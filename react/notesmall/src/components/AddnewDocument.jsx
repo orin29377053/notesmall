@@ -27,7 +27,7 @@ const AddnewDocument = () => {
             .then((res) => {
                 console.log(res);
                 const id = res.data.createDocument._id;
-                dispatch(editingDocument(res.data.createDocument));
+                dispatch({type:"EDITING_DOCUMENT",payload:(res.data.createDocument)});
 
                 return id;
             })

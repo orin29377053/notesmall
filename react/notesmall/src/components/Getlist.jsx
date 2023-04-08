@@ -6,27 +6,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import "../App.css";
 
-const getlistfromGraphql = (setList) => {
-    console.log("getlist");
-    const query = `query Query {
-    documents {
-        _id
-        title
-        updated_at
-    }
-    }`;
-    fetch("http://localhost:8000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-    })
-        .then((res) => res.json())
-        .then((res) => {
-            setList(res.data.documents);
-        });
-};
-
 const List = ({ list }) => {
+
+
     return list?.map((item) => (
         <Link
             key={item._id}
@@ -66,14 +48,20 @@ const List = ({ list }) => {
 };
 
 function Getlist() {
-    // console.log("dd")
-
-    const [list, setList] = useState();
+    const { sidebar } = useSelector((state) => state.common);
+    const dispatch = useDispatch();
     const getlist = () => {
-        getlistfromGraphql(setList);
+        dispatch({
+            type: "FETCH_SIDEBAR_LIST",
+            payload: {
+                gqlMethod: "query",
+                api: "documents",
+                response: "_id title updated_at",
+            },
+        });
     };
     useEffect(() => {
-        getlistfromGraphql(setList);
+        getlist();
     }, []);
 
     return (
@@ -88,7 +76,7 @@ function Getlist() {
                     Refresh
                 </Button>
             </div>
-            <List list={list} />
+            <List list={sidebar} />
         </div>
     );
 }

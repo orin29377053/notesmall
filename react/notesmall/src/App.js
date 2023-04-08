@@ -3,7 +3,7 @@ import "./App.css";
 import SmallEditor from "./components/SmallEditor";
 import Sidebar from "./components/Sidebar";
 import { Provider } from "react-redux";
-import store from "./store";
+import store from "./redux/store";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {

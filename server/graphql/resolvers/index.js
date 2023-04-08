@@ -24,7 +24,7 @@ const Resolvers = {
         },
         documents: async () => {
             try {
-                const documentsFetched = await Document.find();
+                const documentsFetched = await Document.find().where({isDeleted: false});
                 return documentsFetched.map((document) => {
                     return {
                         ...document._doc,
@@ -111,6 +111,25 @@ const Resolvers = {
                 throw error;
             }
         },
+        deleteDocument: async (_, args) => {
+            console.log(args);
+
+            try {
+                const { _id, isDeleted } = args.document;
+                console.log(_id, isDeleted)
+                const document = await Document.findByIdAndUpdate(
+                    _id,
+                    { isDeleted },
+                    { new: true }
+                );
+                if (!document) {
+                    throw new Error(`Document with ID ${id} not found`);
+                }
+                return { ...document._doc, _id: document.id };
+            } catch (error) {
+                throw error;
+            }
+        }
     },
 };
 

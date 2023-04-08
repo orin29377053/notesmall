@@ -12,6 +12,10 @@ const documentSchema = new Schema({
         type: String,
         // required: true,
     },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
     created_at: {
         type: Date,
         immutable: true, //不能被覆寫

@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import ReadMarkdown from "./ReadMarkdown";
 import "remirror/styles/all.css";
-import React, { useCallback, useState, useRef, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
@@ -14,10 +13,10 @@ import { getPresignedUrl, handleUpload } from "./ImageUpload";
 import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
-import AddnewDocument from "./AddnewDocument";
 import "../App.css";
-import { editingDocument, updatingTitle, count } from "../action/document";
-import { Row, Stack } from "react-bootstrap";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Row } from "react-bootstrap";
 import {
     BlockquoteExtension,
     BoldExtension,
@@ -111,45 +110,45 @@ function uploadHandler(files) {
     return promises;
 }
 
-const hooks = [
-    () => {
-        const { getJSON, getMarkdown } = useHelpers();
-        const handleSaveShortcut = useCallback(
-            ({ state }) => {
-                const markdown = getMarkdown();
+// const hooks = [
+//     () => {
+//         const { getJSON, getMarkdown } = useHelpers();
+//         const handleSaveShortcut = useCallback(
+//             ({ state }) => {
+//                 const markdown = getMarkdown();
 
-                // const sss = useSelector(res => res.editingDocument);
+//                 // const sss = useSelector(res => res.editingDocument);
 
-                const postdata = { data: markdown };
-                const contentID = "wwswd";
-                // Ded()
-                // console.log(markdown)
+//                 const postdata = { data: markdown };
+//                 const contentID = "wwswd";
+//                 // Ded()
+//                 // console.log(markdown)
 
-                // // post the markdown to the backend server
-                // const query = `
-                // mutation{
-                //     updatedDocument(document: { _id: ${contentID}, content: "${markdown}" }) {
-                //         title
-                //     }}
-                //     `;
+//                 // // post the markdown to the backend server
+//                 // const query = `
+//                 // mutation{
+//                 //     updatedDocument(document: { _id: ${contentID}, content: "${markdown}" }) {
+//                 //         title
+//                 //     }}
+//                 //     `;
 
-                // fetch("http://localhost:8000/graphql", {
-                //     method: "POST",
-                //     body: JSON.stringify({ query }),
-                //     headers: {
-                //         "Content-Type": "application/json",
-                //     },
-                // });
-                // SendDocument()
-                return true; // Prevents any further key handlers from being run.
-            },
-            [getJSON]
-        );
+//                 // fetch("http://localhost:8000/graphql", {
+//                 //     method: "POST",
+//                 //     body: JSON.stringify({ query }),
+//                 //     headers: {
+//                 //         "Content-Type": "application/json",
+//                 //     },
+//                 // });
+//                 // SendDocument()
+//                 return true; // Prevents any further key handlers from being run.
+//             },
+//             [getJSON]
+//         );
 
-        // "Mod" means platform agnostic modifier key - i.e. Ctrl on Windows, or Cmd on MacOS
-        useKeymap("Mod-s", handleSaveShortcut);
-    },
-];
+//         // "Mod" means platform agnostic modifier key - i.e. Ctrl on Windows, or Cmd on MacOS
+//         useKeymap("Mod-s", handleSaveShortcut);
+//     },
+// ];
 
 // update the editor content with the markdown content
 const MdToContent = ({ htmlContents }) => {
@@ -163,39 +162,18 @@ const TextEditor = () => {
     return <div {...getRootProps()} />;
 };
 
-const changeTitle = debounce((id, title) => {
-    if (title) {
-        const query = `
-            mutation{
-                updatedDocument(document: { _id: "${id}", title: "${title}"}) {
-                    title
-                }}
-                `;
-        fetch("http://localhost:8000/graphql", {
-            method: "POST",
-            body: JSON.stringify({ query }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-    } else {
-        //TODO: sync animation
 
-        console.log("please type title");
-    }
-}, 1000);
+
 
 const SmallEditor = () => {
+    let history = useNavigate();
+
     const { id } = useParams();
+    console.log(id);
     const dispatch = useDispatch();
-    // const [htmlContents, setHtmlContent] = useState();
-    // const [oldid, setId] = useState();
-    // const [title, setTitle] = useState("");
-    const document = useSelector((state) => state?.editingDocument);
-    const count = useSelector((state) => state?.count);
-    const title = document?.title;
-    const content = document?.content;
-    console.log("title", title);
+    const { editingDocument } = useSelector((state) => state.editor);
+    const title = editingDocument?.title;
+    const content = editingDocument?.content;
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -231,8 +209,23 @@ const SmallEditor = () => {
             },
         });
 
-        dispatch({ type: "UPDATING_CONTENT", payload: { content: markdown } });
+        dispatch({ type: "UPDATE_CONTENT", payload: { content: markdown } });
     };
+    const Delete = (dispatch, id) => {
+    
+        dispatch({
+            type: "DELETE_SIDEBAR_LIST",
+            payload: {
+                gqlMethod: "mutation",
+                api: "deleteDocument",
+                format: `(document:{ _id: "${id}" ,isDeleted: true})`,
+                response: "_id ",
+            },
+        });
+        history("/")
+    
+    
+    }
 
     const getEssay = (id) => {
         console.log("getid");
@@ -254,11 +247,10 @@ const SmallEditor = () => {
             })
                 .then((res) => res.json())
                 .then((res) => {
-                    const document = marked(res.data.document.content);
-                    // setHtmlContent(document);
-                    // setId(res.data.document._id);
-                    // setTitle(res.data.document.title);
-                    dispatch(editingDocument(res.data.document));
+                    dispatch({
+                        type: "EDITING_DOCUMENT",
+                        payload: { editingDocument: res.data.document },
+                    });
                 });
         }
     };
@@ -267,19 +259,46 @@ const SmallEditor = () => {
         getEssay(id);
     }, [id]);
 
+    const changeTitle = useCallback(
+        debounce((id, title) => {
+            if (title) {
+                dispatch({
+                    type: "EDIT_TITLE",
+                    payload: {
+                        gqlMethod: "mutation",
+                        api: "updatedDocument",
+                        format: `(document:{ _id: "${id}", title: "${title}" })`,
+                        response: "title content",
+                    },
+                });
+            } else {
+                console.log("no dispatch");
+            }
+        }, 500),
+        []
+    );
+
     useEffect(() => {
-        changeTitle(id, title);
-    }, [title]);
+        title && changeTitle(id, title);
+    }, [title, changeTitle]);
 
     return (
         <AllStyledComponent>
             {/* the className is used to define css variables necessary for the editor */}
 
             <ThemeProvider>
+            <Button
+                    variant="contained"
+                    color="warning"
+                    onClick={() => { Delete(dispatch,id) }}
+                    size="small"
+                >
+                    Delete
+                </Button>
                 <Remirror
                     manager={manager}
                     initialContent={state}
-                    hooks={hooks}
+                    // hooks={hooks}
                     // onChange={handleEditorChange}
                     // autoRender="false"
                 >
@@ -287,16 +306,14 @@ const SmallEditor = () => {
                     {/* <AddnewDocument /> */}
                     <Row className="px-3 mb-2 mt-3">
                         <input
-                            
                             type="text"
                             value={title}
                             onChange={(e) => {
                                 if (e.target.value) {
                                     dispatch({
-                                        type: "UPDATING_TITLE",
+                                        type: "UPDATE_TITLE",
                                         payload: { title: e.target.value },
                                     });
-                                    // setTitle(e.target.value)
                                 } else {
                                     alert("please type title");
                                 }
@@ -308,7 +325,6 @@ const SmallEditor = () => {
                                 font-size: 2rem;
                                 font-weight: 700;
                                 margin-bottom: 1rem;
-
                             `}
                         ></input>
                     </Row>

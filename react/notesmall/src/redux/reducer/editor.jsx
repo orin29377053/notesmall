@@ -4,14 +4,15 @@ const initState = {
     count: 0,
 };
 
-const documentReducer = (state = initState, action) => {
+const editorReducer = (state = initState, action) => {
     switch (action.type) {
         case "EDITING_DOCUMENT":
             return {
                 ...state,
                 editingDocument: action.payload.editingDocument,
             };
-        case "UPDATING_TITLE":
+        case "UPDATE_TITLE":
+            console.log(action)
             return {
                 ...state,
                 editingDocument: {
@@ -24,7 +25,7 @@ const documentReducer = (state = initState, action) => {
                 ...state,
                 count: action.payload.count,
             };
-        case "UPDATING_CONTENT":
+        case "UPDATE_CONTENT":
             return {
                 ...state,
                 editingDocument: {
@@ -32,6 +33,8 @@ const documentReducer = (state = initState, action) => {
                     content: action.payload.content,
                 },
             };
+        default:
+            return state;
     }
 };
-export default documentReducer;
+export default editorReducer;
