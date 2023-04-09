@@ -5,7 +5,9 @@ import Sidebar from "./components/Sidebar";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Search from "./components/Search";
+import TagEditor from "./components/TagEditor";
+import "bootstrap/dist/css/bootstrap.min.css";
 function App() {
     return (
         <Provider store={store}>
@@ -14,8 +16,9 @@ function App() {
                     <Sidebar />
                     <div className="content">
                         <Routes>
-                            <Route path="/:id" element={<SmallEditor/>}>
-                            </Route>
+                            <Route path="/tag" element={<TagEditor />} />
+                            <Route path="/search/" element={<Search />} />
+                            <Route path="/:id" element={<SmallEditor />} />
                         </Routes>
                     </div>
                 </div>

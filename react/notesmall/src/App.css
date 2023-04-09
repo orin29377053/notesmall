@@ -36,21 +36,19 @@
         transform: rotate(360deg);
     }
 }
-.body {
+/* .body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
+} */
 
 .sidebar {
     width: 18%;
     background-color: #282c34;
     color: white;
-    /* padding: 15px; */
     height: 100vh;
-    /* let sidebar fix on the left */
     position: fixed;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .content {

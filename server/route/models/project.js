@@ -2,19 +2,27 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const documentSchema = new Schema({
-    title: {
+const projectSchema = new Schema({
+    name: {
         type: String,
         required: true,
     },
-    content: {
-        type: String,
-        // required: true,
+    isFavorite: {
+        type: Boolean,
+        default: false,
+        required: true,
     },
     isDeleted: {
         type: Boolean,
         default: false,
+        required: true,
     },
+    isArchived: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
+
     created_at: {
         type: Date,
         immutable: true, //不能被覆寫
@@ -24,17 +32,12 @@ const documentSchema = new Schema({
         type: Date,
         default: () => Date.now(),
     },
-    tags: [
+    documents: [
         {
             type: Schema.Types.ObjectId,
-            ref: "Tag",
+            ref: "Document",
         },
     ],
-    project: {
-        type: Schema.Types.ObjectId,
-        ref: "Project",
-    },
-    
 });
 
-module.exports = mongoose.model("Document", documentSchema);
+module.exports = mongoose.model("Project", projectSchema);

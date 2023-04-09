@@ -12,7 +12,7 @@ const editorReducer = (state = initState, action) => {
                 editingDocument: action.payload.editingDocument,
             };
         case "UPDATE_TITLE":
-            console.log(action)
+            console.log(action);
             return {
                 ...state,
                 editingDocument: {
@@ -32,6 +32,18 @@ const editorReducer = (state = initState, action) => {
                     ...state.editingDocument,
                     content: action.payload.content,
                 },
+            };
+        
+        //TODO: add document
+        case "ADD_DOCUMENT_RESULT":
+            // console.log(action);
+            // index = _.findIndex(state.sidebar, {
+            //     _id: action.data?.data?.deleteDocument._id,
+            // });
+            // state.sidebar.splice(index, 1);
+            return {
+                ...state,
+                // sidebar: action.data?.data?.documents,
             };
         default:
             return state;

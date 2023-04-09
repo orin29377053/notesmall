@@ -4,6 +4,7 @@ import _ from "lodash";
 import { API_METHOD, APIKit } from "../api/apiService";
 import edit from "./edit";
 import common from "./common";
+import tag from "./tag";
 
 export function* fetchApi({
     method,
@@ -38,13 +39,8 @@ export function* fetchApi({
         success = true;
     } catch (error) {
         console.log(error.response);
-        // 發生錯誤先取出 statusCode
-        let statusCode = error?.response?.status;
+        alert(error.response?.data?.errors[0]?.message);
 
-        let message = `${error}`;
-        if (!!error?.response?.data && statusCode === 400) {
-            message = _.join(_.values(error.response.data), "\n");
-        }
     }
 
     //有設定 reducer才會呼叫
@@ -55,7 +51,7 @@ export function* fetchApi({
 }
 
 function* rootSaga() {
-    yield all([edit(), common()]);
+    yield all([edit(), common(), tag()]);
 }
 
 export default rootSaga;

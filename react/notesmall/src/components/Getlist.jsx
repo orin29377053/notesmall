@@ -4,18 +4,18 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
+import CachedIcon from "@mui/icons-material/Cached";
 import "../App.css";
 
 const List = ({ list }) => {
-
-
     return list?.map((item) => (
         <Link
             key={item._id}
             to={`/${item._id}`}
             css={css`
                 text-decoration: none;
-                color: white;
+                color: #dedede;
+
                 &:hover {
                     color: black;
                 }
@@ -35,11 +35,18 @@ const List = ({ list }) => {
                     css={css`
                         font-weight: bold;
                         font-size: 1.2rem;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                     `}
                 >
                     {item.title}
                 </div>
-                <div css={css``}>
+                <div
+                    css={css`
+                        font-size: small;
+                    `}
+                >
                     {item.updated_at?.slice(0, 19).replace("T", " ")}
                 </div>
             </div>
@@ -56,6 +63,7 @@ function Getlist() {
             payload: {
                 gqlMethod: "query",
                 api: "documents",
+                format: "(isDeleted: false)",
                 response: "_id title updated_at",
             },
         });
@@ -68,10 +76,11 @@ function Getlist() {
         <div>
             <div className="my-3 text-center">
                 <Button
-                    variant="contained"
+                    variant="text"
                     color="warning"
                     onClick={getlist}
                     size="small"
+                    startIcon={<CachedIcon />}
                 >
                     Refresh
                 </Button>

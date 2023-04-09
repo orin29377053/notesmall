@@ -14,9 +14,11 @@ import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
 import "../App.css";
-import { Button } from "@mui/material";
+import { Button, Alert ,AlertTitle} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import {
     BlockquoteExtension,
     BoldExtension,
@@ -162,9 +164,6 @@ const TextEditor = () => {
     return <div {...getRootProps()} />;
 };
 
-
-
-
 const SmallEditor = () => {
     let history = useNavigate();
 
@@ -212,7 +211,6 @@ const SmallEditor = () => {
         dispatch({ type: "UPDATE_CONTENT", payload: { content: markdown } });
     };
     const Delete = (dispatch, id) => {
-    
         dispatch({
             type: "DELETE_SIDEBAR_LIST",
             payload: {
@@ -222,10 +220,8 @@ const SmallEditor = () => {
                 response: "_id ",
             },
         });
-        history("/")
-    
-    
-    }
+        history("/");
+    };
 
     const getEssay = (id) => {
         console.log("getid");
@@ -287,10 +283,13 @@ const SmallEditor = () => {
             {/* the className is used to define css variables necessary for the editor */}
 
             <ThemeProvider>
-            <Button
+                <Button
                     variant="contained"
                     color="warning"
-                    onClick={() => { Delete(dispatch,id) }}
+                    onClick={() => {
+                        Delete(dispatch, id);
+                    }}
+                    startIcon={<DeleteIcon />}
                     size="small"
                 >
                     Delete
@@ -333,7 +332,7 @@ const SmallEditor = () => {
                     </Row>
                     <MdToContent htmlContents={content} />
                     <OnChangeHTML
-                        onChange={debounce(handleEditorChange, 1000)}
+                        onChange={debounce(handleEditorChange, 3000)}
                     ></OnChangeHTML>
                     <TextEditor className="px-1" />
                 </Remirror>
