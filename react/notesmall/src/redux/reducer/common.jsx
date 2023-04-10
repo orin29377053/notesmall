@@ -3,7 +3,7 @@ const initState = {
     sidebar: [],
     searchKeyword: "",
     searchResult: [],
-
+    // selectedID: "",
 };
 
 const commonReducer = (state = initState, action) => {
@@ -42,28 +42,28 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 searchResult: action.data?.data?.searchDocuments,
             };
-        
+
         case "SEARCH_KEYWORD":
-            return {    
+            return {
                 ...state,
                 searchKeyword: action.payload.keyword,
             };
         case "UPTATE_SIDE_BAR_LIST":
-            console.log(action.payload)
-            console.log(state.sidebar)
+            console.log(action.payload);
+            console.log(state.sidebar);
             return {
                 ...state,
-                sidebar: state.sidebar.map(item =>
+                sidebar: state.sidebar.map((item) =>
                     item._id === action.payload._id ? action.payload : item
                 ),
             };
-            case "NEW_SIDE_BAR_LIST":
-                console.log(action.payload)
-                console.log(state.sidebar)
-                return {
-                    ...state,
-                    sidebar: [...state.sidebar, action.payload],
-                };
+        case "NEW_SIDE_BAR_LIST":
+            console.log(action.payload);
+            console.log(state.sidebar);
+            return {
+                ...state,
+                sidebar: [...state.sidebar, action.payload],
+            };
 
         default:
             return state;

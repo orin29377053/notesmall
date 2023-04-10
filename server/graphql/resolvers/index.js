@@ -312,7 +312,6 @@ const Resolvers = {
             console.log(args);
             try {
                 const { _id, title, content, tags, project } = args.document;
-                console.log(_id,tags);
                 const updated_at = Date.now();
                 const document = await Document.findByIdAndUpdate(
                     _id,
@@ -321,7 +320,7 @@ const Resolvers = {
                 ).populate("tags");
 
                 const newDocument = await document.save();
-                console.log("newDocument");
+                console.log("newDocument",document);
 
                 if (tags) {
                     await Tag.updateMany(

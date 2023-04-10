@@ -11,7 +11,7 @@ import { useEffect } from "react";
 const AddnewDocument = () => {
     const dispatch = useDispatch();
     let history = useNavigate();
-    const add = () => {
+    const add = async() => {
         // dispatch({
         //     type: "CREATE_DOCUMENTS",
         //     payload: {
@@ -44,36 +44,53 @@ const AddnewDocument = () => {
                     tags{_id,name,colorCode}
                 }}
                 `;
-        fetch("http://localhost:8000/graphql", {
+        const eded=await fetch("http://localhost:8000/graphql", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query }),
         })
-            .then((res) => res.json())
-            .then((res) => {
-                console.log(res);
-                const id = res.data.createDocument._id;
-                dispatch({
-                    type: "CREATE_DOCUMENT_RESULT",
-                    payload: res.data.createDocument,
-                });
+        const res = await eded.json()
+        console.log("frf", res);
+        
+        const id = res.data.createDocument._id;
+        dispatch({
+            type: "CREATE_DOCUMENT_RESULT",
+            payload: res.data.createDocument,
+        });
+        dispatch({
+            type: "NEW_SIDE_BAR_LIST",
+            payload: {
+                _id: id,
+                title: "new document",
+                updated_at: new Date().toISOString(),
+            },
+        });
+        history(`/${id}`);
+            // .then((res) => res.json())
+            // .then((res) => {
+            //     console.log("res",res);
+            //     const id = res.data.createDocument._id;
+            //     dispatch({
+            //         type: "CREATE_DOCUMENT_RESULT",
+            //         payload: res.data.createDocument,
+            //     });
 
-                return id;
-            })
-            .then((id) => {
-                dispatch({
-                    type: "NEW_SIDE_BAR_LIST",
-                    payload: {
-                        _id: id,
-                        title: "new document",
-                        updated_at: new Date().toISOString(),
-                    },
-                });
-                return id;
-            })
-            .then((id) => {
-                history(`/${id}`);
-            });
+            //     return id;
+            // })
+            // .then((id) => {
+            //     dispatch({
+            //         type: "NEW_SIDE_BAR_LIST",
+            //         payload: {
+            //             _id: id,
+            //             title: "new document",
+            //             updated_at: new Date().toISOString(),
+            //         },
+            //     });
+            //     return id;
+            // })
+            // .then((id) => {
+            //     history(`/${id}`);
+            // });
     };
     
     return (

@@ -4,6 +4,7 @@ const initState = {
     editingDocument: {},
     title: "",
     count: 0,
+    // selectedID: "",
 };
 
 const editorReducer = (state = initState, action) => {
@@ -13,8 +14,7 @@ const editorReducer = (state = initState, action) => {
 
             return {
                 ...state,
-                editingDocument: action.data.data.document
-                    
+                editingDocument: action.data.data.document,
             };
 
         case "UPDATE_TITLE":
@@ -62,12 +62,21 @@ const editorReducer = (state = initState, action) => {
             };
         case "CREATE_DOCUMENT_RESULT":
             console.log(action);
-            
+
             return {
-                ...state,  
-                editingDocument: action.payload,  
+                ...state,
+                editingDocument: action.payload,
+                // selectedID: action.payload._id,
             };
-        
+        case "UPDATE_DOCUMENT_TITLE":
+            console.log(action);
+            return {
+                ...state,
+                editingDocument: {
+                    ...state.editingDocument,
+                    title: action.data.data.updatedDocument.title,
+                },
+            };
 
         default:
             return state;

@@ -180,11 +180,13 @@ const TextEditor = () => {
 
 const SmallEditor = () => {
     let history = useNavigate();
+    const { editingDocument } = useSelector((state) => state.editor);
 
     const { id } = useParams();
-    console.log(id);
+    console.log("is it strat?id", id);
+    console.log("is it same?id",editingDocument?._id);
+
     const dispatch = useDispatch();
-    const { editingDocument } = useSelector((state) => state.editor);
     const title = editingDocument?.title;
     const content = editingDocument?.content;
 
@@ -275,6 +277,7 @@ const SmallEditor = () => {
 
     const changeTitle = useCallback(
         debounce((id, title) => {
+            console.log("here!!!!", id, editingDocument._id)
             if (title) {
                 dispatch({
                     type: "EDIT_TITLE",
@@ -282,10 +285,10 @@ const SmallEditor = () => {
                         gqlMethod: "mutation",
                         api: "updatedDocument",
                         format: `(document:{ _id: "${id}", title: "${title}" })`,
-                        response: "title content",
+                        response: "_id title content",
                     },
                 });
-                // dispatch({ type: "JUST_UPTATE_SIDE_BAR_LIST"});
+                dispatch({ type: "JUST_UPTATE_SIDE_BAR_LIST"});
                 dispatch({
                     type: "UPTATE_SIDE_BAR_LIST",
                     payload: {
@@ -298,10 +301,11 @@ const SmallEditor = () => {
                 console.log("no dispatch");
             }
         }, 500),
-        []
+        [id]
     );
 
     useEffect(() => {
+        if(id===editingDocument._id)
         title && changeTitle(id, title);
     }, [title, changeTitle]);
 

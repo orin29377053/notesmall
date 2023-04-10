@@ -7,13 +7,13 @@ function* fetch(action) {
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
-        reducer: "JUST_UPTATE_SIDE_BAR_LIST",
+        reducer: "UPDATE_DOCUMENT_TITLE",
         queryString: action.payload,
     });
 }
 
 function* fetchUpdateTags(action) {
-    console.log(action)
+    console.log(action);
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -23,7 +23,7 @@ function* fetchUpdateTags(action) {
 }
 
 function* fetchQueryDocument(action) {
-    console.log(action)
+    console.log(action);
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -32,8 +32,7 @@ function* fetchQueryDocument(action) {
     });
 }
 function* fetchCreateDocument(action) {
-
-    console.log(action)
+    console.log(action);
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -42,16 +41,11 @@ function* fetchCreateDocument(action) {
     });
 }
 
-
-
 function* mySaga() {
     yield takeLatest("EDIT_TITLE", fetch);
     yield takeLatest("UPDATE_TAGS", fetchUpdateTags);
     yield takeLatest("QUERY_DOCUMENTS", fetchQueryDocument);
     yield takeLatest("CREATE_DOCUMENTS", fetchCreateDocument);
-
-
-
 }
 
 export default mySaga;
