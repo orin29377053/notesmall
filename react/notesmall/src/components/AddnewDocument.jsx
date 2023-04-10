@@ -7,17 +7,41 @@ import { marked } from "marked";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useEffect } from "react";
 const AddnewDocument = () => {
     const dispatch = useDispatch();
-
     let history = useNavigate();
     const add = () => {
+        // dispatch({
+        //     type: "CREATE_DOCUMENTS",
+        //     payload: {
+        //         gqlMethod: "mutation",
+        //         api: "createDocument",
+        //         format: `(document: {title: "new document",content: "new document"})`,
+        //         response: "_id title content updated_at tags{_id,name,colorCode} ",
+        //     },
+        // });
+        
+        // dispatch({
+        //     type: "NEW_SIDE_BAR_LIST",
+        //     payload: {
+        //         _id: id,
+        //         title: "new document",
+        //         updated_at: new Date().toISOString(),
+        //     },
+        // });
+
+        // history(`/${id}`);
+
+
         const query = `
             mutation{
             createDocument(document: {title: "new document",content: "new document"}) {
                     _id
                     content
                     title
+                    updated_at 
+                    tags{_id,name,colorCode}
                 }}
                 `;
         fetch("http://localhost:8000/graphql", {
@@ -30,22 +54,33 @@ const AddnewDocument = () => {
                 console.log(res);
                 const id = res.data.createDocument._id;
                 dispatch({
-                    type: "EDITING_DOCUMENT",
+                    type: "CREATE_DOCUMENT_RESULT",
                     payload: res.data.createDocument,
                 });
 
                 return id;
             })
             .then((id) => {
+                dispatch({
+                    type: "NEW_SIDE_BAR_LIST",
+                    payload: {
+                        _id: id,
+                        title: "new document",
+                        updated_at: new Date().toISOString(),
+                    },
+                });
+                return id;
+            })
+            .then((id) => {
                 history(`/${id}`);
             });
     };
-
+    
     return (
         <Button
             variant="text"
             size="small"
-            onClick={add}
+            onClick={()=>(add(useSelector))}
             startIcon={<AddIcon />}
             css={css`
                 color: white !important;

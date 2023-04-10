@@ -75,7 +75,7 @@ function Getlist() {
     return (
         <div>
             <div className="my-3 text-center">
-                <Button
+                {/* <Button
                     variant="text"
                     color="warning"
                     onClick={getlist}
@@ -83,7 +83,7 @@ function Getlist() {
                     startIcon={<CachedIcon />}
                 >
                     Refresh
-                </Button>
+                </Button> */}
             </div>
             <List list={sidebar} />
         </div>

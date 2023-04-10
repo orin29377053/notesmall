@@ -21,7 +21,7 @@ const getDocument = async (documentID) => {
                 tags.push(tag);
             }
         }
-        console.log(tags);
+        // console.log(tags);
 
         return {
             ...document._doc,
@@ -190,8 +190,8 @@ const Resolvers = {
                 throw error;
             }
         },
-        tag: async (parent, { id }) => {
-            console.log("tag");
+        tag: async (parent, { id }, context, info) => {
+            console.log(parent,context, info);
             try {
                 const tag = await Tag.findById(id);
                 if (!tag) {
@@ -210,7 +210,8 @@ const Resolvers = {
                 throw error;
             }
         },
-        tags: async () => {
+        tags: async (parent, args, context, info) => {
+            console.log("parent", parent)
             try {
                 const tags = await Tag.find();
                 return tags.map(async (tag) => {
@@ -311,6 +312,7 @@ const Resolvers = {
             console.log(args);
             try {
                 const { _id, title, content, tags, project } = args.document;
+                console.log(_id,tags);
                 const updated_at = Date.now();
                 const document = await Document.findByIdAndUpdate(
                     _id,
@@ -381,7 +383,7 @@ const Resolvers = {
             }
         },
         createTag: async (_, args) => {
-            console.log(args);
+            console.log("args", args);
             try {
                 const { name, colorCode } = args.tag;
                 const tag = new Tag({
@@ -418,6 +420,44 @@ const Resolvers = {
                 throw error;
             }
         },
+        deleteTag: async (_, args) => {
+            console.log(args);
+            try {
+                const { id } = args;
+                const tag = await Tag.findByIdAndDelete(id);
+                console.log(tag);
+
+        
+                if (!tag) {
+                    throw new Error(`Tag with ID ${id} not found`);
+                }
+                //pull from document
+                await Document.updateMany(
+                    { _id: { $in: tag.document } },
+                    { $pull: { tags: id } }
+                );
+
+
+                return {
+                    ...tag._doc,
+                    _id: tag.id,
+                    document:
+                        tag.document?.length > 0
+                            ? await Promise.all(tag.document.map(getDocument))
+                            : [],
+                };
+            } catch (error) {
+                throw error;
+            }
+        },
+
+
+
+
+
+
+
+
         createProject: async (_, args) => {
             console.log(args);
             try {

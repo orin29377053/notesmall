@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 const initState = {
     editingDocument: {},
     title: "",
@@ -7,10 +9,14 @@ const initState = {
 const editorReducer = (state = initState, action) => {
     switch (action.type) {
         case "EDITING_DOCUMENT":
+            console.log(action);
+
             return {
                 ...state,
-                editingDocument: action.payload.editingDocument,
+                editingDocument: action.data.data.document
+                    
             };
+
         case "UPDATE_TITLE":
             console.log(action);
             return {
@@ -33,7 +39,7 @@ const editorReducer = (state = initState, action) => {
                     content: action.payload.content,
                 },
             };
-        
+
         //TODO: add document
         case "ADD_DOCUMENT_RESULT":
             // console.log(action);
@@ -45,6 +51,24 @@ const editorReducer = (state = initState, action) => {
                 ...state,
                 // sidebar: action.data?.data?.documents,
             };
+        case "UPDATE_TAGS_RESULT":
+            console.log(action);
+            return {
+                ...state,
+                editingDocument: {
+                    ...state.editingDocument,
+                    tags: action.data.data.updatedDocument.tags,
+                },
+            };
+        case "CREATE_DOCUMENT_RESULT":
+            console.log(action);
+            
+            return {
+                ...state,  
+                editingDocument: action.payload,  
+            };
+        
+
         default:
             return state;
     }

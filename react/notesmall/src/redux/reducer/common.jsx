@@ -48,6 +48,22 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 searchKeyword: action.payload.keyword,
             };
+        case "UPTATE_SIDE_BAR_LIST":
+            console.log(action.payload)
+            console.log(state.sidebar)
+            return {
+                ...state,
+                sidebar: state.sidebar.map(item =>
+                    item._id === action.payload._id ? action.payload : item
+                ),
+            };
+            case "NEW_SIDE_BAR_LIST":
+                console.log(action.payload)
+                console.log(state.sidebar)
+                return {
+                    ...state,
+                    sidebar: [...state.sidebar, action.payload],
+                };
 
         default:
             return state;

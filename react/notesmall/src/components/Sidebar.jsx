@@ -7,6 +7,8 @@ import AddnewDocument from "./AddnewDocument";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
+import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
+
 const Sidebar = () => {
     let history = useNavigate();
     return (
@@ -33,6 +35,23 @@ const Sidebar = () => {
                     startIcon={<SearchIcon />}
                 >
                     Search
+                </Button>
+                <Button
+                    variant="text"
+                    color="warning"
+                    onClick={() => history("/tag")}
+                    size="small"
+                    css={css`
+                        margin: 0 5px;
+                        color: white !important;
+                        &:hover {
+                            color: black !important;
+                            background-color: #c5c5c5;
+                        }
+                    `}
+                    startIcon={<TurnedInNotIcon />}
+                >
+                    Tag
                 </Button>
                 <AddnewDocument />
             </div>

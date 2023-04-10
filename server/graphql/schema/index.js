@@ -15,7 +15,7 @@ module.exports = buildSchema(`
     isDeleted: Boolean!
     created_at: String!
     updated_at: String!
-    tags: [Tag!]
+    tags: [Tag]
     project: Project
   }
 
@@ -38,13 +38,13 @@ module.exports = buildSchema(`
     name: String!
     colorCode: String
     created_at: String!
-    document: [Document!]
+    document: [Document]
   }
   input TagInput {
     _id: ID
     name: String!
     colorCode: String
-    document: [ID!]
+    document: [ID]
   }
 
 
@@ -58,7 +58,7 @@ module.exports = buildSchema(`
     title: String
     content: String
     isDeleted: Boolean
-    tags: [ID!]
+    tags: [ID]
     project: ID
   }
 
@@ -92,6 +92,7 @@ module.exports = buildSchema(`
     createTag(tag:TagInput): Tag
     updatedTag(tag:TagInput): Tag
     createProject(project:ProjectInput): Project
+    deleteTag(id:ID!): Tag
   }
 
   schema {

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import "remirror/styles/all.css";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
@@ -14,10 +14,15 @@ import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
 import "../App.css";
-import { Button, Alert ,AlertTitle} from "@mui/material";
+import { Button, Alert, AlertTitle } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
+import Badge from "@mui/material/Badge";
+import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import TagSelector from "./TagSelector";
 
 import {
     BlockquoteExtension,
@@ -111,48 +116,57 @@ function uploadHandler(files) {
 
     return promises;
 }
+const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    // border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+};
 
-// const hooks = [
-//     () => {
-//         const { getJSON, getMarkdown } = useHelpers();
-//         const handleSaveShortcut = useCallback(
-//             ({ state }) => {
-//                 const markdown = getMarkdown();
+const TagContent = () => {
+    // const { taglist } = useSelector((state) => state.tag);
+    const { editingDocument } = useSelector((state) => state.editor);
+    const tagLength = editingDocument?.tags?.length || 0;
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => {
+        setOpen(true);
+    };
 
-//                 // const sss = useSelector(res => res.editingDocument);
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-//                 const postdata = { data: markdown };
-//                 const contentID = "wwswd";
-//                 // Ded()
-//                 // console.log(markdown)
+    return (
+        <div>
+            <Badge
+                badgeContent={tagLength}
+                color="secondary"
+                css={css`
+                    margin-left: 10px;
+                `}
+                onClick={handleOpen}
+            >
+                <TurnedInNotIcon color="action" />
+            </Badge>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <TagSelector setOpen={setOpen} />
+                </Box>
+            </Modal>
+        </div>
+    );
+};
 
-//                 // // post the markdown to the backend server
-//                 // const query = `
-//                 // mutation{
-//                 //     updatedDocument(document: { _id: ${contentID}, content: "${markdown}" }) {
-//                 //         title
-//                 //     }}
-//                 //     `;
-
-//                 // fetch("http://localhost:8000/graphql", {
-//                 //     method: "POST",
-//                 //     body: JSON.stringify({ query }),
-//                 //     headers: {
-//                 //         "Content-Type": "application/json",
-//                 //     },
-//                 // });
-//                 // SendDocument()
-//                 return true; // Prevents any further key handlers from being run.
-//             },
-//             [getJSON]
-//         );
-
-//         // "Mod" means platform agnostic modifier key - i.e. Ctrl on Windows, or Cmd on MacOS
-//         useKeymap("Mod-s", handleSaveShortcut);
-//     },
-// ];
-
-// update the editor content with the markdown content
 const MdToContent = ({ htmlContents }) => {
     const { setContent } = useRemirrorContext();
     setContent(htmlContents);
@@ -209,6 +223,14 @@ const SmallEditor = () => {
         });
 
         dispatch({ type: "UPDATE_CONTENT", payload: { content: markdown } });
+        dispatch({
+            type: "UPTATE_SIDE_BAR_LIST",
+            payload: {
+                _id: id,
+                title: title,
+                updated_at: new Date().toISOString(),
+            },
+        });
     };
     const Delete = (dispatch, id) => {
         dispatch({
@@ -226,33 +248,29 @@ const SmallEditor = () => {
     const getEssay = (id) => {
         console.log("getid");
         if (id) {
-            const query = `
-        query{
-            document( id: "${id}") {
-                _id
-                title
-                content
-                updated_at
-            }
-        }
-        `;
-            fetch("http://localhost:8000/graphql", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query }),
-            })
-                .then((res) => res.json())
-                .then((res) => {
-                    dispatch({
-                        type: "EDITING_DOCUMENT",
-                        payload: { editingDocument: res.data.document },
-                    });
-                });
+            dispatch({
+                type: "QUERY_DOCUMENTS",
+                payload: {
+                    gqlMethod: "query",
+                    api: "document",
+                    format: `(id:"${id}")`,
+                    response:
+                        "_id title content updated_at tags{_id,name,colorCode} ",
+                },
+            });
         }
     };
 
     useEffect(() => {
         getEssay(id);
+        dispatch({
+            type: "FETCH_TAG_LIST",
+            payload: {
+                gqlMethod: "query",
+                api: "tags",
+                response: "_id name colorCode document{_id title content}",
+            },
+        });
     }, [id]);
 
     const changeTitle = useCallback(
@@ -265,6 +283,15 @@ const SmallEditor = () => {
                         api: "updatedDocument",
                         format: `(document:{ _id: "${id}", title: "${title}" })`,
                         response: "title content",
+                    },
+                });
+                // dispatch({ type: "JUST_UPTATE_SIDE_BAR_LIST"});
+                dispatch({
+                    type: "UPTATE_SIDE_BAR_LIST",
+                    payload: {
+                        _id: id,
+                        title: title,
+                        updated_at: new Date().toISOString(),
                     },
                 });
             } else {
@@ -283,17 +310,26 @@ const SmallEditor = () => {
             {/* the className is used to define css variables necessary for the editor */}
 
             <ThemeProvider>
-                <Button
-                    variant="contained"
-                    color="warning"
-                    onClick={() => {
-                        Delete(dispatch, id);
-                    }}
-                    startIcon={<DeleteIcon />}
-                    size="small"
+                <div
+                    css={css`
+                        margin: 2px;
+                        display: flex;
+                    `}
                 >
-                    Delete
-                </Button>
+                    <Button
+                        variant="contained"
+                        color="warning"
+                        onClick={() => {
+                            Delete(dispatch, id);
+                        }}
+                        startIcon={<DeleteIcon />}
+                        size="small"
+                    >
+                        Delete
+                    </Button>
+                    <TagContent />
+                </div>
+
                 <Remirror
                     manager={manager}
                     initialContent={state}
@@ -327,6 +363,7 @@ const SmallEditor = () => {
                             `}
                         ></input>
                     </Row>
+
                     <Row className="px-1 mb-4">
                         <EditorToolbar />
                     </Row>
