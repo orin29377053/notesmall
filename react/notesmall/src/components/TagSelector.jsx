@@ -17,7 +17,13 @@ const unselectTag = (tag, select, setSelect, unselect, setUnselect) => {
     setSelect(select.filter((item) => item._id !== tag._id));
 };
 
-const UnSelectTagList = ({ select, setSelect, unselect, setUnselect }) => {
+const UnSelectTagList = ({
+    select,
+    setSelect,
+    unselect,
+    setUnselect,
+    getTextColorFromBackground,
+}) => {
     return unselect?.map((item) => (
         <>
             <Chip
@@ -26,6 +32,9 @@ const UnSelectTagList = ({ select, setSelect, unselect, setUnselect }) => {
                 css={css`
                     background-color: ${item.colorCode};
                     margin: 5px;
+                    color: ${getTextColorFromBackground(
+                        item.colorCode.slice(1)
+                    )};
                 `}
                 variant="outlined"
                 onClick={() => {
@@ -38,7 +47,13 @@ const UnSelectTagList = ({ select, setSelect, unselect, setUnselect }) => {
     ));
 };
 
-const SelectTagList = ({ select, setSelect, unselect, setUnselect }) => {
+const SelectTagList = ({
+    select,
+    setSelect,
+    unselect,
+    setUnselect,
+    getTextColorFromBackground,
+}) => {
     return select?.map((item) => (
         <>
             <Chip
@@ -47,6 +62,9 @@ const SelectTagList = ({ select, setSelect, unselect, setUnselect }) => {
                 css={css`
                     background-color: ${item.colorCode};
                     margin: 5px;
+                    color: ${getTextColorFromBackground(
+                        item.colorCode.slice(1)
+                    )};
                 `}
                 variant="outlined"
                 onDelete={() =>
@@ -91,6 +109,27 @@ const TagSelector = ({ setOpen }) => {
         });
         setOpen(false);
     };
+    function getTextColorFromBackground(bgColor) {
+        // 将16进制背景色转换为RGB颜色
+        var rgbColor = hexToRgb(bgColor);
+        // 将RGB颜色转换为灰度值
+        var gray =
+            0.2126 * rgbColor.r + 0.7152 * rgbColor.g + 0.0722 * rgbColor.b;
+
+        // 设置灰度值阈值
+        var threshold = 128;
+        // 如果灰度值小于阈值，则返回白色文本颜色，否则返回黑色文本颜色
+        return gray < threshold ? "#ffffff" : "#000000";
+    }
+
+    function hexToRgb(hexColor) {
+        // 将16进制颜色转换为RGB颜色
+        var r = parseInt(hexColor.substr(0, 2), 16);
+        var g = parseInt(hexColor.substr(2, 2), 16);
+        var b = parseInt(hexColor.substr(4, 2), 16);
+
+        return { r: r, g: g, b: b };
+    }
 
     // console.log(select, unselect);
 
@@ -103,6 +142,7 @@ const TagSelector = ({ setOpen }) => {
                     select={select}
                     setSelect={setSelect}
                     setUnselect={setUnselect}
+                    getTextColorFromBackground={getTextColorFromBackground}
                 />
             </div>
             <br></br>
@@ -113,6 +153,7 @@ const TagSelector = ({ setOpen }) => {
                     select={select}
                     setSelect={setSelect}
                     setUnselect={setUnselect}
+                    getTextColorFromBackground={getTextColorFromBackground}
                 />
             </div>
             {console.log(2)}

@@ -2,17 +2,14 @@
 
 import { css } from "@emotion/react";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { MuiColorInput } from "mui-color-input";
 import Chip from "@mui/material/Chip";
-import TagSelector from "./TagSelector";
-
 
 const style = {
     position: "absolute",
@@ -29,8 +26,8 @@ const style = {
 const Taglist = ({ taglist }) => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-    const handleOpen = (id,name, colorCode) => {
-        setId(id)
+    const handleOpen = (id, name, colorCode) => {
+        setId(id);
         setTagname(name);
         setColor(colorCode);
         setOpen(true);
@@ -69,23 +66,49 @@ const Taglist = ({ taglist }) => {
             },
         });
     };
+    function getTextColorFromBackground(bgColor) {
+        // 将16进制背景色转换为RGB颜色
+        var rgbColor = hexToRgb(bgColor);
+        // 将RGB颜色转换为灰度值
+        var gray =
+            0.2126 * rgbColor.r + 0.7152 * rgbColor.g + 0.0722 * rgbColor.b;
 
-    return taglist?.map((item) => (
-        <>
-            <Chip
-                // icon={<TurnedInNotIcon />}
-                key={item._id}
-                label={item.name}
-                css={css`
-                    background-color: ${item.colorCode};
-                    margin: 5px;
-                `}
-                variant="outlined"
-                onClick={() => {
-                    console.log(item._id);
-                    handleOpen(item._id,item.name, item.colorCode);
-                }}
-            />
+        // 设置灰度值阈值
+        var threshold = 128;
+        // 如果灰度值小于阈值，则返回白色文本颜色，否则返回黑色文本颜色
+        return gray < threshold ? "#ffffff" : "#000000";
+    }
+
+    function hexToRgb(hexColor) {
+        // 将16进制颜色转换为RGB颜色
+        var r = parseInt(hexColor.substr(0, 2), 16);
+        var g = parseInt(hexColor.substr(2, 2), 16);
+        var b = parseInt(hexColor.substr(4, 2), 16);
+
+        return { r: r, g: g, b: b };
+    }
+
+    return (
+        <div>
+            {taglist?.map((item) => (
+                <Chip
+                    // icon={<TurnedInNotIcon />}
+                    key={item._id}
+                    label={item.name}
+                    css={css`
+                        background-color: ${item.colorCode};
+                        margin: 5px;
+                        color: ${getTextColorFromBackground(
+                            item.colorCode.slice(1)
+                        )};
+                    `}
+                    variant="outlined"
+                    onClick={() => {
+                        console.log(item._id);
+                        handleOpen(item._id, item.name, item.colorCode);
+                    }}
+                />
+            ))}
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -119,7 +142,6 @@ const Taglist = ({ taglist }) => {
                             margin-bottom: 10px;
                             font-size: 15px;
                             font-weight: bold;
-
                         `}
                     >
                         Choose your tag color
@@ -166,8 +188,8 @@ const Taglist = ({ taglist }) => {
                     </div>
                 </Box>
             </Modal>
-        </>
-    ));
+        </div>
+    );
 };
 
 const TagEditor = () => {

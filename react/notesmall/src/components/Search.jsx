@@ -8,31 +8,21 @@ import debounce from "lodash.debounce";
 import { Link } from "react-router-dom";
 import { css } from "@emotion/react";
 
-const SearchResult = ({ searchResult }) => {
-    const stringHandler = (str) => {
-        if (str.length > 100) {
-            return (
-                "..." +
-                str.replace(/[#*!()\[\]<>]-/g, "").substring(0, 100) +
-                "..."
-            );
-        } else {
-            return str;
-        }
-    };
+const SearchResult = ({ searchResult, goToDoc }) => {
     return searchResult?.map((item) => (
-        <Link
+        <div
             key={item._id}
+            onClick={() => goToDoc(item._id)}
             to={`/${item._id}`}
             css={css`
                 text-decoration: none;
-                background-color: #c5c5c5;
+                background-color: white;
                 color: #474747;
             `}
         >
             <div
                 css={css`
-                    border: 1px solid #494949;
+                    border: 1px solid #c7c7c7;
                     padding: 8px 20px;
                     margin: 10px 0;
                     border-radius: 5px;
@@ -56,10 +46,12 @@ const SearchResult = ({ searchResult }) => {
                         font-size: 0.8rem;
                     `}
                 >
-                    {stringHandler(item.content)}
+                    {item.content
+                        .replace(/[#*!()\[\]<>]-/g, "")
+                        .substring(0, 100) + " ..."}
                 </div>
             </div>
-        </Link>
+        </div>
     ));
 };
 const fetchToSearch = debounce((dispatch, keyword) => {
@@ -88,7 +80,12 @@ const Search = () => {
     }, [keyword]);
 
     const { searchResult } = useSelector((state) => state.common);
-    console.log(searchResult);
+    const goToDoc = (id) => {
+        dispatch({
+            type: "CHANGE_DOCUMENT",
+            payload: { id },
+        });
+    };
     return (
         <div>
             <TextField
@@ -103,7 +100,7 @@ const Search = () => {
                 }}
             />
             <div>
-                <SearchResult searchResult={searchResult} />
+                <SearchResult searchResult={searchResult} goToDoc={goToDoc} />
             </div>
         </div>
     );

@@ -4,7 +4,6 @@ import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
 
 function* fetch(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -15,7 +14,6 @@ function* fetch(action) {
 
 
 function* addTag(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -24,7 +22,6 @@ function* addTag(action) {
     });
 }
 function* updateTag(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -33,7 +30,6 @@ function* updateTag(action) {
     });
 }
 function* deleteTag(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

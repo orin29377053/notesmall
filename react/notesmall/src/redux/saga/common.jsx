@@ -4,7 +4,6 @@ import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
 
 function* fetch(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -13,7 +12,6 @@ function* fetch(action) {
     });
 }
 function* deleteDocument(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -22,7 +20,6 @@ function* deleteDocument(action) {
     });
 }
 function* searchDocuments(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

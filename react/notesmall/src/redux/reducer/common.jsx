@@ -3,11 +3,12 @@ const initState = {
     sidebar: [],
     searchKeyword: "",
     searchResult: [],
-    // selectedID: "",
+    selectedID: "",
 };
 
 const commonReducer = (state = initState, action) => {
     let index;
+    let variable;
     switch (action.type) {
         case "FETCH_SIDEBAR_LIST_RESULT":
             return {
@@ -15,7 +16,6 @@ const commonReducer = (state = initState, action) => {
                 sidebar: action.data?.data?.documents,
             };
         case "DELETE_SIDEBAR_LIST_RESULT":
-            console.log(action);
             index = _.findIndex(state.sidebar, {
                 _id: action.data?.data?.deleteDocument._id,
             });
@@ -24,20 +24,7 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 // sidebar: action.data?.data?.documents,
             };
-        //TODO: add document
-
-        case "ADD_DOCUMENT_RESULT":
-            // console.log(action);
-            // index = _.findIndex(state.sidebar, {
-            //     _id: action.data?.data?.deleteDocument._id,
-            // });
-            // state.sidebar.splice(index, 1);
-            return {
-                ...state,
-                // sidebar: action.data?.data?.documents,
-            };
         case "SEARCH_LIST_RESULT":
-            console.log(action);
             return {
                 ...state,
                 searchResult: action.data?.data?.searchDocuments,
@@ -49,22 +36,27 @@ const commonReducer = (state = initState, action) => {
                 searchKeyword: action.payload.keyword,
             };
         case "UPTATE_SIDE_BAR_LIST":
-            console.log(action.payload);
-            console.log(state.sidebar);
             return {
                 ...state,
                 sidebar: state.sidebar.map((item) =>
                     item._id === action.payload._id ? action.payload : item
                 ),
             };
-        case "NEW_SIDE_BAR_LIST":
-            console.log(action.payload);
-            console.log(state.sidebar);
+        case "CREATE_DOCUMENT_RESULT":
+            variable = {};
+            variable.title = action.data?.data.createDocument.title;
+            variable._id = action.data?.data.createDocument._id;
+            variable.updated_at = action.data?.data.createDocument.updated_at;
             return {
                 ...state,
-                sidebar: [...state.sidebar, action.payload],
+                sidebar: [...state.sidebar, variable],
+                selectedID: action.data?.data?.createDocument._id,
             };
-
+        case "CHANGE_DOCUMENT":
+            return {
+                ...state,
+                selectedID: action.payload.id,
+            };
         default:
             return state;
     }

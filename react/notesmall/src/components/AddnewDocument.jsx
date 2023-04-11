@@ -12,15 +12,15 @@ const AddnewDocument = () => {
     const dispatch = useDispatch();
     let history = useNavigate();
     const add = async() => {
-        // dispatch({
-        //     type: "CREATE_DOCUMENTS",
-        //     payload: {
-        //         gqlMethod: "mutation",
-        //         api: "createDocument",
-        //         format: `(document: {title: "new document",content: "new document"})`,
-        //         response: "_id title content updated_at tags{_id,name,colorCode} ",
-        //     },
-        // });
+        dispatch({
+            type: "CREATE_DOCUMENTS",
+            payload: {
+                gqlMethod: "mutation",
+                api: "createDocument",
+                format: `(document: {title: "new document",content: "new document"})`,
+                response: "_id title content updated_at tags{_id,name,colorCode} ",
+            },
+        });
         
         // dispatch({
         //     type: "NEW_SIDE_BAR_LIST",
@@ -34,38 +34,38 @@ const AddnewDocument = () => {
         // history(`/${id}`);
 
 
-        const query = `
-            mutation{
-            createDocument(document: {title: "new document",content: "new document"}) {
-                    _id
-                    content
-                    title
-                    updated_at 
-                    tags{_id,name,colorCode}
-                }}
-                `;
-        const eded=await fetch("http://localhost:8000/graphql", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query }),
-        })
-        const res = await eded.json()
-        console.log("frf", res);
+        // const query = `
+        //     mutation{
+        //     createDocument(document: {title: "new document",content: "new document"}) {
+        //             _id
+        //             content
+        //             title
+        //             updated_at 
+        //             tags{_id,name,colorCode}
+        //         }}
+        //         `;
+        // const eded=await fetch("http://localhost:8000/graphql", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({ query }),
+        // })
+        // const res = await eded.json()
+        // console.log("frf", res);
         
-        const id = res.data.createDocument._id;
-        dispatch({
-            type: "CREATE_DOCUMENT_RESULT",
-            payload: res.data.createDocument,
-        });
-        dispatch({
-            type: "NEW_SIDE_BAR_LIST",
-            payload: {
-                _id: id,
-                title: "new document",
-                updated_at: new Date().toISOString(),
-            },
-        });
-        history(`/${id}`);
+        // const id = res.data.createDocument._id;
+        // dispatch({
+        //     type: "CREATE_DOCUMENT_RESULT",
+        //     payload: res.data.createDocument,
+        // });
+        // dispatch({
+        //     type: "NEW_SIDE_BAR_LIST",
+        //     payload: {
+        //         _id: id,
+        //         title: "new document",
+        //         updated_at: new Date().toISOString(),
+        //     },
+        // });
+        // history(`/${id}`);
             // .then((res) => res.json())
             // .then((res) => {
             //     console.log("res",res);

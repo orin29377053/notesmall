@@ -28,6 +28,7 @@ const documentFuzzySearch = (keyword) => {
                 score: {
                     $gt: 0,
                 },
+                isDeleted: false,
             },
         },
     ];

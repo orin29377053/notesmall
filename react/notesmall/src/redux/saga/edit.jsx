@@ -23,7 +23,6 @@ function* fetchUpdateTags(action) {
 }
 
 function* fetchQueryDocument(action) {
-    console.log(action);
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -32,7 +31,6 @@ function* fetchQueryDocument(action) {
     });
 }
 function* fetchCreateDocument(action) {
-    console.log(action);
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

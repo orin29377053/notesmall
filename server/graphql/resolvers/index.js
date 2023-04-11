@@ -8,7 +8,7 @@ const Project = require("../../route/models/project");
 const { documentFuzzySearch } = require("../search");
 
 const getDocument = async (documentID) => {
-    console.log("dwd");
+    // console.log("dwd");
     try {
         const document = await Document.findById(documentID).populate("tags");
         if (!document) {
@@ -57,7 +57,7 @@ const getTag = async (tagID) => {
     console.log("hi");
     try {
         const tag = await Tag.findById(tagID).exec();
-        console.log(tag.document);
+        // console.log(tag.document);
         if (!tag) {
             throw new Error(`Tag with ID ${tagID} not found`);
         }
@@ -102,7 +102,7 @@ const Resolvers = {
                         isDeleted: isDeleted,
                     })
                     .populate("tags");
-                console.log("documents", documents);
+                // console.log("documents", documents);
                 return documents.map(async (document) => {
                     return {
                         ...document._doc,
@@ -133,7 +133,7 @@ const Resolvers = {
         document: async (parent, { id }) => {
             try {
                 const document = await Document.findById(id);
-                console.log("document", document);
+                // console.log("document", document);
                 if (!document) {
                     throw new Error(`Document with ID ${id} not found`);
                 }
@@ -162,10 +162,10 @@ const Resolvers = {
         },
         searchDocuments: async (parent, { keyword }) => {
             try {
-                console.log(keyword);
+                // console.log(keyword);
                 const query = documentFuzzySearch(keyword);
                 const documents = await Document.aggregate(query);
-                console.log("dSSWSocuments", documents);
+                // console.log("dSSWSocuments", documents);
                 // console.log(documents[0].highlights[0])
                 return documents.map(async (document) => {
                     return {
@@ -218,7 +218,9 @@ const Resolvers = {
                     return {
                         ...tag._doc,
                         _id: tag.id,
-                        created_at: new Date(tag._doc.created_at).toISOString(),
+                        created_at:
+                            
+                            new Date(tag._doc.created_at).toISOString(),
                         document:
                             tag.document?.length > 0
                                 ? await Promise.all(

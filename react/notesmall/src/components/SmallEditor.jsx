@@ -181,10 +181,9 @@ const TextEditor = () => {
 const SmallEditor = () => {
     let history = useNavigate();
     const { editingDocument } = useSelector((state) => state.editor);
+    const { selectedID } = useSelector((state) => state.common);
 
     const { id } = useParams();
-    console.log("is it strat?id", id);
-    console.log("is it same?id",editingDocument?._id);
 
     const dispatch = useDispatch();
     const title = editingDocument?.title;
@@ -248,7 +247,6 @@ const SmallEditor = () => {
     };
 
     const getEssay = (id) => {
-        console.log("getid");
         if (id) {
             dispatch({
                 type: "QUERY_DOCUMENTS",
@@ -277,7 +275,6 @@ const SmallEditor = () => {
 
     const changeTitle = useCallback(
         debounce((id, title) => {
-            console.log("here!!!!", id, editingDocument._id)
             if (title) {
                 dispatch({
                     type: "EDIT_TITLE",
@@ -288,7 +285,7 @@ const SmallEditor = () => {
                         response: "_id title content",
                     },
                 });
-                dispatch({ type: "JUST_UPTATE_SIDE_BAR_LIST"});
+                dispatch({ type: "JUST_UPTATE_SIDE_BAR_LIST" });
                 dispatch({
                     type: "UPTATE_SIDE_BAR_LIST",
                     payload: {
@@ -301,12 +298,16 @@ const SmallEditor = () => {
                 console.log("no dispatch");
             }
         }, 500),
-        [id]
+        []
     );
 
     useEffect(() => {
-        if(id===editingDocument._id)
-        title && changeTitle(id, title);
+        console.log("id", id, "selectedID", selectedID);
+        if (id === selectedID) {
+            title && changeTitle(id, title);
+        } else {
+            console.log("i GOT YOU!!!")
+        }
     }, [title, changeTitle]);
 
     return (
