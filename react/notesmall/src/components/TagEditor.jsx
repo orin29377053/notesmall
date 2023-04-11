@@ -68,22 +68,22 @@ const Taglist = ({ taglist }) => {
     };
     function getTextColorFromBackground(bgColor) {
         // 将16进制背景色转换为RGB颜色
-        var rgbColor = hexToRgb(bgColor);
+        let rgbColor = hexToRgb(bgColor);
         // 将RGB颜色转换为灰度值
-        var gray =
+        let gray =
             0.2126 * rgbColor.r + 0.7152 * rgbColor.g + 0.0722 * rgbColor.b;
 
         // 设置灰度值阈值
-        var threshold = 128;
+        let threshold = 128;
         // 如果灰度值小于阈值，则返回白色文本颜色，否则返回黑色文本颜色
         return gray < threshold ? "#ffffff" : "#000000";
     }
 
     function hexToRgb(hexColor) {
         // 将16进制颜色转换为RGB颜色
-        var r = parseInt(hexColor.substr(0, 2), 16);
-        var g = parseInt(hexColor.substr(2, 2), 16);
-        var b = parseInt(hexColor.substr(4, 2), 16);
+        let r = parseInt(hexColor.substr(0, 2), 16);
+        let g = parseInt(hexColor.substr(2, 2), 16);
+        let b = parseInt(hexColor.substr(4, 2), 16);
 
         return { r: r, g: g, b: b };
     }
