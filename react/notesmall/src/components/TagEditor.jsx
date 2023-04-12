@@ -10,7 +10,9 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { MuiColorInput } from "mui-color-input";
 import Chip from "@mui/material/Chip";
-
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 const style = {
     position: "absolute",
     top: "50%",
@@ -23,9 +25,53 @@ const style = {
     p: 4,
 };
 
+const ItemCard = ({ item }) => {
+    console.log("item", item);
+    return item?.document.map((doc) => (
+        <div
+            css={css`
+                border: 1px solid #c7c7c7;
+                padding: 8px 20px;
+                margin: 10px 0;
+                border-radius: 5px;
+                &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 26px 40px -24px rgb(0 36 100 / 50%);
+                }
+            `}
+        >
+            <Link
+                to={`/${doc?._id}`}
+                css={css`
+                    text-decoration: none;
+                    background-color: white;
+                    color: #474747;
+                `}
+            >
+                <div
+                    key={item._id}
+                    css={css`
+                        font-size: 1.2rem;
+                        font-weight: 600;
+                    `}
+                >
+                    {doc?.title}
+                </div>
+                <div>
+                    {doc?.content
+                        .replace(/[#*!()\[\]<>]-/g, "")
+                        .substring(0, 100) + " ..."}
+                </div>
+            </Link>
+        </div>
+    ));
+};
+
 const Taglist = ({ taglist }) => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
+    const [selectedButton, setSelectedButton] = useState(null);
+
     const handleOpen = (id, name, colorCode) => {
         setId(id);
         setTagname(name);
@@ -87,12 +133,14 @@ const Taglist = ({ taglist }) => {
 
         return { r: r, g: g, b: b };
     }
+    const handleButtonClick = (button) => {
+        setSelectedButton(button);
+    };
 
     return (
         <div>
             {taglist?.map((item) => (
                 <Chip
-                    // icon={<TurnedInNotIcon />}
                     key={item._id}
                     label={item.name}
                     css={css`
@@ -104,6 +152,11 @@ const Taglist = ({ taglist }) => {
                     `}
                     variant="outlined"
                     onClick={() => {
+                        // console.log(item.name);
+                        handleButtonClick(item);
+                    }}
+                    deleteIcon={<AutoAwesomeIcon />}
+                    onDelete={() => {
                         console.log(item._id);
                         handleOpen(item._id, item.name, item.colorCode);
                     }}
@@ -188,6 +241,9 @@ const Taglist = ({ taglist }) => {
                     </div>
                 </Box>
             </Modal>
+            <div>
+                <ItemCard item={selectedButton} />
+            </div>
         </div>
     );
 };
@@ -203,6 +259,7 @@ const TagEditor = () => {
     const handleChange = (color) => {
         setColor(color);
     };
+    console.log(taglist);
 
     const getTagList = () => {
         dispatch({
@@ -300,7 +357,6 @@ const TagEditor = () => {
             <div>
                 <Taglist taglist={taglist} />
             </div>
-            {/* <TagSelector /> */}
         </div>
     );
 };

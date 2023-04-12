@@ -24,6 +24,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TagSelector from "./TagSelector";
 import { useBeforeunload, Beforeunload } from "react-beforeunload";
+import SyncIndicator from "./SyncIndicator";
 
 import {
     BlockquoteExtension,
@@ -189,6 +190,7 @@ const SmallEditor = () => {
     const rawContent = editingDocument?.content;
     const newID = editingDocument?._id;
     const refVContent = useRef({ id: "", html: "" });
+    const refUploading = useRef(true);
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -204,6 +206,9 @@ const SmallEditor = () => {
     });
 
     const handleEditorChange = async (html) => {
+        console.log("refUploading.current", refUploading.current);
+        refUploading.current = false;
+
         refVContent.current.html = html;
         const turndownService = new TurndownService({
             // keep: 'code[data-language]',
@@ -225,6 +230,7 @@ const SmallEditor = () => {
                 "Content-Type": "application/json",
             },
         });
+        refUploading.current = true;
     };
 
     const Delete = (dispatch, id) => {
@@ -261,7 +267,7 @@ const SmallEditor = () => {
 
     const changeTitle = useCallback(
         debounce((id, title) => {
-            console.log("update")
+            console.log("update");
             if (title) {
                 dispatch({
                     type: "EDIT_TITLE",
@@ -280,6 +286,8 @@ const SmallEditor = () => {
                 //         updated_at: new Date().toISOString(),
                 //     },
                 // });
+                refUploading.current = true;
+                // setIsSyncing(true);
             } else {
                 console.log("no dispatch");
             }
@@ -303,8 +311,14 @@ const SmallEditor = () => {
         dispatch({ type: "UPDATE_CONTENT", payload: { content: marked } });
     }, [location]);
 
+
+
     return (
         <AllStyledComponent>
+            {console.log("NrfNO")}
+
+            <div>{refUploading.current ? "sync" : "not sync"}</div>
+
             <ThemeProvider>
                 <div
                     css={css`
@@ -326,24 +340,21 @@ const SmallEditor = () => {
                     <TagContent />
                 </div>
 
-                <Remirror
-                    manager={manager}
-                    initialContent={state}
-                    // hooks={hooks}
-                    // onChange={handleEditorChange}
-                    // autoRender="false"
-                >
-                    {/* <SendDocument /> */}
-                    {/* <AddnewDocument /> */}
+                {console.log("NONONNONONO")}
+                <Remirror manager={manager} initialContent={state}>
                     <Row className="px-3 mb-2 mt-3">
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => {
                                 if (e.target.value) {
+                                    refUploading.current = false;
                                     dispatch({
                                         type: "UPDATE_TITLE",
-                                        payload: { id:refVContent.current.id,title: e.target.value },
+                                        payload: {
+                                            id: refVContent.current.id,
+                                            title: e.target.value,
+                                        },
                                     });
                                 } else {
                                     alert("please type title");
@@ -367,6 +378,8 @@ const SmallEditor = () => {
                     <OnChangeHTML
                         onChange={debounce(handleEditorChange, 500)}
                     ></OnChangeHTML>
+                    {/* <OnChangeJSON onChange={handleUpdate} /> */}
+
                     <TextEditor className="px-1" />
                 </Remirror>
             </ThemeProvider>

@@ -7,12 +7,9 @@ const { getTag, getProject } = require("./merge");
 const Dataloader = require("dataloader");
 
 const documentLoader = new Dataloader((documentIDs) => {
-    console.log("documentIDs", documentIDs)
+    console.log("documentIDs", documentIDs);
     return Document.find({ _id: { $in: documentIDs } });
 });
-
-
-
 
 const tarnsformDocument = async (document) => {
     return {
@@ -46,12 +43,10 @@ module.exports = {
             }
         },
         document: async (parent, { id }) => {
-
             try {
                 const document = await Document.findById(id);
                 // const document1 = await Document.find({ _id: { $in: id } });
 
-                
                 // console.log("document", document);
                 if (!document) {
                     throw new Error(`Document with ID ${id} not found`);
@@ -63,13 +58,23 @@ module.exports = {
         },
         searchDocuments: async (parent, { keyword }) => {
             try {
-                // console.log(keyword);
                 const query = documentFuzzySearch(keyword);
                 const documents = await Document.aggregate(query);
-                // console.log("dSSWSocuments", documents);
-                // console.log(documents[0].highlights[0])
+                console.log("documents", documents)
                 return documents.map(async (document) => {
-                    return tarnsformDocument(document);
+                    return {
+                        ...document,
+                        // _id: document.+id,
+                        created_at: dataToString(document.created_at),
+                        updated_at: dataToString(document.updated_at),
+                        tags:
+                            document.tags?.length > 0
+                                ? await Promise.all(document.tags.map((tagID) => getTag(tagID)))
+                                : [],
+                        project: document.project
+                            ? getProject.bind(this, document.project)
+                            : null,
+                    };
                 });
             } catch (error) {
                 throw error;
@@ -164,11 +169,13 @@ module.exports = {
                 throw error;
             }
         },
-        permantDeleteALLDocument: async (_, args) => {  
+        permantDeleteALLDocument: async (_, args) => {
             try {
                 const { isDeleted } = args.document;
                 const deletedDocuments = await Document.find({ isDeleted });
-                const deletedDocumentIds = deletedDocuments.map(doc => doc._id);
+                const deletedDocumentIds = deletedDocuments.map(
+                    (doc) => doc._id
+                );
                 const result = [];
                 for (const id of deletedDocumentIds) {
                     const document = await Document.findByIdAndDelete(id);
@@ -177,7 +184,7 @@ module.exports = {
                     }
                     result.push(id);
                 }
-                
+
                 //tags
                 await Tag.updateMany(
                     { document: { $in: deletedDocumentIds } },
@@ -188,12 +195,11 @@ module.exports = {
                     { documents: { $in: deletedDocumentIds } },
                     { $pull: { documents: { $in: deletedDocumentIds } } }
                 );
-        
+
                 return result;
             } catch (error) {
                 throw error;
             }
-        }
-        
+        },
     },
 };

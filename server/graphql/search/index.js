@@ -19,11 +19,6 @@ const documentFuzzySearch = (keyword) => {
             },
         },
         {
-            $project: {
-                __v: 0,
-            },
-        },
-        {
             $match: {
                 score: {
                     $gt: 0,
