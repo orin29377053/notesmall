@@ -2,6 +2,7 @@
 import { css } from "@emotion/react";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import "../App.css";
 
 function Getlist() {
@@ -33,9 +34,10 @@ function Getlist() {
         <div>
             <div className="my-3 text-center"></div>
             {sidebar?.map((item) => (
-                <div
+                <Link
                     key={item._id}
-                    onClick={() => goToDoc(item._id)}
+                    to={`/${item._id}`}
+                    // onClick={() => goToDoc(item._id)}
                     css={css`
                         text-decoration: none;
                         color: #dedede;
@@ -74,7 +76,7 @@ function Getlist() {
                             {item.updated_at?.slice(0, 19).replace("T", " ")}
                         </div>
                     </div>
-                </div>
+                </Link>
             ))}
         </div>
     );

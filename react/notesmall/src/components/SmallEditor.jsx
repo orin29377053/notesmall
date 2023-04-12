@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import "remirror/styles/all.css";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
 import "../App.css";
 import { Button, Alert, AlertTitle } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Row } from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Badge from "@mui/material/Badge";
@@ -23,6 +23,7 @@ import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TagSelector from "./TagSelector";
+import { useBeforeunload, Beforeunload } from "react-beforeunload";
 
 import {
     BlockquoteExtension,
@@ -129,7 +130,6 @@ const style = {
 };
 
 const TagContent = () => {
-    // const { taglist } = useSelector((state) => state.tag);
     const { editingDocument } = useSelector((state) => state.editor);
     const tagLength = editingDocument?.tags?.length || 0;
     const [open, setOpen] = useState(false);
@@ -169,6 +169,7 @@ const TagContent = () => {
 
 const MdToContent = ({ htmlContents }) => {
     const { setContent } = useRemirrorContext();
+    if (!htmlContents) return;
     setContent(htmlContents);
     return;
 };
@@ -179,15 +180,15 @@ const TextEditor = () => {
 };
 
 const SmallEditor = () => {
+    const location = useLocation();
     let history = useNavigate();
     const { editingDocument } = useSelector((state) => state.editor);
-    const { selectedID } = useSelector((state) => state.common);
-
     const { id } = useParams();
-
     const dispatch = useDispatch();
     const title = editingDocument?.title;
-    const content = editingDocument?.content;
+    const rawContent = editingDocument?.content;
+    const newID = editingDocument?._id;
+    const refVContent = useRef({ id: "", html: "" });
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -203,12 +204,14 @@ const SmallEditor = () => {
     });
 
     const handleEditorChange = async (html) => {
+        refVContent.current.html = html;
         const turndownService = new TurndownService({
             // keep: 'code[data-language]',
             codeBlockStyle: "fenced",
             fence: "```",
         });
         const markdown = turndownService.turndown(html);
+
         const query = `
                 mutation{
                     updatedDocument(document: { _id: "${id}",content: """${markdown}""" , title: "${title}"}) {
@@ -222,17 +225,8 @@ const SmallEditor = () => {
                 "Content-Type": "application/json",
             },
         });
-
-        dispatch({ type: "UPDATE_CONTENT", payload: { content: markdown } });
-        dispatch({
-            type: "UPTATE_SIDE_BAR_LIST",
-            payload: {
-                _id: id,
-                title: title,
-                updated_at: new Date().toISOString(),
-            },
-        });
     };
+
     const Delete = (dispatch, id) => {
         dispatch({
             type: "DELETE_SIDEBAR_LIST",
@@ -246,8 +240,9 @@ const SmallEditor = () => {
         history("/");
     };
 
-    const getEssay = (id) => {
-        if (id) {
+    useEffect(() => {
+        if (id !== newID) {
+            console.log("start sync ");
             dispatch({
                 type: "QUERY_DOCUMENTS",
                 payload: {
@@ -258,23 +253,15 @@ const SmallEditor = () => {
                         "_id title content updated_at tags{_id,name,colorCode} ",
                 },
             });
+        } else if (id === newID) {
+            console.log("sync success");
+            refVContent.current.id = newID;
         }
-    };
-
-    useEffect(() => {
-        getEssay(id);
-        dispatch({
-            type: "FETCH_TAG_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "tags",
-                response: "_id name colorCode document{_id title content}",
-            },
-        });
-    }, [id]);
+    }, [id, newID]);
 
     const changeTitle = useCallback(
         debounce((id, title) => {
+            console.log("update")
             if (title) {
                 dispatch({
                     type: "EDIT_TITLE",
@@ -282,18 +269,17 @@ const SmallEditor = () => {
                         gqlMethod: "mutation",
                         api: "updatedDocument",
                         format: `(document:{ _id: "${id}", title: "${title}" })`,
-                        response: "_id title content",
+                        response: "_id title content updated_at",
                     },
                 });
-                dispatch({ type: "JUST_UPTATE_SIDE_BAR_LIST" });
-                dispatch({
-                    type: "UPTATE_SIDE_BAR_LIST",
-                    payload: {
-                        _id: id,
-                        title: title,
-                        updated_at: new Date().toISOString(),
-                    },
-                });
+                // dispatch({
+                //     type: "UPTATE_SIDE_BAR_LIST",
+                //     payload: {
+                //         _id: id,
+                //         title: title,
+                //         updated_at: new Date().toISOString(),
+                //     },
+                // });
             } else {
                 console.log("no dispatch");
             }
@@ -302,18 +288,23 @@ const SmallEditor = () => {
     );
 
     useEffect(() => {
-        console.log("id", id, "selectedID", selectedID);
-        if (id === selectedID) {
+        if (id === newID) {
             title && changeTitle(id, title);
-        } else {
-            console.log("i GOT YOU!!!")
         }
     }, [title, changeTitle]);
 
+    useEffect(() => {
+        const turndownService = new TurndownService({
+            // keep: 'code[data-language]',
+            codeBlockStyle: "fenced",
+            fence: "```",
+        });
+        const marked = turndownService.turndown(refVContent.current.html);
+        dispatch({ type: "UPDATE_CONTENT", payload: { content: marked } });
+    }, [location]);
+
     return (
         <AllStyledComponent>
-            {/* the className is used to define css variables necessary for the editor */}
-
             <ThemeProvider>
                 <div
                     css={css`
@@ -352,7 +343,7 @@ const SmallEditor = () => {
                                 if (e.target.value) {
                                     dispatch({
                                         type: "UPDATE_TITLE",
-                                        payload: { title: e.target.value },
+                                        payload: { id:refVContent.current.id,title: e.target.value },
                                     });
                                 } else {
                                     alert("please type title");
@@ -372,9 +363,9 @@ const SmallEditor = () => {
                     <Row className="px-1 mb-4">
                         <EditorToolbar />
                     </Row>
-                    <MdToContent htmlContents={content} />
+                    <MdToContent htmlContents={rawContent} />
                     <OnChangeHTML
-                        onChange={debounce(handleEditorChange, 3000)}
+                        onChange={debounce(handleEditorChange, 500)}
                     ></OnChangeHTML>
                     <TextEditor className="px-1" />
                 </Remirror>

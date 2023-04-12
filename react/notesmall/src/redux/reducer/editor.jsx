@@ -16,6 +16,8 @@ const editorReducer = (state = initState, action) => {
             };
 
         case "UPDATE_TITLE":
+            console.log(action.payload.id,state.editingDocument._id)
+            // console.log(state.editingDocument._id)
             return {
                 ...state,
                 editingDocument: {

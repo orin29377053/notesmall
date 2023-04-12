@@ -11,6 +11,7 @@ const commonReducer = (state = initState, action) => {
     let variable;
     switch (action.type) {
         case "FETCH_SIDEBAR_LIST_RESULT":
+            console.log(action.data?.data?.documents);
             return {
                 ...state,
                 sidebar: action.data?.data?.documents,
@@ -56,6 +57,17 @@ const commonReducer = (state = initState, action) => {
             return {
                 ...state,
                 selectedID: action.payload.id,
+            };
+
+        case "UPDATE_DOCUMENT_TITLE":
+            console.log(action.data.data.updatedDocument)
+            return {
+                ...state,
+                sidebar: state.sidebar.map((item) =>
+                    item._id === action.data.data.updatedDocument._id
+                        ? action.data.data.updatedDocument
+                        : item
+                ),
             };
         default:
             return state;

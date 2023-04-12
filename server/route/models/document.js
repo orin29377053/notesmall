@@ -34,7 +34,12 @@ const documentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Project",
     },
-    
+});
+
+
+documentSchema.pre("find", function (next) {
+    console.log("Document search started");
+    next();
 });
 
 module.exports = mongoose.model("Document", documentSchema);

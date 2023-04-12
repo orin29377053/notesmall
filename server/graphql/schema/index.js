@@ -8,15 +8,15 @@ module.exports = buildSchema(`
     body: String!
     createdAt: String!
   }
-  type Document {
-    _id: ID!
-    title: String!
-    content: String
-    isDeleted: Boolean!
-    created_at: String!
-    updated_at: String!
-    tags: [Tag]
-    project: Project
+  type Document @cacheControl{
+    _id: ID! 
+    title: String! @cacheControl
+    content: String 
+    isDeleted: Boolean! 
+    created_at: String! 
+    updated_at: String! 
+    tags: [Tag] 
+    project: Project 
   }
 
   type Project {
@@ -33,12 +33,12 @@ module.exports = buildSchema(`
 
 
 
-  type Tag {
-    _id: ID!
-    name: String!
-    colorCode: String
-    created_at: String!
-    document: [Document]
+  type Tag   {
+    _id: ID! 
+    name: String! 
+    colorCode: String  
+    created_at: String! 
+    document: [Document] 
   }
   input TagInput {
     _id: ID
@@ -74,7 +74,7 @@ module.exports = buildSchema(`
 
   type Query {
     articles:[Article!]
-    documents(isDeleted:Boolean!):[Document!]
+    documents(isDeleted:Boolean!):[Document!] 
     document(id: ID!): Document
     searchDocuments(keyword: String!): [Document!]
     tag(id:ID!): Tag
@@ -93,10 +93,22 @@ module.exports = buildSchema(`
     updatedTag(tag:TagInput): Tag
     createProject(project:ProjectInput): Project
     deleteTag(id:ID!): Tag
+    permantDeleteALLDocument(document:DocumentInput): [Document!]
+    permantDeleteDocument(document:DocumentInput): Document
   }
 
   schema {
     query: Query
     mutation: Mutation
   }
+  enum CacheControlScope {
+    PUBLIC
+    PRIVATE
+  }
+  
+  directive @cacheControl(
+    maxAge: Int
+    scope: CacheControlScope
+    inheritMaxAge: Boolean
+  ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
 `)

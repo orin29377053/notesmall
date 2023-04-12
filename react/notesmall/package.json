@@ -24,6 +24,7 @@
     "marked": "^4.3.0",
     "mui-color-input": "^1.0.5",
     "react": "^18.2.0",
+    "react-beforeunload": "^2.5.3",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^18.2.0",
     "react-prosemirror": "^0.2.1",

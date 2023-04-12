@@ -24,17 +24,25 @@ const s3 = new S3Client({
 
 // apollo server
 const { ApolloServer } = require("@apollo/server");
+const { ApolloServerPluginCacheControl } =require( '@apollo/server/plugin/cacheControl');
+
 const { expressMiddleware } = require("@apollo/server/express4");
 const {
     ApolloServerPluginDrainHttpServer,
 } = require("@apollo/server/plugin/drainHttpServer");
+const Keyv =require( "keyv");
+const { KeyvAdapter } =require ("@apollo/utils.keyvadapter");
 const graphqlSchema = require("./graphql/schema");
-const { Resolvers } = require("./graphql/resolvers");
+const rootResolver = require("./graphql/resolvers/index");
 const httpServer = http.createServer(app);
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
-    resolvers: Resolvers,
+    resolvers: rootResolver,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    cache: new KeyvAdapter(new Keyv("redis://default@localhost:6379")), 
+
+    // cacheControl: true
+    
 });
 
 // mongoose
