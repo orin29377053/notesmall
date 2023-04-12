@@ -23,8 +23,6 @@ import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TagSelector from "./TagSelector";
-import { useBeforeunload, Beforeunload } from "react-beforeunload";
-import SyncIndicator from "./SyncIndicator";
 
 import {
     BlockquoteExtension,
@@ -308,7 +306,7 @@ const SmallEditor = () => {
             fence: "```",
         });
         const marked = turndownService.turndown(refVContent.current.html);
-        dispatch({ type: "UPDATE_CONTENT", payload: { content: marked } });
+        dispatch({ type: "UPDATE_CONTENT", payload: { id:refVContent.current.id,content: marked } });
     }, [location]);
 
 

@@ -11,6 +11,7 @@ import TagEditor from "./components/TagEditor";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import ProjectEditor from "./components/ProjectEditor";
 
 const Initail = () => {
     const dispatch = useDispatch();
@@ -38,6 +39,7 @@ function App() {
                             <Routes>
                                 <Route path="/tag" element={<TagEditor />} />
                                 <Route path="/search/" element={<Search />} />
+                                <Route path="/project" element={<ProjectEditor />} />
                                 <Route path="/:id" element={<SmallEditor />} />
                             </Routes>
                         </div>

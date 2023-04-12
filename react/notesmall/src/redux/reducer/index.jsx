@@ -3,6 +3,7 @@
 import editorReducer from "./editor";
 import commonReducer from "./common";
 import tagReducer from "./tag";
+import projectReducer from "./project";
 
 const reducer = (state = {}, action) =>
     // always return a new object for the root state
@@ -10,5 +11,6 @@ const reducer = (state = {}, action) =>
         editor: editorReducer(state.editor, action),
         common: commonReducer(state.common, action),
         tag: tagReducer(state.tag, action),
+        project: projectReducer(state.project, action),
     });
 export default reducer;

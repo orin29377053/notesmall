@@ -8,7 +8,7 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
-
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 const Sidebar = () => {
     let history = useNavigate();
     return (
@@ -25,7 +25,7 @@ const Sidebar = () => {
                     onClick={() => history("/search")}
                     size="small"
                     css={css`
-                        margin: 0 5px;
+                        margin: 0 3px;
                         color: white !important;
                         &:hover {
                             color: black !important;
@@ -36,13 +36,14 @@ const Sidebar = () => {
                 >
                     Search
                 </Button>
+                
                 <Button
                     variant="text"
                     color="warning"
                     onClick={() => history("/tag")}
                     size="small"
                     css={css`
-                        margin: 0 5px;
+                        margin: 0 3px;
                         color: white !important;
                         &:hover {
                             color: black !important;
@@ -52,6 +53,23 @@ const Sidebar = () => {
                     startIcon={<TurnedInNotIcon />}
                 >
                     Tag
+                </Button>
+                <Button
+                    variant="text"
+                    color="warning"
+                    onClick={() => history("/project")}
+                    size="small"
+                    css={css`
+                        margin: 0 3px;
+                        color: white !important;
+                        &:hover {
+                            color: black !important;
+                            background-color: #c5c5c5;
+                        }
+                    `}
+                    startIcon={<AccountTreeIcon />}
+                >
+                    Project
                 </Button>
                 <AddnewDocument />
             </div>

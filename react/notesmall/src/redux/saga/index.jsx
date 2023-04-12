@@ -5,6 +5,7 @@ import { API_METHOD, APIKit } from "../api/apiService";
 import edit from "./edit";
 import common from "./common";
 import tag from "./tag";
+import project from "./project";
 
 export function* fetchApi({
     method,
@@ -51,7 +52,7 @@ export function* fetchApi({
 }
 
 function* rootSaga() {
-    yield all([edit(), common(), tag()]);
+    yield all([edit(), common(), tag(),project()]);
 }
 
 export default rootSaga;

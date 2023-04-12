@@ -87,7 +87,8 @@ const TagSelector = ({ setOpen }) => {
         const filteredTags = taglist.filter(
             (tag) => !documentTags.some((docTag) => docTag._id === tag._id)
         );
-        // console.log(filteredTags, documentTags);
+        console.log("taglist", taglist);
+        console.log(filteredTags, documentTags);
         setSelect(documentTags);
         setUnselect(filteredTags);
     }, [taglist, documentTags]);
@@ -104,21 +105,16 @@ const TagSelector = ({ setOpen }) => {
                 gqlMethod: "mutation",
                 api: "updatedDocument",
                 format: `(document:{_id:"${editingDocument._id}" ,tags: [${tags}]})`,
-                response: "tags{_id,name,colorCode} ",
+                response: "_id title content tags{_id,name,colorCode} ",
             },
         });
         setOpen(false);
     };
     function getTextColorFromBackground(bgColor) {
-        // 将16进制背景色转换为RGB颜色
         let rgbColor = hexToRgb(bgColor);
-        // 将RGB颜色转换为灰度值
         let gray =
             0.2126 * rgbColor.r + 0.7152 * rgbColor.g + 0.0722 * rgbColor.b;
-
-        // 设置灰度值阈值
         let threshold = 128;
-        // 如果灰度值小于阈值，则返回白色文本颜色，否则返回黑色文本颜色
         return gray < threshold ? "#ffffff" : "#000000";
     }
 

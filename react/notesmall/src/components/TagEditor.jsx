@@ -284,7 +284,7 @@ const TagEditor = () => {
     };
 
     useEffect(() => {
-        getTagList();
+        // getTagList();
     }, []);
 
     return (

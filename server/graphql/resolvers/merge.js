@@ -4,6 +4,41 @@ const Project = require("../../route/models/project");
 const Dataloader = require("dataloader");
 const dataToString = require("../../utils/dataToString");
 
+
+
+const documentLoader = new Dataloader(async (documentIDs) => {
+    console.log("documentIDs", documentIDs)
+    try {
+        documentLoader.clearAll();
+
+        const documents = await Document.find({
+            _id: { $in: documentIDs },
+        }).exec();
+        // console.log(documents);
+        const documentsMap = new Map(
+            documents.map((doc) => [doc._id.toString(), doc])
+        );
+        // console.log("documentsMap", documentsMap);
+        return documentIDs.map((id) => documentsMap.get(id.toString()) || null);
+    } catch (error) {
+        throw error;
+    }
+});
+
+const tagLoader = new Dataloader(async (tagIDs) => {
+
+    console.log("tagIDs", tagIDs);
+    try {
+        tagLoader.clearAll();
+        const tags = await Tag.find({ _id: { $in: tagIDs } }).exec();
+        const tagsMap = new Map(tags.map((tag) => [tag._id.toString(), tag]));
+        return tagIDs.map((id) => tagsMap.get(id.toString()) || null);
+    } catch (error) {
+        throw error;
+    }
+});
+
+
 // const documentLoader = new Dataloader((documentIDs) => {
 //     console.log("documentIDs", documentIDs);
 //     // return Promise.all(documentIDs.map(id => Document.findById(id).exec()));
@@ -12,21 +47,21 @@ const dataToString = require("../../utils/dataToString");
 
 // });
 
-const documentLoader = new Dataloader(async (documentIDs) => {
-    console.log("documentIDs", documentIDs)
-    try {
-        const documents = await Document.find({
-            _id: { $in: documentIDs },
-        }).exec();
-        // console.log(documents);
-        const documentsMap = new Map(
-            documents.map((doc) => [doc._id.toString(), doc])
-        );
-        return documentIDs.map((id) => documentsMap.get(id.toString()) || null);
-    } catch (error) {
-        throw error;
-    }
-});
+// const documentLoader = new Dataloader(async (documentIDs) => {
+//     console.log("documentIDs", documentIDs)
+//     try {
+//         const documents = await Document.find({
+//             _id: { $in: documentIDs },
+//         }).exec();
+//         // console.log(documents);
+//         const documentsMap = new Map(
+//             documents.map((doc) => [doc._id.toString(), doc])
+//         );
+//         return documentIDs.map((id) => documentsMap.get(id.toString()) || null);
+//     } catch (error) {
+//         throw error;
+//     }
+// });
 
 // const tagLoader = new Dataloader((tagIDs) => {
 //     // console.log("tagIDs", tagIDs);
@@ -34,16 +69,16 @@ const documentLoader = new Dataloader(async (documentIDs) => {
 //     // return Promise.all(tagIDs.map(id => Tag.findById(id).exec()));
 //     return Tag.find({ _id: { $in: tagIDs } });
 // });
-const tagLoader = new Dataloader(async (tagIDs) => {
-    console.log("tagIDs", tagIDs);
-    try {
-        const tags = await Tag.find({ _id: { $in: tagIDs } }).exec();
-        const tagsMap = new Map(tags.map((tag) => [tag._id.toString(), tag]));
-        return tagIDs.map((id) => tagsMap.get(id.toString()) || null);
-    } catch (error) {
-        throw error;
-    }
-});
+// const tagLoader = new Dataloader(async (tagIDs) => {
+//     console.log("tagIDs", tagIDs);
+//     try {
+//         const tags = await Tag.find({ _id: { $in: tagIDs } }).exec();
+//         const tagsMap = new Map(tags.map((tag) => [tag._id.toString(), tag]));
+//         return tagIDs.map((id) => tagsMap.get(id.toString()) || null);
+//     } catch (error) {
+//         throw error;
+//     }
+// });
 
 const projectLoader = new Dataloader((projectIDs) => {
     // return Promise.all(projectIDs.map(id => Project.findById(id).exec()));
@@ -90,6 +125,8 @@ const transformTag = async (tag) => {
 };
 
 const getDocument = async (documentID) => {
+
+    
     // console.log(documentID.toString());
     try {
         // const document = await Document.findById(documentID);
@@ -109,8 +146,8 @@ const getDocument = async (documentID) => {
                 tags.push(tag);
             }
         }
-        // console.log(tags);
-
+        console.log("OK");
+// 
         return {
             ...document._doc,
             _id: document._id,
@@ -123,6 +160,7 @@ const getDocument = async (documentID) => {
 };
 
 const getProject = async (projectID) => {
+    
     try {
         // const project = await Project.findById(projectID);
         const project = await projectLoader.load(projectID.toString());
@@ -144,7 +182,8 @@ const getProject = async (projectID) => {
 };
 
 const getTag = async (tagID) => {
-    console.log("singel tagID", tagID._id);
+    // console.log("singel tagID", tagID._id);
+
     // console.log("hi");
 
     try {
@@ -202,3 +241,6 @@ const tags = async (parent, args, context, info) => {
 exports.getDocument = getDocument;
 exports.getProject = getProject;
 exports.getTag = getTag;
+exports.documentLoader = documentLoader;
+exports.projectLoader = projectLoader;
+exports.tagLoader = tagLoader;

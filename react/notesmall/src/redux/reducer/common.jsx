@@ -60,7 +60,7 @@ const commonReducer = (state = initState, action) => {
             };
 
         case "UPDATE_DOCUMENT_TITLE":
-            console.log(action.data.data.updatedDocument)
+            console.log(action.data.data.updatedDocument);
             return {
                 ...state,
                 sidebar: state.sidebar.map((item) =>
@@ -69,6 +69,8 @@ const commonReducer = (state = initState, action) => {
                         : item
                 ),
             };
+
+
         default:
             return state;
     }

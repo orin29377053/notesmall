@@ -20,5 +20,5 @@ const rootResolver = {
         ...projectResolver.Mutation,
     }
 }
-console.log("rootResolver", rootResolver);
+// console.log("rootResolver", rootResolver);
 module.exports =  rootResolver ;
