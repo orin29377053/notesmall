@@ -8,6 +8,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.126",
     "@mui/material": "^5.11.16",
     "@remirror/extension-markdown": "^2.0.12",
     "@remirror/pm": "^2.0.4",
@@ -34,6 +35,7 @@
     "redux": "^4.2.1",
     "redux-saga": "^1.2.3",
     "remirror": "^2.0.26",
+    "uuidv4": "^6.2.13",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

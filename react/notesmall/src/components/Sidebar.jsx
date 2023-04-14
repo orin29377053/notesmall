@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import CategoryTab from "./sidebar/CategoryTab";
 const Sidebar = () => {
     let history = useNavigate();
     return (
@@ -73,7 +74,8 @@ const Sidebar = () => {
                 </Button>
                 <AddnewDocument />
             </div>
-            <Getlist />
+            {/* <Getlist /> */}
+            <CategoryTab />
         </div>
     );
 };

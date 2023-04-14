@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const CommonProvider = ({ children }) => {
     const { selectedID } = useSelector((state) => state.common);
+    const location = useLocation();
     const dispatch = useDispatch();
     const getTagList = () => {
         dispatch({
@@ -11,7 +12,7 @@ const CommonProvider = ({ children }) => {
             payload: {
                 gqlMethod: "query",
                 api: "tags",
-                response: "_id name colorCode document{_id title content}",
+                response: "_id name colorCode  document{_id title content}",
             },
         });
     };
@@ -25,15 +26,39 @@ const CommonProvider = ({ children }) => {
             },
         });
     };
+    const getlist = () => {
+        dispatch({
+            type: "FETCH_SIDEBAR_LIST",
+            payload: {
+                gqlMethod: "query",
+                api: "documents",
+                format: "(isDeleted: false)",
+                response:
+                    "_id title updated_at isDeleted isFavorite isArchived",
+            },
+        });
+    };
     useEffect(() => {
         getTagList();
         getProjectList();
+        getlist();
     }, []);
 
     let history = useNavigate();
     useEffect(() => {
         history(`/${selectedID}`);
     }, [selectedID]);
+
+    useEffect(() => {
+        console.log(location);
+        // if (location.pathname === "/") {
+        //     dispatch({
+        //         type: "CHANGE_DOCUMENT",
+        //         payload: { id: location },
+        //     });
+        // }
+    }, [location]);
+
 
 
 

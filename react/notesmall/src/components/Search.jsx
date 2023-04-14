@@ -3,54 +3,30 @@
 import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback } from "react";
 import debounce from "lodash.debounce";
-import { Link } from "react-router-dom";
-import { css } from "@emotion/react";
+
+import DocumentCard from "./Card";
 
 const SearchResult = ({ searchResult, goToDoc }) => {
+    function extractImageURL(content) {
+        const regex = /(https?:\/\/[^\s]*?\.(?:png|jpg|jpeg|gif))/gi;
+        const matches = content.match(regex);
+        return matches ? matches[0] : null;
+    }
+    function sanitizeContent(content) {
+        const text = content
+            .replace(/[#*!()\[\]<>]-/g, "") // 刪除所有的符號
+            .replace(/(#+)/g, ""); // 刪除所有的井號（#）
+        return text.substring(0, 100) + "...";
+    }
     return searchResult?.map((item) => (
-        <div
-            key={item._id}
-            onClick={() => goToDoc(item._id)}
-            to={`/${item._id}`}
-            css={css`
-                text-decoration: none;
-                background-color: white;
-                color: #474747;
-            `}
-        >
-            <div
-                css={css`
-                    border: 1px solid #c7c7c7;
-                    padding: 8px 20px;
-                    margin: 10px 0;
-                    border-radius: 5px;
-                    &:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 26px 40px -24px rgb(0 36 100 / 50%);
-                    }
-                `}
-            >
-                <div
-                    key={item._id}
-                    css={css`
-                        font-size: 1.2rem;
-                        font-weight: 600;
-                    `}
-                >
-                    {item.title}
-                </div>
-                <div
-                    css={css`
-                        font-size: 0.8rem;
-                    `}
-                >
-                    {item.content
-                        .replace(/[#*!()\[\]<>]-/g, "")
-                        .substring(0, 100) + " ..."}
-                </div>
-            </div>
+        <div>
+            <DocumentCard
+                title={item.title}
+                content={sanitizeContent(item.content)}
+                _id={item._id}
+                image={extractImageURL(item.content)}
+            />
         </div>
     ));
 };

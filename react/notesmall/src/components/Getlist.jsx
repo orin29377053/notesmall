@@ -20,8 +20,23 @@ function Getlist() {
         });
     };
     useEffect(() => {
-        getlist();
-    }, []);
+        // getlist();
+        console.log("sidebar", sidebar);
+        const deletedItems = sidebar.filter((item) => item.isDeleted);
+        const archivedItems = sidebar.filter(
+            (item) => item.isArchived && !item.isDeleted
+        );
+        const favoriteItems = sidebar.filter(
+            (item) => item.isFavorite && !item.isArchived && !item.isDeleted
+        );
+        const otherItems = sidebar.filter(
+            (item) => !item.isFavorite && !item.isArchived && !item.isDeleted
+        );
+        console.log("deletedItems", deletedItems);
+        console.log("archivedItems", archivedItems);
+        console.log("favoriteItems", favoriteItems);
+        console.log("otherItems", otherItems);
+    }, [sidebar]);
 
     const goToDoc = (id) => {
         dispatch({

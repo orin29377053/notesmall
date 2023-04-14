@@ -54,6 +54,7 @@ const commonReducer = (state = initState, action) => {
                 selectedID: action.data?.data?.createDocument._id,
             };
         case "CHANGE_DOCUMENT":
+            console.log(action.payload.id);
             return {
                 ...state,
                 selectedID: action.payload.id,
@@ -61,6 +62,7 @@ const commonReducer = (state = initState, action) => {
 
         case "UPDATE_DOCUMENT_TITLE":
             console.log(action.data.data.updatedDocument);
+            console.log(state.sidebar);
             return {
                 ...state,
                 sidebar: state.sidebar.map((item) =>

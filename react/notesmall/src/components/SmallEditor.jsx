@@ -266,14 +266,14 @@ const SmallEditor = () => {
     const changeTitle = useCallback(
         debounce((id, title) => {
             console.log("update");
-            if (title) {
+            if (  (id === newID)&& title) {
                 dispatch({
                     type: "EDIT_TITLE",
                     payload: {
                         gqlMethod: "mutation",
                         api: "updatedDocument",
                         format: `(document:{ _id: "${id}", title: "${title}" })`,
-                        response: "_id title content updated_at",
+                        response: "_id title content updated_at isDeleted isFavorite isArchived",
                     },
                 });
                 // dispatch({
@@ -290,7 +290,7 @@ const SmallEditor = () => {
                 console.log("no dispatch");
             }
         }, 500),
-        []
+        [newID]
     );
 
     useEffect(() => {
