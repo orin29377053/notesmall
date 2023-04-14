@@ -6,7 +6,7 @@ const dataToString = require("../../utils/dataToString");
 const { getDocument, getProject, getTag } = require("./merge");
 
 const transformProject = async (project) => {
-    console.log("project",project.documents);
+    // console.log("project",project.documents);
 
     return {
         ...project._doc,
@@ -25,7 +25,7 @@ module.exports = {
         projects: async () => {
             try {
                 const projects = await Project.find().populate("documents");
-                console.log("projects", projects);
+                // console.log("projects", projects);
                 const transformedProjects = await Promise.all(projects.map(async (project) => {
                     return transformProject(project);
                 }));

@@ -5,6 +5,8 @@
 const documentResolver = require("./document")
 const tagResolver = require("./tag")
 const projectResolver = require("./project")
+const articleResolver = require("./article")
+
 
 
 
@@ -13,6 +15,7 @@ const rootResolver = {
         ...documentResolver.Query,
         ...tagResolver.Query,
         ...projectResolver.Query,
+        ...articleResolver.Query
     },
     Mutation : {
         ...documentResolver.Mutation,

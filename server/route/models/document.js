@@ -15,6 +15,16 @@ const documentSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    isArchived: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
+    isFavorite: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
     created_at: {
         type: Date,
         immutable: true, //不能被覆寫

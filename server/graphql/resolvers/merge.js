@@ -7,7 +7,7 @@ const dataToString = require("../../utils/dataToString");
 
 
 const documentLoader = new Dataloader(async (documentIDs) => {
-    console.log("documentIDs", documentIDs)
+    // console.log("documentIDs", documentIDs)
     try {
         documentLoader.clearAll();
 
@@ -27,7 +27,7 @@ const documentLoader = new Dataloader(async (documentIDs) => {
 
 const tagLoader = new Dataloader(async (tagIDs) => {
 
-    console.log("tagIDs", tagIDs);
+    // console.log("tagIDs", tagIDs);
     try {
         tagLoader.clearAll();
         const tags = await Tag.find({ _id: { $in: tagIDs } }).exec();
@@ -38,91 +38,11 @@ const tagLoader = new Dataloader(async (tagIDs) => {
     }
 });
 
-
-// const documentLoader = new Dataloader((documentIDs) => {
-//     console.log("documentIDs", documentIDs);
-//     // return Promise.all(documentIDs.map(id => Document.findById(id).exec()));
-//     // return Promise.all(documentIDs.map(id => Document.findById(id).exec()));
-//     return Document.find({ _id: { $in: documentIDs } });
-
-// });
-
-// const documentLoader = new Dataloader(async (documentIDs) => {
-//     console.log("documentIDs", documentIDs)
-//     try {
-//         const documents = await Document.find({
-//             _id: { $in: documentIDs },
-//         }).exec();
-//         // console.log(documents);
-//         const documentsMap = new Map(
-//             documents.map((doc) => [doc._id.toString(), doc])
-//         );
-//         return documentIDs.map((id) => documentsMap.get(id.toString()) || null);
-//     } catch (error) {
-//         throw error;
-//     }
-// });
-
-// const tagLoader = new Dataloader((tagIDs) => {
-//     // console.log("tagIDs", tagIDs);
-//     // console.log("tagIDs", tagIDs);
-//     // return Promise.all(tagIDs.map(id => Tag.findById(id).exec()));
-//     return Tag.find({ _id: { $in: tagIDs } });
-// });
-// const tagLoader = new Dataloader(async (tagIDs) => {
-//     console.log("tagIDs", tagIDs);
-//     try {
-//         const tags = await Tag.find({ _id: { $in: tagIDs } }).exec();
-//         const tagsMap = new Map(tags.map((tag) => [tag._id.toString(), tag]));
-//         return tagIDs.map((id) => tagsMap.get(id.toString()) || null);
-//     } catch (error) {
-//         throw error;
-//     }
-// });
-
 const projectLoader = new Dataloader((projectIDs) => {
+    console.log("projectIDs", projectIDs);
     // return Promise.all(projectIDs.map(id => Project.findById(id).exec()));
     return Project.find({ _id: { $in: projectIDs } });
 });
-
-const transformProject = async (project) => {
-    return {
-        ...project._doc,
-        _id: project.id,
-        created_at: new Date(project._doc.created_at).toISOString(),
-        updated_at: new Date(project._doc.updated_at).toISOString(),
-        documents:
-            project.documents?.length > 0
-                ? await Promise.all(project.documents.map(getDocument))
-                : [],
-    };
-};
-const tarnsformDocument = async (document) => {
-    return {
-        ...document._doc,
-        _id: document.id,
-        created_at: dataToString(document._doc.created_at),
-        updated_at: dataToString(document._doc.updated_at),
-        tags:
-            document.tags?.length > 0
-                ? await Promise.all(document.tags.map((tagID) => getTag(tagID)))
-                : [],
-        project: document.project
-            ? getProject.bind(this, document.project)
-            : null,
-    };
-};
-const transformTag = async (tag) => {
-    return {
-        ...tag._doc,
-        _id: tag.id,
-        created_at: dataToString(tag._doc.created_at),
-        document:
-            tag.document?.length > 0
-                ? await Promise.all(tag.document.map(getDocument))
-                : [],
-    };
-};
 
 const getDocument = async (documentID) => {
 
@@ -146,7 +66,7 @@ const getDocument = async (documentID) => {
                 tags.push(tag);
             }
         }
-        console.log("OK");
+        // console.log("OK");
 // 
         return {
             ...document._doc,
@@ -187,10 +107,14 @@ const getTag = async (tagID) => {
     // console.log("hi");
 
     try {
-        // const tag = await Tag.find({ tags: { $in: tagID } });
+        // const tags = await Tag.find({ _id: { $in: [tagID._id.toString()] } });
+        // const tag=tags[0];
 
         // const tag = await Tag.findById(tagID).exec();
+
+
         const tag = await tagLoader.load(tagID._id.toString());
+
         // console.log(tag);
 
         if (!tag) {
@@ -214,29 +138,7 @@ const getTag = async (tagID) => {
         throw error;
     }
 };
-const documents = async (parent) => {
-    try {
-        const documents = await Document.find().populate("tags");
-        // .where("isDeleted")
-        // .equals(isDeleted);
-        return documents.map(async (document) => {
-            return tarnsformDocument(document);
-        });
-    } catch (error) {
-        throw error;
-    }
-};
-const tags = async (parent, args, context, info) => {
-    // console.log("parent", parent);
-    try {
-        const tags = await Tag.find();
-        return tags.map(async (tag) => {
-            return transformTag(tag);
-        });
-    } catch (error) {
-        throw error;
-    }
-};
+
 
 exports.getDocument = getDocument;
 exports.getProject = getProject;

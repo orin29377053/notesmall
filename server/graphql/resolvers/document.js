@@ -29,7 +29,9 @@ const tarnsformDocument = async (document) => {
 
 module.exports = {
     Query: {
-        documents: async (parent, { isDeleted }) => {
+        documents: async (parent, { isDeleted }, _, info) => {
+            info.cacheControl.setCacheHint({ maxAge: 59, scope: 'PUBLIC' });
+
             try {
                 const documents = await Document.find()
                     .populate("tags")
@@ -42,7 +44,9 @@ module.exports = {
                 throw error;
             }
         },
-        document: async (parent, { id }) => {
+        document: async (parent, { id }, _, info) => {
+            info.cacheControl.setCacheHint({ maxAge: 57, scope: 'PUBLIC' });
+
             try {
                 const document = await Document.findById(id);
                 // const document1 = await Document.find({ _id: { $in: id } });
@@ -60,7 +64,7 @@ module.exports = {
             try {
                 const query = documentFuzzySearch(keyword);
                 const documents = await Document.aggregate(query);
-                console.log("documents", documents)
+                console.log("documents", documents);
                 return documents.map(async (document) => {
                     return {
                         ...document,
@@ -69,7 +73,11 @@ module.exports = {
                         updated_at: dataToString(document.updated_at),
                         tags:
                             document.tags?.length > 0
-                                ? await Promise.all(document.tags.map((tagID) => getTag(tagID)))
+                                ? await Promise.all(
+                                      document.tags.map((tagID) =>
+                                          getTag(tagID)
+                                      )
+                                  )
                                 : [],
                         project: document.project
                             ? getProject.bind(this, document.project)
@@ -99,11 +107,27 @@ module.exports = {
         updatedDocument: async (_, args) => {
             // console.log(args);
             try {
-                const { _id, title, content, tags, project } = args.document;
+                const {
+                    _id,
+                    title,
+                    content,
+                    tags,
+                    project,
+                    isArchived,
+                    isFavorite,
+                } = args.document;
                 const updated_at = Date.now();
                 const document = await Document.findByIdAndUpdate(
                     _id,
-                    { title, content, updated_at, tags, project },
+                    {
+                        title,
+                        content,
+                        updated_at,
+                        tags,
+                        project,
+                        isArchived,
+                        isFavorite,
+                    },
                     { new: true }
                 ).populate("tags");
 

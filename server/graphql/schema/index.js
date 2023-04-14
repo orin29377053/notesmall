@@ -2,19 +2,21 @@ const { buildSchema } = require("graphql")
 
 module.exports = buildSchema(`
 
-  type Article {
-    _id: ID!
-    title: String!
-    body: String!
-    createdAt: String!
-  }
-  type Document @cacheControl{
+  type Article  {
     _id: ID! 
-    title: String! @cacheControl
+    title: String! 
+    body: String! 
+    createdAt: String! 
+  }
+  type Document  {
+    _id: ID! 
+    title: String! 
     content: String 
     isDeleted: Boolean! 
-    created_at: String! 
-    updated_at: String! 
+    isArchived: Boolean! 
+    isFavorite: Boolean! 
+    created_at: String!  @cacheControl(maxAge: 47 scope: PUBLIC inheritMaxAge: false)
+    updated_at: String! @cacheControl(maxAge: 32 scope: PUBLIC inheritMaxAge: false)
     tags: [Tag] 
     project: Project 
   }
@@ -33,7 +35,7 @@ module.exports = buildSchema(`
 
 
 
-  type Tag   {
+  type Tag  {
     _id: ID! 
     name: String! 
     colorCode: String  
@@ -58,6 +60,8 @@ module.exports = buildSchema(`
     title: String
     content: String
     isDeleted: Boolean
+    isFavorite: Boolean
+    isArchived: Boolean
     tags: [ID]
     project: ID
   }

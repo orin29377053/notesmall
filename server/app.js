@@ -9,10 +9,7 @@ const app = express();
 
 // aws
 const fs = require("fs");
-const {
-    S3Client,
-    PutObjectCommand,
-} = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const s3 = new S3Client({
     credentials: {
@@ -24,27 +21,40 @@ const s3 = new S3Client({
 
 // apollo server
 const { ApolloServer } = require("@apollo/server");
-const { ApolloServerPluginCacheControl } =require( '@apollo/server/plugin/cacheControl');
+const {
+    ApolloServerPluginCacheControl,
+} = require("@apollo/server/plugin/cacheControl");
 
 const { expressMiddleware } = require("@apollo/server/express4");
 const {
     ApolloServerPluginDrainHttpServer,
 } = require("@apollo/server/plugin/drainHttpServer");
-const Keyv =require( "keyv");
-const { KeyvAdapter } =require ("@apollo/utils.keyvadapter");
+const Keyv = require("keyv");
+const { KeyvAdapter } = require("@apollo/utils.keyvadapter");
+
 const graphqlSchema = require("./graphql/schema");
 const rootResolver = require("./graphql/resolvers/index");
 const httpServer = http.createServer(app);
+const {
+    ApolloServerPluginLandingPageLocalDefault,
+} = require("apollo-server-core");
+const responseCachePlugin = require("@apollo/server-plugin-response-cache");
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     resolvers: rootResolver,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    cache: new KeyvAdapter(new Keyv("redis://default@localhost:6379")), 
+    cache: new KeyvAdapter(new Keyv("redis://default@127.0.0.1:6379")),
+    plugins: [
+        ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+        ApolloServerPluginCacheControl({ defaultMaxAge: 1}),
+        ApolloServerPluginDrainHttpServer({ httpServer }),
+        responseCachePlugin.default(),
+    ],
+    // debug: true,
+    csrfPrevention: true,
+    introspection: true,
 
     // cacheControl: true
-    
 });
-
 // mongoose
 const mongoose = require("mongoose");
 const url = process.env.MONGOATLAS_URL;
@@ -59,9 +69,6 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-
-
-
 
 app.get("/", (req, res) => {
     res.json({ data: "Hello World!" });
