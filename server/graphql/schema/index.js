@@ -1,4 +1,4 @@
-const { buildSchema } = require("graphql")
+const { buildSchema } = require("graphql");
 
 module.exports = buildSchema(`
 
@@ -19,6 +19,8 @@ module.exports = buildSchema(`
     updated_at: String! @cacheControl(maxAge: 32 scope: PUBLIC inheritMaxAge: false)
     tags: [Tag] 
     project: Project 
+    highlights: [Highlight!]
+    score: Float!
   }
 
   type Project {
@@ -32,9 +34,6 @@ module.exports = buildSchema(`
     documents: [Document]
   }
 
-
-
-
   type Tag  {
     _id: ID! 
     name: String! 
@@ -42,6 +41,27 @@ module.exports = buildSchema(`
     created_at: String! 
     document: [Document] 
   }
+
+  type SearchResult {
+    _id: ID! 
+    title: String! 
+    content: String 
+    highlights: [Highlight!]
+    score: Float!
+  }
+
+  type Highlight {
+    path: String!
+    score: Float!
+    texts:[HighlightDetail!]
+  }
+  type HighlightDetail {
+    value: String!
+    type: String!
+  }
+
+
+
   input TagInput {
     _id: ID
     name: String!
@@ -115,4 +135,4 @@ module.exports = buildSchema(`
     scope: CacheControlScope
     inheritMaxAge: Boolean
   ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
-`)
+`);

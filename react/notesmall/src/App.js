@@ -12,28 +12,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import ProjectEditor from "./components/ProjectEditor";
+import Header from "./components/layout/Header";
 
-const Initail = () => {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch({
-            type: "FETCH_TAG_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "tags",
-                response: "_id name colorCode document{_id title content}",
-            },
-        });
-    }, []);
-};
+
 
 function App() {
     return (
         <Provider store={store}>
-            {/* <Initail/> */}
             <BrowserRouter>
                 <CommonProvider>
                     <div className="body">
+                        <Header />
                         <Sidebar />
                         <div className="content">
                             <Routes>

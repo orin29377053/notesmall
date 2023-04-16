@@ -4,6 +4,7 @@ const initState = {
     searchKeyword: "",
     searchResult: [],
     selectedID: "",
+    path: "",
 };
 
 const commonReducer = (state = initState, action) => {
@@ -11,7 +12,7 @@ const commonReducer = (state = initState, action) => {
     let variable;
     switch (action.type) {
         case "FETCH_SIDEBAR_LIST_RESULT":
-            console.log(action.data?.data?.documents);
+            // console.log(action.data?.data?.documents);
             return {
                 ...state,
                 sidebar: action.data?.data?.documents,
@@ -54,15 +55,15 @@ const commonReducer = (state = initState, action) => {
                 selectedID: action.data?.data?.createDocument._id,
             };
         case "CHANGE_DOCUMENT":
-            console.log(action.payload.id);
+            // console.log(action.payload.id);
             return {
                 ...state,
                 selectedID: action.payload.id,
             };
 
         case "UPDATE_DOCUMENT_TITLE":
-            console.log(action.data.data.updatedDocument);
-            console.log(state.sidebar);
+            // console.log(action.data.data.updatedDocument);
+            // console.log(state.sidebar);
             return {
                 ...state,
                 sidebar: state.sidebar.map((item) =>
@@ -70,6 +71,11 @@ const commonReducer = (state = initState, action) => {
                         ? action.data.data.updatedDocument
                         : item
                 ),
+            };
+        case "UPDATE_PATH":
+            return {
+                ...state,
+                path: action.payload.path,
             };
 
 

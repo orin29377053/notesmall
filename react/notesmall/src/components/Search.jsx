@@ -4,32 +4,9 @@ import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
+import SearchResult from "./search/SearchResult";
 
-import DocumentCard from "./Card";
 
-const SearchResult = ({ searchResult, goToDoc }) => {
-    function extractImageURL(content) {
-        const regex = /(https?:\/\/[^\s]*?\.(?:png|jpg|jpeg|gif))/gi;
-        const matches = content.match(regex);
-        return matches ? matches[0] : null;
-    }
-    function sanitizeContent(content) {
-        const text = content
-            .replace(/[#*!()\[\]<>]-/g, "") // 刪除所有的符號
-            .replace(/(#+)/g, ""); // 刪除所有的井號（#）
-        return text.substring(0, 100) + "...";
-    }
-    return searchResult?.map((item) => (
-        <div>
-            <DocumentCard
-                title={item.title}
-                content={sanitizeContent(item.content)}
-                _id={item._id}
-                image={extractImageURL(item.content)}
-            />
-        </div>
-    ));
-};
 const fetchToSearch = debounce((dispatch, keyword) => {
     if (keyword) {
         dispatch({
@@ -38,7 +15,21 @@ const fetchToSearch = debounce((dispatch, keyword) => {
                 gqlMethod: "query",
                 api: "searchDocuments",
                 format: `(keyword: "${keyword}")`,
-                response: "_id title content",
+                response: `_id title
+                content
+                score
+                tags {
+                  name
+                  colorCode
+                }
+                highlights {
+                  path
+                  score
+                  texts {
+                    type
+                    value
+                  }
+                } `,
             },
         });
     } else {
@@ -56,12 +47,7 @@ const Search = () => {
     }, [keyword]);
 
     const { searchResult } = useSelector((state) => state.common);
-    const goToDoc = (id) => {
-        dispatch({
-            type: "CHANGE_DOCUMENT",
-            payload: { id },
-        });
-    };
+    console.log("searchResult", searchResult);
     return (
         <div>
             <TextField
@@ -76,8 +62,9 @@ const Search = () => {
                 }}
             />
             <div>
-                <SearchResult searchResult={searchResult} goToDoc={goToDoc} />
+                <SearchResult searchResult={searchResult} />
             </div>
+            {/* <Test /> */}
         </div>
     );
 };

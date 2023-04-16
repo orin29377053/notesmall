@@ -70,6 +70,8 @@ const getDocument = async (documentID) => {
 // 
         return {
             ...document._doc,
+            created_at: dataToString(document._doc.created_at),
+            updated_at: dataToString(document._doc.updated_at),
             _id: document._id,
             project: getProject.bind(this, document.project),
             tags: tags,

@@ -2,7 +2,6 @@
 import React from "react";
 import { css } from "@emotion/react";
 import "../App.css";
-import Getlist from "./Getlist";
 import AddnewDocument from "./AddnewDocument";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +9,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CategoryTab from "./sidebar/CategoryTab";
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+
 const Sidebar = () => {
     let history = useNavigate();
     return (
@@ -27,7 +28,7 @@ const Sidebar = () => {
                     size="small"
                     css={css`
                         margin: 0 3px;
-                        color: white !important;
+                        color: black !important;
                         &:hover {
                             color: black !important;
                             background-color: #c5c5c5;
@@ -45,7 +46,7 @@ const Sidebar = () => {
                     size="small"
                     css={css`
                         margin: 0 3px;
-                        color: white !important;
+                        color: black !important;
                         &:hover {
                             color: black !important;
                             background-color: #c5c5c5;
@@ -62,13 +63,13 @@ const Sidebar = () => {
                     size="small"
                     css={css`
                         margin: 0 3px;
-                        color: white !important;
+                        color: black !important;
                         &:hover {
                             color: black !important;
                             background-color: #c5c5c5;
                         }
                     `}
-                    startIcon={<AccountTreeIcon />}
+                    startIcon={<AccountTreeOutlinedIcon />}
                 >
                     Project
                 </Button>

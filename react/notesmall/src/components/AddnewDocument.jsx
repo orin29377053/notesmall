@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect } from "react";
+import PostAddIcon from '@mui/icons-material/PostAdd';
 const AddnewDocument = () => {
     const dispatch = useDispatch();
     let history = useNavigate();
@@ -98,9 +99,10 @@ const AddnewDocument = () => {
             variant="text"
             size="small"
             onClick={()=>(add(useSelector))}
-            startIcon={<AddIcon />}
+            startIcon={<PostAddIcon />}
             css={css`
-                color: white !important;
+            color: black !important;
+
                 &:hover {
                     color: black !important;
                     background-color: #c5c5c5;

@@ -1,28 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import "remirror/styles/all.css";
-import React, { useCallback, useMemo, useState, useRef } from "react";
+import React, { useCallback, useMemo, useState, useRef,useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
-import { marked } from "marked";
 import debounce from "lodash.debounce";
 import jsx from "refractor/lang/jsx.js";
 import typescript from "refractor/lang/typescript.js";
 import { ExtensionPriority } from "remirror";
-import { getPresignedUrl, handleUpload } from "./ImageUpload";
 import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
 import "../App.css";
-import { Button, Alert, AlertTitle } from "@mui/material";
+import { Button} from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Row } from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Badge from "@mui/material/Badge";
-import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import TagSelector from "./TagSelector";
+import uploadHandler from "../utils/uploadHandler";
+import TagContent from "./editor/TagContent";
 
 import {
     BlockquoteExtension,
@@ -67,7 +62,6 @@ import {
     OnChangeJSON,
     OnChangeHTML,
 } from "@remirror/react";
-import { useEffect } from "react";
 
 function EditorToolbar() {
     return (
@@ -88,83 +82,7 @@ function EditorToolbar() {
     );
 }
 
-function uploadHandler(files) {
-    const promises = [];
 
-    for (const { file, progress } of files) {
-        promises.push(
-            () =>
-                new Promise(async (resolve) => {
-                    const reader = new FileReader();
-                    const url = await getPresignedUrl(file.name);
-                    await handleUpload(url.presignedUrl, file);
-
-                    reader.addEventListener(
-                        "load",
-                        (readerEvent) => {
-                            resolve({
-                                src: url.objectUrl,
-                                fileName: file.name,
-                            });
-                        },
-                        { once: true }
-                    );
-                    reader.readAsDataURL(file);
-                })
-        );
-    }
-
-    return promises;
-}
-const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    // border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-};
-
-const TagContent = () => {
-    const { editingDocument } = useSelector((state) => state.editor);
-    const tagLength = editingDocument?.tags?.length || 0;
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    return (
-        <div>
-            <Badge
-                badgeContent={tagLength}
-                color="secondary"
-                css={css`
-                    margin-left: 10px;
-                `}
-                onClick={handleOpen}
-            >
-                <TurnedInNotIcon color="action" />
-            </Badge>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <TagSelector setOpen={setOpen} />
-                </Box>
-            </Modal>
-        </div>
-    );
-};
 
 const MdToContent = ({ htmlContents }) => {
     const { setContent } = useRemirrorContext();
@@ -189,6 +107,7 @@ const SmallEditor = () => {
     const newID = editingDocument?._id;
     const refVContent = useRef({ id: "", html: "" });
     const refUploading = useRef(true);
+    const {path}= useSelector((state) => state.common);
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -204,7 +123,6 @@ const SmallEditor = () => {
     });
 
     const handleEditorChange = async (html) => {
-        console.log("refUploading.current", refUploading.current);
         refUploading.current = false;
 
         refVContent.current.html = html;
@@ -260,12 +178,12 @@ const SmallEditor = () => {
         } else if (id === newID) {
             console.log("sync success");
             refVContent.current.id = newID;
+            
         }
-    }, [id, newID]);
+    }, [id, newID,path]);
 
     const changeTitle = useCallback(
         debounce((id, title) => {
-            console.log("update");
             if (  (id === newID)&& title) {
                 dispatch({
                     type: "EDIT_TITLE",
@@ -313,7 +231,6 @@ const SmallEditor = () => {
 
     return (
         <AllStyledComponent>
-            {console.log("NrfNO")}
 
             <div>{refUploading.current ? "sync" : "not sync"}</div>
 
@@ -338,7 +255,6 @@ const SmallEditor = () => {
                     <TagContent />
                 </div>
 
-                {console.log("NONONNONONO")}
                 <Remirror manager={manager} initialContent={state}>
                     <Row className="px-3 mb-2 mt-3">
                         <input

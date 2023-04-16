@@ -21,10 +21,10 @@ const ProjectEditor = () => {
             },
         });
     };
-  console.log(projectlist)
+  // console.log(projectlist)
   
   useEffect(() => {
-    console.log("projectList",projectlist)
+    // console.log("projectList",projectlist)
     // getProjectList()
   }, [projectlist])
 

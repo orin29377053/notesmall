@@ -22,7 +22,7 @@ const CommonProvider = ({ children }) => {
             payload: {
                 gqlMethod: "query",
                 api: "projects",
-                response: "_id name  documents {_id title content}",
+                response: "_id name  documents {_id title content updated_at}",
             },
         });
     };
@@ -50,17 +50,12 @@ const CommonProvider = ({ children }) => {
     }, [selectedID]);
 
     useEffect(() => {
-        console.log(location);
-        // if (location.pathname === "/") {
-        //     dispatch({
-        //         type: "CHANGE_DOCUMENT",
-        //         payload: { id: location },
-        //     });
-        // }
+        console.log("path is change", location.pathname)
+        dispatch({
+            type: "UPDATE_PATH",
+            payload: { path: location.pathname },
+        });
     }, [location]);
-
-
-
 
     return <div>{children}</div>;
 };

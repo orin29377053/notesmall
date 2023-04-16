@@ -9,12 +9,20 @@ const documentFuzzySearch = (keyword) => {
                         wildcard: "*",
                     },
                 },
+                highlight: {
+                    path: {
+                        wildcard: "*",
+                    },
+                },
             },
         },
         {
             $addFields: {
                 score: {
                     $meta: "searchScore",
+                },
+                highlights: {
+                    $meta: "searchHighlights",
                 },
             },
         },

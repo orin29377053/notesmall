@@ -64,8 +64,12 @@ module.exports = {
             try {
                 const query = documentFuzzySearch(keyword);
                 const documents = await Document.aggregate(query);
-                console.log("documents", documents);
                 return documents.map(async (document) => {
+                    console.log("document", document.highlights);
+                    document.highlights.map((highlight) => {
+                        console.log("highlight", highlight.texts);
+                    });
+
                     return {
                         ...document,
                         // _id: document.+id,
@@ -88,6 +92,7 @@ module.exports = {
                 throw error;
             }
         },
+        
     },
     Mutation: {
         createDocument: async (_, args) => {

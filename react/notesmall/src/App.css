@@ -44,8 +44,8 @@
 
 .sidebar {
     width: 18%;
-    background-color: #282c34;
-    color: white;
+    /* background-color: #e9ecf3; */
+    /* color: white; */
     height: 100vh;
     position: fixed;
     overflow: auto;

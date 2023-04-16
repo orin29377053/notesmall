@@ -11,8 +11,11 @@ import TextField from "@mui/material/TextField";
 import { MuiColorInput } from "mui-color-input";
 import Chip from "@mui/material/Chip";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import DocumentCard from "./Card";
+import sanitizeContent from "../utils/sanitizeContent";
+import extractImageURL from "../utils/extractImageURL";
+import getTextColorFromBackground from "../utils/getTextColorFromBackground";
+
 const style = {
     position: "absolute",
     top: "50%",
@@ -27,42 +30,12 @@ const style = {
 
 const ItemCard = ({ item }) => {
     return item?.document.map((doc) => (
-        <div
-            css={css`
-                border: 1px solid #c7c7c7;
-                padding: 8px 20px;
-                margin: 10px 0;
-                border-radius: 5px;
-                &:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 26px 40px -24px rgb(0 36 100 / 50%);
-                }
-            `}
-        >
-            <Link
-                to={`/${doc?._id}`}
-                css={css`
-                    text-decoration: none;
-                    background-color: white;
-                    color: #474747;
-                `}
-            >
-                <div
-                    key={item._id}
-                    css={css`
-                        font-size: 1.2rem;
-                        font-weight: 600;
-                    `}
-                >
-                    {doc?.title}
-                </div>
-                <div>
-                    {doc?.content
-                        .replace(/[#*!()\[\]<>]-/g, "")
-                        .substring(0, 100) + " ..."}
-                </div>
-            </Link>
-        </div>
+        <DocumentCard
+            title={doc.title}
+            content={sanitizeContent(doc.content)}
+            _id={doc._id}
+            image={extractImageURL(doc.content)}
+        />
     ));
 };
 
@@ -110,22 +83,7 @@ const Taglist = ({ taglist }) => {
             },
         });
     };
-    function getTextColorFromBackground(bgColor) {
-        let rgbColor = hexToRgb(bgColor);
-        let gray =
-            0.2126 * rgbColor.r + 0.7152 * rgbColor.g + 0.0722 * rgbColor.b;
 
-        let threshold = 128;
-        return gray < threshold ? "#ffffff" : "#000000";
-    }
-
-    function hexToRgb(hexColor) {
-        let r = parseInt(hexColor.substr(0, 2), 16);
-        let g = parseInt(hexColor.substr(2, 2), 16);
-        let b = parseInt(hexColor.substr(4, 2), 16);
-
-        return { r: r, g: g, b: b };
-    }
     const handleButtonClick = (button) => {
         setSelectedButton(button);
     };
@@ -234,8 +192,19 @@ const Taglist = ({ taglist }) => {
                     </div>
                 </Box>
             </Modal>
-            <div>
-                <ItemCard item={selectedButton} />
+            <div
+                css={css`
+                    display: flex;
+                    flex-wrap: wrap;
+                `}
+            >
+                <ItemCard
+                    css={css`
+                        width: 100%;
+                        margin-left: 20px;
+                    `}
+                    item={selectedButton}
+                />
             </div>
         </div>
     );
@@ -252,18 +221,7 @@ const TagEditor = () => {
     const handleChange = (color) => {
         setColor(color);
     };
-    console.log(taglist);
 
-    const getTagList = () => {
-        dispatch({
-            type: "FETCH_TAG_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "tags",
-                response: "_id name colorCode document{_id title content}",
-            },
-        });
-    };
     const addTag = () => {
         dispatch({
             type: "FETCH_ADD_TAG",
@@ -275,9 +233,19 @@ const TagEditor = () => {
             },
         });
     };
+    const getTagList = () => {
+        dispatch({
+            type: "FETCH_TAG_LIST",
+            payload: {
+                gqlMethod: "query",
+                api: "tags",
+                response: "_id name colorCode  document{_id title content}",
+            },
+        });
+    };
 
     useEffect(() => {
-        // getTagList();
+        getTagList();
     }, []);
 
     return (
@@ -348,7 +316,12 @@ const TagEditor = () => {
                 </Box>
             </Modal>
             <div>
-                <Taglist taglist={taglist} />
+                <Taglist
+                    css={css`
+                        display: flex;
+                    `}
+                    taglist={taglist}
+                />
             </div>
         </div>
     );

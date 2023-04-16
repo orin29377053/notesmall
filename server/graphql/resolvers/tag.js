@@ -1,7 +1,6 @@
 const Document = require("../../route/models/document");
 const Tag = require("../../route/models/tag");
 const Project = require("../../route/models/project");
-const { documentFuzzySearch } = require("../search");
 const dataToString = require("../../utils/dataToString");
 const { getDocument, getProject } = require("./merge");
 
