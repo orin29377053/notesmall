@@ -47,7 +47,6 @@ const Search = () => {
     }, [keyword]);
 
     const { searchResult } = useSelector((state) => state.common);
-    console.log("searchResult", searchResult);
     return (
         <div>
             <TextField

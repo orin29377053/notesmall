@@ -26,9 +26,11 @@ module.exports = {
             try {
                 const projects = await Project.find().populate("documents");
                 // console.log("projects", projects);
-                const transformedProjects = await Promise.all(projects.map(async (project) => {
-                    return transformProject(project);
-                }));
+                const transformedProjects = await Promise.all(
+                    projects.map(async (project) => {
+                        return transformProject(project);
+                    })
+                );
                 return transformedProjects;
             } catch (error) {
                 throw error;
@@ -57,6 +59,72 @@ module.exports = {
                 });
                 const newProject = await project.save();
                 return { ...newProject._doc, _id: newProject.id };
+            } catch (error) {
+                throw error;
+            }
+        },
+        updateProject: async (_, args) => {
+            try {
+                const { _id, name, isArchived, isFavorite, documents } =
+                    args.project;
+                const updated_at = Date.now();
+
+                const project = await Project.findByIdAndUpdate(
+                    _id,
+                    {
+                        _id,
+                        name,
+                        isArchived,
+                        isFavorite,
+                        documents,
+                        updated_at,
+                    },
+                    { new: true }
+                );
+                console.log("documents", documents);
+                const newProject = await project.save();
+                if (documents) {
+                    console.log("dwdw");
+                    const oldProject = await Project.findById(_id);
+                    const oldDocuments = oldProject.documents;
+                    const newDocuments = documents;
+                    const deletedDocuments = oldDocuments.filter(
+                        (document) => !newDocuments.includes(document)
+                    );
+                    const addedDocuments = newDocuments.filter(
+                        (document) => !oldDocuments.includes(document)
+                    );
+                    deletedDocuments.forEach(async (documentID) => {
+                        const document = await Document.findById(documentID);
+                        document.project = null;
+                        await document.save();
+                    });
+                    addedDocuments.forEach(async (documentID) => {
+                        const document = await Document.findById(documentID);
+                        document.project = _id;
+                        await document.save();
+                    });
+                }
+                return transformProject(newProject);
+            } catch (error) {
+                throw error;
+            }
+        },
+        deleteProject: async (_, args) => {
+            try {
+                const { id } = args;
+                // console.log(_id, isDeleted);
+                const project = await Project.findByIdAndDelete(id);
+                if (!project) {
+                    throw new Error(`Project with ID ${id} not found`);
+                }
+                project.documents.forEach(async (documentID) => {
+                    const document = await Document.findById(documentID);
+                    document.project = null;
+                    await document.save();
+                });
+
+                return transformProject(project);
             } catch (error) {
                 throw error;
             }

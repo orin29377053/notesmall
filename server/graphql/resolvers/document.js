@@ -35,8 +35,8 @@ module.exports = {
             try {
                 const documents = await Document.find()
                     .populate("tags")
-                    .where("isDeleted")
-                    .equals(isDeleted);
+                    // .where("isDeleted")
+                    // .equals(isDeleted);
                 return documents.map(async (document) => {
                     return tarnsformDocument(document);
                 });

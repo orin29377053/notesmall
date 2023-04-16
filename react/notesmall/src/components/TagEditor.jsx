@@ -182,6 +182,8 @@ const Taglist = ({ taglist }) => {
                                 deleteTag(id);
                                 handleClose();
                             }}
+                            color="error"
+
                             css={css`
                                 margin-top: 10px;
                                 float: left;

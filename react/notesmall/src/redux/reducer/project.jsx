@@ -10,6 +10,33 @@ const projectReducer = (state = initState, action) => {
                 ...state,
                 projectlist: action.data.data.projects,
             };
+        case "CREATE_PROJECT_RESULT":
+            console.log(action.data.data.createProject);
+            return {
+                ...state,
+                projectlist: [...state.projectlist, action.data.data.createProject],
+            };
+        case "DELETE_PROJECT_RESULT":
+            console.log(action.data.data);
+            return {
+                ...state,
+                projectlist: state.projectlist.filter(
+                    (item) => item._id !== action.data.data.deleteProject._id
+                ),
+            };
+        case "UPDATE_PROJECT_RESULT":
+            console.log(action.data.data);
+            return {
+                ...state,
+                projectlist: state.projectlist.map((item) =>
+                    item._id === action.data.data.updateProject._id
+
+                        ? action.data.data.updateProject
+                        : item
+                ),
+            };
+        
+        
         default:
             return state;
     }

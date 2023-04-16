@@ -18,6 +18,8 @@ import { Row } from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete";
 import uploadHandler from "../utils/uploadHandler";
 import TagContent from "./editor/TagContent";
+import ProjectSelector from "./editor/ProjectSelector";
+import TOC from "./editor/TOC";
 
 import {
     BlockquoteExtension,
@@ -172,7 +174,7 @@ const SmallEditor = () => {
                     api: "document",
                     format: `(id:"${id}")`,
                     response:
-                        "_id title content updated_at tags{_id,name,colorCode} ",
+                        "_id title content updated_at tags{_id,name,colorCode} project{_id,name} ",
                 },
             });
         } else if (id === newID) {
@@ -194,16 +196,7 @@ const SmallEditor = () => {
                         response: "_id title content updated_at isDeleted isFavorite isArchived",
                     },
                 });
-                // dispatch({
-                //     type: "UPTATE_SIDE_BAR_LIST",
-                //     payload: {
-                //         _id: id,
-                //         title: title,
-                //         updated_at: new Date().toISOString(),
-                //     },
-                // });
                 refUploading.current = true;
-                // setIsSyncing(true);
             } else {
                 console.log("no dispatch");
             }
@@ -237,13 +230,15 @@ const SmallEditor = () => {
             <ThemeProvider>
                 <div
                     css={css`
-                        margin: 2px;
+                        margin: 5px;
                         display: flex;
+                        align-items: center
+
                     `}
                 >
                     <Button
                         variant="contained"
-                        color="warning"
+                        color="error"
                         onClick={() => {
                             Delete(dispatch, id);
                         }}
@@ -251,8 +246,10 @@ const SmallEditor = () => {
                         size="small"
                     >
                         Delete
+                    
                     </Button>
                     <TagContent />
+                    <ProjectSelector />
                 </div>
 
                 <Remirror manager={manager} initialContent={state}>
@@ -292,10 +289,9 @@ const SmallEditor = () => {
                     <OnChangeHTML
                         onChange={debounce(handleEditorChange, 500)}
                     ></OnChangeHTML>
-                    {/* <OnChangeJSON onChange={handleUpdate} /> */}
-
                     <TextEditor className="px-1" />
                 </Remirror>
+                <TOC tracingDoc={refVContent.current.html}/>
             </ThemeProvider>
         </AllStyledComponent>
     );

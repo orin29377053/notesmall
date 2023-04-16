@@ -65,6 +65,14 @@ const editorReducer = (state = initState, action) => {
                     title: action.data.data.updatedDocument.title,
                 },
             };
+        case "UPDATE_DOCUMENT_PROJECT":
+            return {
+                ...state,
+                editingDocument: {
+                    ...state.editingDocument,
+                    project: action.data.data.updatedDocument.project,
+                },
+            };
 
         default:
             return state;

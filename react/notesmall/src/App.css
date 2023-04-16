@@ -49,6 +49,7 @@
     height: 100vh;
     position: fixed;
     overflow: auto;
+    border-right: 1px solid #e7ebf0;
 }
 
 .content {
@@ -67,4 +68,17 @@
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 10px;
+}
+
+.singleLine {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cardBody {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }

@@ -4,6 +4,10 @@ import React,{useState} from "react";
 import List from "@mui/material/List";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import ToggleList from "./unit/ToggleList";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 const MainDocument = ({ deletedItems, archivedItems, allItems,recentItems}) => {
     const [status, setStatus] = useState({
         mainOpen: true,
@@ -63,17 +67,17 @@ const MainDocument = ({ deletedItems, archivedItems, allItems,recentItems}) => {
         >
             <ToggleList
                 onClickAction={handleMainListClick}
-                name={"Main"}
+                name={"Documents"}
                 Status={status.mainOpen}
                 list={allItems}
-                icon={<InboxIcon />}
+                icon={<FolderOpenIcon />}
             />
             <ToggleList
                 onClickAction={handleRecentListClick}
                 name={"Recent"}
                 Status={status.recentOpen}
                 list={recentItems}
-                icon={<InboxIcon />}
+                icon={<AccessTimeIcon />}
             />
             <ToggleList
                 onClickAction={handleArchiveListClick}
@@ -87,7 +91,7 @@ const MainDocument = ({ deletedItems, archivedItems, allItems,recentItems}) => {
                 name={"Delete"}
                 Status={status.deleteOpen}
                 list={deletedItems}
-                icon={<InboxIcon />}
+                icon={<DeleteOutlineIcon />}
             />
         </List>
     );

@@ -14,8 +14,10 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 const ToggleList = ({ onClickAction, Status, list ,icon,name}) => {
     return (
         <>
-            <ListItemButton onClick={onClickAction} >
-                <ListItemIcon>
+            <ListItemButton onClick={onClickAction} dense="true" >
+                <ListItemIcon sx={{
+                                minWidth: "30px",
+                            }}>
                     {icon}
                 </ListItemIcon>
                 <ListItemText primary={name} />

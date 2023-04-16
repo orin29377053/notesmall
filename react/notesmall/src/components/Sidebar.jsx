@@ -18,7 +18,8 @@ const Sidebar = () => {
             <div
                 css={css`
                     padding: 5px 20px;
-                    border-bottom: 1px solid #494949;
+                    border-bottom: 1px solid #E7EBF0;
+
                 `}
             >
                 <Button

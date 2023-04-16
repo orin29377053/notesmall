@@ -10,9 +10,9 @@ import { useSelector } from "react-redux";
 import FavoriteDocument from "./FavoriteDocument";
 import MainDocument from "./MainDocument";
 import ProjectDocument from "./ProjectDocument";
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
-import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
-import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined';
+import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
+import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 const CategoryTab = () => {
     const { sidebar } = useSelector((state) => state.common);
     const { projectlist } = useSelector((state) => state.project);
@@ -32,12 +32,13 @@ const CategoryTab = () => {
     );
     const allItems = [...favoriteItems, ...otherItems];
     const compareFunction = (a, b) => {
-        const aTime = new Date(a.update_time).getTime();
-        const bTime = new Date(b.update_time).getTime();
-        return aTime - bTime;
+        const aTime = new Date(a.updated_at).getTime();
+        // console.log("aTime", aTime)
+        const bTime = new Date(b.updated_at).getTime();
+        return bTime - aTime;
     };
 
-    const recentItems = allItems.sort(compareFunction);
+    const recentItems = allItems.slice().sort(compareFunction);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -46,44 +47,68 @@ const CategoryTab = () => {
     return (
         <Box sx={{ width: "100%", typography: "body1" }}>
             <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Box
+                    sx={{
+                        borderBottom: 1,
+                        borderColor: "divider",
+                    }}
+                >
                     <TabList
                         onChange={handleChange}
                         aria-label="lab API tabs example"
                         css={css`
                             padding: 0px 0px 0px 0px;
+                            justify-content: space-around;
                         `}
-                        
                     >
-                        <Tab icon={<InsertDriveFileOutlinedIcon />} value="main" css={css`
-                            padding: 0px 0px 0px 0px;
-
-
-                        `}
+                        <Tab
+                            icon={<InsertDriveFileOutlinedIcon />}
+                            value="main"
+                            css={css`
+                                padding: 0px 0px 0px 0px;
+                            `}
                             sx={{
-                                maxWidth:50,   
-                                minWidth: 30,
-                            }} />
-                        <Tab icon={<StarBorderOutlinedIcon/>} value="favorite" css={css`
-                            padding: 0px 0px 0px 0px;
-                            width: 30px;
-
-                        `}sx={{
-                            maxWidth: 30,   
-                            minWidth: 30,
-                        }} />
-                        <Tab icon={<AccountTreeOutlinedIcon/>} value="project" css={css`
-                            padding: 0px 0px 0px 0px;
-                            width: 30px;
-
-                        `}sx={{
-                            maxWidth: 30,   
-                            minWidth: 30,
-                        }}/>
+                                alignContent: "center",
+                                // maxWidth:50,
+                                minWidth: 45,
+                            }}
+                        />
+                        <Tab
+                            icon={<StarBorderOutlinedIcon />}
+                            value="favorite"
+                            css={css`
+                                padding: 0px 0px 0px 0px;
+                                width: 30px;
+                            `}
+                            sx={
+                                {
+                                    // maxWidth: 30,
+                                    minWidth: 45,
+                                }
+                            }
+                        />
+                        <Tab
+                            icon={<AccountTreeOutlinedIcon />}
+                            value="project"
+                            css={css`
+                                padding: 0px 0px 0px 0px;
+                                width: 30px;
+                            `}
+                            sx={
+                                {
+                                    // maxWidth: 30,
+                                    minWidth: 45,
+                                }
+                            }
+                        />
                     </TabList>
                 </Box>
-                <TabPanel value="main" css={css`
-                        padding: 0px 0px;`}>
+                <TabPanel
+                    value="main"
+                    css={css`
+                        padding: 0px 0px;
+                    `}
+                >
                     <MainDocument
                         deletedItems={deletedItems}
                         archivedItems={archivedItems}
@@ -92,12 +117,20 @@ const CategoryTab = () => {
                         recentItems={recentItems}
                     />
                 </TabPanel>
-                <TabPanel value="favorite" css={css`
-                        padding: 0px 0px;`}>
+                <TabPanel
+                    value="favorite"
+                    css={css`
+                        padding: 0px 0px;
+                    `}
+                >
                     <FavoriteDocument list={favoriteItems} />
                 </TabPanel>
-                <TabPanel value="project" css={css`
-                        padding: 0px 0px;`}>
+                <TabPanel
+                    value="project"
+                    css={css`
+                        padding: 0px 0px;
+                    `}
+                >
                     <ProjectDocument projectlist={projectlist} />
                 </TabPanel>
             </TabContext>

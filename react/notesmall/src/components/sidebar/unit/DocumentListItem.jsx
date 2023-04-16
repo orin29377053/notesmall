@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 const DocumentListItem = ({ list }) => {
     console.log("list", list);
     return list?.map((item) => (
-        <Tooltip title={`Last updated: ${item.updated_at?.slice(0, 19).replace("T", " ")}`} arrow>
+        <Tooltip title={`Last updated: ${item.updated_at?.slice(0, 19).replace("T", " ")}`} arrow enterDelay={800} >
             <ListItem>
                 <Link
                     to={`/${item._id}`}

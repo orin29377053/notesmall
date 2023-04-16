@@ -8,7 +8,7 @@ import Badge from "@mui/material/Badge";
 import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import TagSelector from "../TagSelector";
+import TagSelector from "./TagSelector";
 
 const style = {
     position: "absolute",
@@ -42,6 +42,7 @@ const TagContent = () => {
                 color="secondary"
                 css={css`
                     margin-left: 10px;
+                    margin-right: 10px;
                 `}
                 onClick={handleOpen}
             >

@@ -4,7 +4,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import List from "@mui/material/List";
-
+import FolderCopyOutlinedIcon from '@mui/icons-material/FolderCopyOutlined';
 const ProjectDocument = ({ projectlist }) => {
     const [openedProject, setOpenedProject] = React.useState(null);
 
@@ -28,7 +28,7 @@ const ProjectDocument = ({ projectlist }) => {
                           Status={openedProject === project.name}
                           onCLockAction={handleListClick}
                           list={project.documents}
-                          icon={<InboxIcon />}
+                          icon={<FolderCopyOutlinedIcon />}
                       />
                   ))
                 : null}

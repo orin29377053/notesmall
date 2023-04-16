@@ -11,7 +11,7 @@ import TagEditor from "./components/TagEditor";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import ProjectEditor from "./components/ProjectEditor";
+import ProjectEditor from "./components/project/ProjectEditor"
 import Header from "./components/layout/Header";
 
 

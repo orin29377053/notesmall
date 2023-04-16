@@ -92,7 +92,7 @@ module.exports = buildSchema(`
     isFavorite: Boolean
     isDeleted: Boolean
     isArchived: Boolean
-    document: [ID]
+    documents: [ID]
   }
 
 
@@ -119,6 +119,9 @@ module.exports = buildSchema(`
     deleteTag(id:ID!): Tag
     permantDeleteALLDocument(document:DocumentInput): [Document!]
     permantDeleteDocument(document:DocumentInput): Document
+    updateProject(project:ProjectInput): Project
+    deleteProject(id:ID!): Project
+
   }
 
   schema {
