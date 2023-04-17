@@ -23,7 +23,7 @@ const style = {
 };
 
 
-const TagContent = () => {
+const TagContent = ({currentHtmlsaveToreducer }) => {
     const { editingDocument } = useSelector((state) => state.editor);
     const tagLength = editingDocument?.tags?.length || 0;
     const [open, setOpen] = useState(false);
@@ -55,7 +55,7 @@ const TagContent = () => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <TagSelector setOpen={setOpen} />
+                    <TagSelector setOpen={setOpen} currentHtmlsaveToreducer={currentHtmlsaveToreducer } />
                 </Box>
             </Modal>
         </div>

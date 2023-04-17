@@ -14,8 +14,8 @@ const AddnewDocument = () => {
                 gqlMethod: "mutation",
                 api: "createDocument",
                 format: `(document: {title: "new document",content: "new document"})`,
-                response: "_id title content updated_at tags{_id,name,colorCode} ",
-            },
+                response:
+                "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",            },
         });
         
     };

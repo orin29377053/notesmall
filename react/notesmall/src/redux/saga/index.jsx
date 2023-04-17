@@ -32,16 +32,16 @@ export function* fetchApi({
     };
 
     try {
-        const { data: response } =
-            method === API_METHOD.GET || method === API_METHOD.DELETE
-                ? yield APIKit[method](path, params)
-                : yield APIKit[method](path, JSON.stringify({ query }), params);
+        const { data: response } = yield APIKit[method](
+            path,
+            JSON.stringify({ query }),
+            params
+        );
         result = response;
         success = true;
     } catch (error) {
         console.log(error.response);
         alert(error.response?.data?.errors[0]?.message);
-
     }
 
     //有設定 reducer才會呼叫
@@ -52,7 +52,7 @@ export function* fetchApi({
 }
 
 function* rootSaga() {
-    yield all([edit(), common(), tag(),project()]);
+    yield all([edit(), common(), tag(), project()]);
 }
 
 export default rootSaga;

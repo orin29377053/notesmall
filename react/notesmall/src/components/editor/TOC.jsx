@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
 
-const TOC = ({tracingDoc}) => {
+
+const TOC = ({tracingDoc,pathID,reducerID}) => {
     const [headings, setHeadings] = useState([]);
     
 
     useEffect(() => {
-        // 獲取所有標題元素
         const headingElements = document.querySelectorAll(
             "h1, h2, h3, h4, h5, h6"
         );
 
-        // 將標題元素轉換成一個包含標題文本和標題級別的對象
         const headingsArray = Array.from(headingElements).map((heading) => {
             return {
                 text: heading.textContent,
@@ -19,14 +20,38 @@ const TOC = ({tracingDoc}) => {
         });
 
         setHeadings(headingsArray);
-    }, [tracingDoc]);
+    }, [tracingDoc,pathID,reducerID]);
 
     return (
         <nav>
-            <ul>
+            <div css={css`
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+                        
+                        `}>Content</div>
+            <ul css={css`
+            padding-left: 10px;
+            `}>
                 {headings.map((heading, index) => (
-                    <li key={index}>
-                        <a href={`#:~:text=${heading.text}`}>{heading.text}</a>
+                    <li key={index} css={
+                        css`
+                        list-style: none;
+
+                        
+                        `
+                    }>
+                        <a href={`#:~:text=${heading.text}`} css={css`
+                        text-decoration: none; 
+                        color: black;
+                        font-size: 0.8rem;
+                        :hover{
+                            color: #3f51b5;
+                            text-decoration: underline;
+                            font-size: 0.9rem;
+                        }
+                    
+                        `}>{heading.text}</a>
                     </li>
                 ))}
             </ul>

@@ -49,7 +49,7 @@ const ProjectEditor = () => {
             payload: {
                 gqlMethod: "query",
                 api: "projects",
-                response: "_id name  documents {_id title content}",
+                response: "_id name  documents {_id title content isDeleted}",
             },
         });
     };
@@ -60,7 +60,7 @@ const ProjectEditor = () => {
                 gqlMethod: "mutation",
                 api: "createProject",
                 format: `(project:{name:"${projectName}"})`,
-                response: "_id name  documents {_id title content}",
+                response: "_id name  documents {_id title content isDeleted}",
             },
         });
     };

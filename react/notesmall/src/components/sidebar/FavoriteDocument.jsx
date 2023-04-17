@@ -8,7 +8,7 @@ import DocumentListItem from "./unit/DocumentListItem";
 
 const FavoriteDocument = ({ list }) => {
     return (
-        <List dense="true">
+        <List dense={true}>
             <DocumentListItem list={list} />
         </List>
     );

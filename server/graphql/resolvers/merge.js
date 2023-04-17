@@ -3,8 +3,7 @@ const Tag = require("../../route/models/tag");
 const Project = require("../../route/models/project");
 const Dataloader = require("dataloader");
 const dataToString = require("../../utils/dataToString");
-
-
+const { cache } = require("../../utils/cache");
 
 const documentLoader = new Dataloader(async (documentIDs) => {
     // console.log("documentIDs", documentIDs)
@@ -38,6 +37,7 @@ const tagLoader = new Dataloader(async (tagIDs) => {
     }
 });
 
+
 const projectLoader = new Dataloader((projectIDs) => {
     console.log("projectIDs", projectIDs);
     // return Promise.all(projectIDs.map(id => Project.findById(id).exec()));
@@ -45,8 +45,6 @@ const projectLoader = new Dataloader((projectIDs) => {
 });
 
 const getDocument = async (documentID) => {
-
-    
     // console.log(documentID.toString());
     try {
         // const document = await Document.findById(documentID);
@@ -67,7 +65,7 @@ const getDocument = async (documentID) => {
             }
         }
         // console.log("OK");
-// 
+        //
         return {
             ...document._doc,
             created_at: dataToString(document._doc.created_at),
@@ -82,7 +80,6 @@ const getDocument = async (documentID) => {
 };
 
 const getProject = async (projectID) => {
-    
     try {
         // const project = await Project.findById(projectID);
         const project = await projectLoader.load(projectID.toString());
@@ -104,20 +101,14 @@ const getProject = async (projectID) => {
 };
 
 const getTag = async (tagID) => {
-    // console.log("singel tagID", tagID._id);
-
-    // console.log("hi");
-
     try {
         // const tags = await Tag.find({ _id: { $in: [tagID._id.toString()] } });
         // const tag=tags[0];
 
         // const tag = await Tag.findById(tagID).exec();
 
-
         const tag = await tagLoader.load(tagID._id.toString());
 
-        // console.log(tag);
 
         if (!tag) {
             // throw new Error(`Tag with ID ${tagID} not found`);
@@ -128,6 +119,7 @@ const getTag = async (tagID) => {
         //     const documentID = tag.document[i]._id;
         //     const document = await getDocument(documentID);
         //     documents.push(document);
+
         // }
 
         // console.log(tag.document);
@@ -140,7 +132,6 @@ const getTag = async (tagID) => {
         throw error;
     }
 };
-
 
 exports.getDocument = getDocument;
 exports.getProject = getProject;

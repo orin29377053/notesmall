@@ -14,7 +14,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 const ToggleList = ({ onClickAction, Status, list ,icon,name}) => {
     return (
         <>
-            <ListItemButton onClick={onClickAction} dense="true" >
+            <ListItemButton onClick={onClickAction} dense={true} >
                 <ListItemIcon sx={{
                                 minWidth: "30px",
                             }}>
@@ -24,7 +24,7 @@ const ToggleList = ({ onClickAction, Status, list ,icon,name}) => {
                 {Status ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={Status} timeout="auto" unmountOnExit>
-                <List component="div" dense="true" disablePadding sx={{ pl: 1,paddingBottom:1 }}>
+                <List component="div" dense={true} disablePadding sx={{ pl: 1,paddingBottom:1 }}>
                     <DocumentListItem list={list} />
                 </List>
             </Collapse>

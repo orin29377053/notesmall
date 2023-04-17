@@ -82,10 +82,10 @@ const ProjectList = ({ list }) => {
                 gqlMethod: "mutation",
                 api: "updateProject",
                 format: `(project:{_id:"${id}", name:"${projectName}"})`,
-                response: "_id name  documents {_id title content}",
+                response: "_id name  documents {_id title content isDeleted}",
             },
         });
-    };
+    }; 
 
     return (
         <div>

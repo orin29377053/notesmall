@@ -16,7 +16,6 @@ import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 const CategoryTab = () => {
     const { sidebar } = useSelector((state) => state.common);
     const { projectlist } = useSelector((state) => state.project);
-    console.log("projectlist", projectlist);
 
     const [value, setValue] = React.useState("main");
 

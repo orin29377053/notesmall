@@ -39,10 +39,11 @@ const {
     ApolloServerPluginLandingPageLocalDefault,
 } = require("apollo-server-core");
 const responseCachePlugin = require("@apollo/server-plugin-response-cache");
+const {cache} = require("./utils/cache");
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     resolvers: rootResolver,
-    cache: new KeyvAdapter(new Keyv("redis://default@127.0.0.1:6379")),
+    cache: new KeyvAdapter(cache),
     plugins: [
         ApolloServerPluginLandingPageLocalDefault({ embed: true }),
         ApolloServerPluginCacheControl({ defaultMaxAge: 1}),

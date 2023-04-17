@@ -8,22 +8,22 @@ module.exports = buildSchema(`
     body: String! 
     createdAt: String! 
   }
-  type Document  {
+  type Document @cacheControl(maxAge: 1 scope: PUBLIC inheritMaxAge: true) {
     _id: ID! 
     title: String! 
     content: String 
     isDeleted: Boolean! 
     isArchived: Boolean! 
     isFavorite: Boolean! 
-    created_at: String!  @cacheControl(maxAge: 47 scope: PUBLIC inheritMaxAge: false)
-    updated_at: String! @cacheControl(maxAge: 32 scope: PUBLIC inheritMaxAge: false)
+    created_at: String!  
+    updated_at: String! 
     tags: [Tag] 
     project: Project 
     highlights: [Highlight!]
     score: Float!
   }
 
-  type Project {
+  type Project @cacheControl(maxAge: 1 scope: PUBLIC inheritMaxAge: true) {
     _id: ID!
     name: String!
     isFavorite: Boolean!
@@ -34,7 +34,7 @@ module.exports = buildSchema(`
     documents: [Document]
   }
 
-  type Tag  {
+  type Tag  @cacheControl(maxAge: 1 scope: PUBLIC inheritMaxAge: true) {
     _id: ID! 
     name: String! 
     colorCode: String  
@@ -118,7 +118,7 @@ module.exports = buildSchema(`
     createProject(project:ProjectInput): Project
     deleteTag(id:ID!): Tag
     permantDeleteALLDocument(document:DocumentInput): [Document!]
-    permantDeleteDocument(document:DocumentInput): Document
+    permantDeleteDocument(id:ID!): Document
     updateProject(project:ProjectInput): Project
     deleteProject(id:ID!): Project
 

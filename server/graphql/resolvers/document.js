@@ -30,13 +30,11 @@ const tarnsformDocument = async (document) => {
 module.exports = {
     Query: {
         documents: async (parent, { isDeleted }, _, info) => {
-            info.cacheControl.setCacheHint({ maxAge: 59, scope: 'PUBLIC' });
 
             try {
-                const documents = await Document.find()
-                    .populate("tags")
-                    // .where("isDeleted")
-                    // .equals(isDeleted);
+                const documents = await Document.find().populate("tags");
+                // .where("isDeleted")
+                // .equals(isDeleted);
                 return documents.map(async (document) => {
                     return tarnsformDocument(document);
                 });
@@ -45,7 +43,7 @@ module.exports = {
             }
         },
         document: async (parent, { id }, _, info) => {
-            info.cacheControl.setCacheHint({ maxAge: 57, scope: 'PUBLIC' });
+            console.log("here");
 
             try {
                 const document = await Document.findById(id);
@@ -92,7 +90,6 @@ module.exports = {
                 throw error;
             }
         },
-        
     },
     Mutation: {
         createDocument: async (_, args) => {
@@ -110,6 +107,8 @@ module.exports = {
             }
         },
         updatedDocument: async (_, args) => {
+            console.log("there");
+
             // console.log(args);
             try {
                 const {
@@ -186,13 +185,25 @@ module.exports = {
                 throw error;
             }
         },
-        permantDeleteDocument: async (_, args) => {
+        permantDeleteDocument: async (_, { id }) => {
             try {
-                const { _id } = args.document;
-                const document = await Document.findByIdAndDelete(_id);
+                const document = await Document.findByIdAndDelete(id);
+
+                console.log("document", document);
                 if (!document) {
                     throw new Error(`Document with ID ${id} not found`);
                 }
+                //tags
+                await Tag.updateMany(
+                    { document: { $in: id } },
+                    { $pull: { document: { $in: id } } }
+                );
+                //project
+                await Project.updateMany(
+                    { documents: { $in: id } },
+                    { $pull: { documents: { $in: id } } }
+                );
+
                 return { ...document._doc, _id: document.id };
             } catch (error) {
                 throw error;

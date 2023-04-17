@@ -35,39 +35,39 @@ const tagReducer = (state = initState, action) => {
                 }),
             };
 
-        case "UPDATE_CONTENT":
-            console.log("action!!!!", action.payload);
-            // const rr = ""
-            // if (action.payload.id) { 
-            //     rr = ""
-            // } else {
-            //     rr = state;
-            // }
+        // case "UPDATE_CONTENT":
+        //     console.log("action!!!!", action.payload);
+        //     // const rr = ""
+        //     // if (action.payload.id) { 
+        //     //     rr = ""
+        //     // } else {
+        //     //     rr = state;
+        //     // }
 
 
-            if (action.payload.id) {
-                return {
-                    ...state,
-                    taglist: state.taglist.map((tag) => {
-                        return {
-                            ...tag,
-                            document: tag.document.map((doc) => {
-                                if (doc.id === action.payload.id) {
-                                    console.log("YA");
-                                    return {
-                                        ...doc,
-                                        content: action.payload.content,
-                                    };
-                                } else {
-                                    return doc;
-                                }
-                            }),
-                        };
-                    }),
-                };
-            } else {
-                return state;
-            }
+        //     if (action.payload.id) {
+        //         return {
+        //             ...state,
+        //             taglist: state.taglist.map((tag) => {
+        //                 return {
+        //                     ...tag,
+        //                     document: tag.document.map((doc) => {
+        //                         if (doc.id === action.payload.id) {
+        //                             console.log("YA");
+        //                             return {
+        //                                 ...doc,
+        //                                 content: action.payload.content,
+        //                             };
+        //                         } else {
+        //                             return doc;
+        //                         }
+        //                     }),
+        //                 };
+        //             }),
+        //         };
+        //     } else {
+        //         return state;
+        //     }
         // update editor tag  after update tag
         case "UPDATE_TAGS_RESULT":
             const document = {

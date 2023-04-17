@@ -22,7 +22,7 @@ const CommonProvider = ({ children }) => {
             payload: {
                 gqlMethod: "query",
                 api: "projects",
-                response: "_id name  documents {_id title content updated_at}",
+                response: "_id name  documents {_id title content updated_at isDeleted}",
             },
         });
     };
@@ -50,7 +50,6 @@ const CommonProvider = ({ children }) => {
     }, [selectedID]);
 
     useEffect(() => {
-        console.log("path is change", location.pathname)
         dispatch({
             type: "UPDATE_PATH",
             payload: { path: location.pathname },

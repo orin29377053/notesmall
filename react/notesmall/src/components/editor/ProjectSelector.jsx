@@ -2,12 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useSelector,useDispatch } from "react-redux";
-const ProjectSelector = () => {
+const ProjectSelector = ({currentHtmlsaveToreducer }) => {
     const dispatch = useDispatch();
     const { editingDocument } = useSelector((state) => state.editor);
     const { projectlist } = useSelector((state) => state.project);
@@ -16,22 +15,24 @@ const ProjectSelector = () => {
     );
 
     const handleChange = (event) => {
-        setProject(event.target.value);
+        currentHtmlsaveToreducer()
         dispatch({
             type: "UPDATE_PROJECT",
             payload: {
                 gqlMethod: "mutation",
                 api: "updatedDocument",
                 format: `(document:{_id:"${editingDocument._id}" ,project: "${event.target.value}"})`,
-                response: "_id title content tags{_id,name,colorCode} ",
+                response: "_id title content tags{_id,name,colorCode} project{_id,name} ",
             },
         })
+        setProject(event.target.value);
+
 
     };
     useEffect(() => {
         setProject(editingDocument?.project?._id || "");
     }, [editingDocument]);
-    
+
 
     return (
         <div

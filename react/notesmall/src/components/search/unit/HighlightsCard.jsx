@@ -1,38 +1,34 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import sanitizeContent from "../../../utils/sanitizeContent";
-import React, { useState } from "react";
-import { Card, CardContent, Typography, Collapse } from "@mui/material";
-const HighlightsCard = ({ item }) => {
-    console.log(item)
-    const [expanded, setExpanded] = useState(false);
-
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
+import { Card, CardContent, Typography } from "@mui/material";
+const HighlightsCard = ({ item, path }) => {
     function removeLinkInBrackets(text) {
         const pattern = /\[(.*?)\]\((.*?)\)/g;
         return text.replace(pattern, "$1");
     }
 
     const highlightsprocess = (data) => {
-        return data.map((item) => {
-            if (item.type === "hit") {
+        return data.map((ele, j) => {
+            if (ele.type === "hit") {
                 return (
-                    <span style={{ backgroundColor: "lightgreen" }}>
-                        {sanitizeContent(item.value)}
+                    <span style={{ backgroundColor: "lightgreen" }} key={j}>
+                        {sanitizeContent(ele.value)}
                     </span>
                 );
             } else {
-                return sanitizeContent(removeLinkInBrackets(item.value));
+                return sanitizeContent(removeLinkInBrackets(ele.value));
             }
         });
     };
 
-    const content = highlightsprocess(item.texts);
-
     return (
-        <Card>
+        <Card
+            css={css`
+                padding: 5px;
+                margin-bottom: 5px;
+            `}
+        >
             <CardContent
                 css={css`
                     padding: 3px 3px 3px 3px;
@@ -41,12 +37,22 @@ const HighlightsCard = ({ item }) => {
                     }
                 `}
             >
-                <Typography variant="subtitle2" color="textSecondary">
-                    {item.path}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                    {content}
-                </Typography>
+                <h6 className="mb-1 fw-bold">{path.toUpperCase()}</h6>
+                {item.map((element, i) => (
+                    <div
+                        css={css`
+                            margin-left: 15px;
+                        `}
+                        className={
+                            item.length - 1 !== i ? "needBottomBorder" : ""
+                        }
+                        key={i}
+                    >
+                        <Typography variant="caption" color="text.secondary">
+                            {highlightsprocess(element.texts)}
+                        </Typography>
+                    </div>
+                ))}
             </CardContent>
         </Card>
     );

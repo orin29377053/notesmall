@@ -9,7 +9,6 @@ import { Button } from "@mui/material";
 const selectTag = (tag, select, setSelect, unselect, setUnselect, dispatch) => {
     setSelect([...select, tag]);
     setUnselect(unselect.filter((item) => item._id !== tag._id));
-    console.log("select!!!!!", select);
 };
 
 const unselectTag = (tag, select, setSelect, unselect, setUnselect) => {
@@ -38,7 +37,6 @@ const UnSelectTagList = ({
                 `}
                 variant="outlined"
                 onClick={() => {
-                    console.log(item._id);
                     selectTag(item, select, setSelect, unselect, setUnselect);
                     // handleOpen(item._id, item.name, item.colorCode);
                 }}
@@ -74,7 +72,7 @@ const SelectTagList = ({
         </>
     ));
 };
-const TagSelector = ({ setOpen }) => {
+const TagSelector = ({ setOpen ,currentHtmlsaveToreducer}) => {
     const dispatch = useDispatch();
 
     const { taglist } = useSelector((state) => state.tag);
@@ -93,12 +91,11 @@ const TagSelector = ({ setOpen }) => {
         setUnselect(filteredTags);
     }, [taglist, documentTags]);
 
-    // console.log(taglist, documentTags);
 
     const handleSave = () => {
+        currentHtmlsaveToreducer()
         const tags = Object.values(select).map((item) => `"${item._id}"`);
 
-        // console.log("select", tags);
         dispatch({
             type: "UPDATE_TAGS",
             payload: {
@@ -119,7 +116,6 @@ const TagSelector = ({ setOpen }) => {
     }
 
     function hexToRgb(hexColor) {
-        // 将16进制颜色转换为RGB颜色
         let r = parseInt(hexColor.substr(0, 2), 16);
         let g = parseInt(hexColor.substr(2, 2), 16);
         let b = parseInt(hexColor.substr(4, 2), 16);
@@ -152,7 +148,6 @@ const TagSelector = ({ setOpen }) => {
                     getTextColorFromBackground={getTextColorFromBackground}
                 />
             </div>
-            {console.log(2)}
             <Button
                 variant="contained"
                 onClick={() => handleSave()}

@@ -1,6 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import "remirror/styles/all.css";
-import React, { useCallback, useMemo, useState, useRef,useEffect } from "react";
+import React, {
+    useCallback,
+    useMemo,
+    useState,
+    useRef,
+    useEffect,
+} from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
@@ -12,14 +18,15 @@ import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
 import "../App.css";
-import { Button} from "@mui/material";
+import { Button } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Row } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete";
 import uploadHandler from "../utils/uploadHandler";
 import TagContent from "./editor/TagContent";
 import ProjectSelector from "./editor/ProjectSelector";
 import TOC from "./editor/TOC";
+import showdown from "showdown";
 
 import {
     BlockquoteExtension,
@@ -84,8 +91,6 @@ function EditorToolbar() {
     );
 }
 
-
-
 const MdToContent = ({ htmlContents }) => {
     const { setContent } = useRemirrorContext();
     if (!htmlContents) return;
@@ -99,17 +104,21 @@ const TextEditor = () => {
 };
 
 const SmallEditor = () => {
+    const { editingDocument } = useSelector((state) => state.editor);
+    const { path } = useSelector((state) => state.common);
+    const { id } = useParams();
+
     const location = useLocation();
     let history = useNavigate();
-    const { editingDocument } = useSelector((state) => state.editor);
-    const { id } = useParams();
     const dispatch = useDispatch();
+
     const title = editingDocument?.title;
     const rawContent = editingDocument?.content;
     const newID = editingDocument?._id;
+    const isDeleted = editingDocument?.isDeleted;
+
     const refVContent = useRef({ id: "", html: "" });
     const refUploading = useRef(true);
-    const {path}= useSelector((state) => state.common);
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -124,9 +133,30 @@ const SmallEditor = () => {
         stringHandler: "markdown",
     });
 
+    const currentHtmlsaveToreducer = () => {
+        const turndownService = new TurndownService({
+            // keep: 'code[data-language]',
+            codeBlockStyle: "fenced",
+            fence: "```",
+        });
+        const marked = turndownService.turndown(refVContent.current.html);
+        dispatch({
+            type: "UPDATE_CONTENT",
+            payload: { id: refVContent.current.id, content: marked },
+        });
+    };
+    const currentTitleSaveToreducer = (title) => {
+        dispatch({
+            type: "UPDATE_TITLE",
+            payload: {
+                id: refVContent.current.id,
+                title: title,
+            },
+        });
+    };
+
     const handleEditorChange = async (html) => {
         refUploading.current = false;
-
         refVContent.current.html = html;
         const turndownService = new TurndownService({
             // keep: 'code[data-language]',
@@ -163,9 +193,24 @@ const SmallEditor = () => {
         });
         history("/");
     };
+    const PermentDelete = (dispatch, id) => {
+        dispatch({
+            type: "PERMENT_DELETE_DOCUMENT",
+            payload: {
+                gqlMethod: "mutation",
+                api: "permantDeleteDocument",
+                format: `(id:"${id}")`,
+                response: "_id ",
+            },
+        });
+        history("/");
+    };
 
     useEffect(() => {
+        const pathID = path.replace(/\//g, "");
+        // console.log("pathID", pathID);
         if (id !== newID) {
+            console.log(id,newID,pathID);
             console.log("start sync ");
             dispatch({
                 type: "QUERY_DOCUMENTS",
@@ -174,26 +219,32 @@ const SmallEditor = () => {
                     api: "document",
                     format: `(id:"${id}")`,
                     response:
-                        "_id title content updated_at tags{_id,name,colorCode} project{_id,name} ",
+                        "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
                 },
             });
         } else if (id === newID) {
+            console.log(id,newID,pathID);
+
             console.log("sync success");
             refVContent.current.id = newID;
-            
+            const converter = new showdown.Converter();
+            const html = converter.makeHtml(rawContent);
+            refVContent.current.html = html;
         }
-    }, [id, newID,path]);
+    }, [id, newID, path]);
 
     const changeTitle = useCallback(
         debounce((id, title) => {
-            if (  (id === newID)&& title) {
+            if (id === newID && title) {
+                console.log("update");
                 dispatch({
                     type: "EDIT_TITLE",
                     payload: {
                         gqlMethod: "mutation",
                         api: "updatedDocument",
                         format: `(document:{ _id: "${id}", title: "${title}" })`,
-                        response: "_id title content updated_at isDeleted isFavorite isArchived",
+                        response:
+                            "_id title content updated_at isDeleted isFavorite isArchived",
                     },
                 });
                 refUploading.current = true;
@@ -217,81 +268,115 @@ const SmallEditor = () => {
             fence: "```",
         });
         const marked = turndownService.turndown(refVContent.current.html);
-        dispatch({ type: "UPDATE_CONTENT", payload: { id:refVContent.current.id,content: marked } });
+        dispatch({
+            type: "UPDATE_CONTENT",
+            payload: { id: refVContent.current.id, content: marked },
+        });
     }, [location]);
-
-
 
     return (
         <AllStyledComponent>
-
-            <div>{refUploading.current ? "sync" : "not sync"}</div>
-
+            {/* <div>{refUploading.current ? "sync" : "not sync"}</div> */}
             <ThemeProvider>
-                <div
-                    css={css`
-                        margin: 5px;
-                        display: flex;
-                        align-items: center
+                <Row>
+                    <Col md={9}>
+                        <Remirror manager={manager} initialContent={state}>
+                            <Row className="px-3 mb-2 mt-3">
+                                <input
+                                    type="text"
+                                    // defaultValue={title}
+                                    value={title}
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            refUploading.current = false;
+                                            currentHtmlsaveToreducer();
+                                            currentTitleSaveToreducer(
+                                                e.target.value
+                                            );
+                                        } else {
+                                            alert("please type title");
+                                        }
+                                    }}
+                                    css={css`
+                                        padding: 0.25rem;
+                                        border: none;
+                                        border-bottom: 1px solid #ccc;
+                                        font-size: 2rem;
+                                        font-weight: 700;
+                                        margin-bottom: 1rem;
+                                    `}
+                                ></input>
+                            </Row>
 
-                    `}
-                >
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => {
-                            Delete(dispatch, id);
-                        }}
-                        startIcon={<DeleteIcon />}
-                        size="small"
+                            <Row className="px-1 mb-4">
+                                <EditorToolbar />
+                            </Row>
+                            <MdToContent htmlContents={rawContent} />
+                            <OnChangeHTML
+                                onChange={debounce(handleEditorChange, 500)}
+                            ></OnChangeHTML>
+                            <TextEditor className="px-1" />
+                        </Remirror>
+                    </Col>
+                    <Col
+                        md={3}
+                        css={css`
+                            border-left: 1px solid #ccc;
+                            display: flex;
+                            flex-direction: column;
+                        `}
                     >
-                        Delete
-                    
-                    </Button>
-                    <TagContent />
-                    <ProjectSelector />
-                </div>
-
-                <Remirror manager={manager} initialContent={state}>
-                    <Row className="px-3 mb-2 mt-3">
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => {
-                                if (e.target.value) {
-                                    refUploading.current = false;
-                                    dispatch({
-                                        type: "UPDATE_TITLE",
-                                        payload: {
-                                            id: refVContent.current.id,
-                                            title: e.target.value,
-                                        },
-                                    });
-                                } else {
-                                    alert("please type title");
-                                }
-                            }}
+                        <div
                             css={css`
-                                padding: 0.25rem;
-                                border: none;
-                                border-bottom: 1px solid #ccc;
-                                font-size: 2rem;
-                                font-weight: 700;
-                                margin-bottom: 1rem;
+                                margin: 5px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
                             `}
-                        ></input>
-                    </Row>
-
-                    <Row className="px-1 mb-4">
-                        <EditorToolbar />
-                    </Row>
-                    <MdToContent htmlContents={rawContent} />
-                    <OnChangeHTML
-                        onChange={debounce(handleEditorChange, 500)}
-                    ></OnChangeHTML>
-                    <TextEditor className="px-1" />
-                </Remirror>
-                <TOC tracingDoc={refVContent.current.html}/>
+                        >
+                            {isDeleted === false ? (
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() => {
+                                        Delete(dispatch, id);
+                                    }}
+                                    startIcon={<DeleteIcon />}
+                                    size="small"
+                                >
+                                    Delete
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    color="warning"
+                                    onClick={() => {
+                                        PermentDelete(dispatch, id);
+                                    }}
+                                    startIcon={<DeleteIcon />}
+                                    size="small"
+                                >
+                                    PermentDelete
+                                </Button>
+                            )}
+                            <TagContent
+                                currentHtmlsaveToreducer={
+                                    currentHtmlsaveToreducer
+                                }
+                            />
+                            <ProjectSelector
+                                currentHtmlsaveToreducer={
+                                    currentHtmlsaveToreducer
+                                }
+                            />
+                        </div>
+                        <TOC
+                            tracingDoc={refVContent.current.html}
+                            pathID={id}
+                            reducerID={newID}
+                        />
+                    </Col>
+                </Row>
             </ThemeProvider>
         </AllStyledComponent>
     );

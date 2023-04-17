@@ -11,6 +11,17 @@ function* fetch(action) {
         reducer: "UPDATE_DOCUMENT_TITLE",
         queryString: action.payload,
     });
+    const action2 = {
+        type: "FETCH_Project_LIST",
+        payload: {
+            gqlMethod: "query",
+            api: "projects",
+            response: "_id name  documents {_id title content updated_at isDeleted}",
+        },
+    };
+    yield* getProjectList(action2);
+
+
 }
 
 function* fetchUpdateTags(action) {
@@ -46,17 +57,17 @@ function* fetchUpdateProject(action) {
         reducer: "UPDATE_DOCUMENT_PROJECT",
         queryString: action.payload,
     });
-    console.log("update project");
     const action2 = {
         type: "FETCH_Project_LIST",
         payload: {
             gqlMethod: "query",
             api: "projects",
-            response: "_id name  documents {_id title content updated_at}",
+            response: "_id name  documents {_id title content updated_at isDeleted} ",
         },
     };
     yield* getProjectList(action2);
 }
+
 
 function* mySaga() {
     yield takeLatest("EDIT_TITLE", fetch);
@@ -64,6 +75,7 @@ function* mySaga() {
     yield takeLatest("QUERY_DOCUMENTS", fetchQueryDocument);
     yield takeLatest("CREATE_DOCUMENTS", fetchCreateDocument);
     yield takeLatest("UPDATE_PROJECT", fetchUpdateProject);
+
 }
 
 export default mySaga;

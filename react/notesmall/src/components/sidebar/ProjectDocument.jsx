@@ -11,6 +11,12 @@ const ProjectDocument = ({ projectlist }) => {
     const handleListClick = (projectName) => {
         setOpenedProject(projectName === openedProject ? null : projectName);
     };
+    const filteredProjects = projectlist.map(project => ({
+        ...project,
+        documents: project.documents?.filter(document => document.isDeleted === false)
+    }));
+    console.log(projectlist,filteredProjects);
+
     return (
         <List
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
@@ -20,8 +26,8 @@ const ProjectDocument = ({ projectlist }) => {
                 color: black;
             `}
         >
-            {projectlist
-                ? projectlist.map((project) => (
+            {filteredProjects
+                ? filteredProjects.map((project) => (
                       <ToggleList
                           onClickAction={() => handleListClick(project.name)}
                           name={project.name}

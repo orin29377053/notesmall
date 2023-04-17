@@ -17,6 +17,17 @@ const SearchResult = ({ searchResult }) => (
                         align-items: center;
                     `}
                 >
+                    <Col
+                        md={8}
+                        css={css`
+                            height: 280px;
+                            overflow: auto;
+                            padding: 10px;
+                            border-radius: 5px;
+                        `}
+                    >
+                        <SearchDetails highlights={item.highlights} />
+                    </Col>
                     <Col md={4}>
                         <DocumentCard
                             title={item.title}
@@ -24,18 +35,6 @@ const SearchResult = ({ searchResult }) => (
                             _id={item._id}
                             image={extractImageURL(item.content)}
                         />
-                    </Col>
-                    <Col
-                        md={8}
-                        css={css`
-                            height: 280px;
-                            overflow: auto;
-                            border: 1px solid #d8d8d8;
-                            padding: 5px;
-                            border-radius: 5px;
-                        `}
-                    >
-                        <SearchDetails highlights={item.highlights} />
                     </Col>
                 </Row>
                 {searchResult.length - 1 !== i && <hr />}

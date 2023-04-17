@@ -3,6 +3,7 @@ const initState = {
     sidebar: [],
     searchKeyword: "",
     searchResult: [],
+    searchResultDetail: [],
     selectedID: "",
     path: "",
 };
@@ -10,6 +11,7 @@ const initState = {
 const commonReducer = (state = initState, action) => {
     let index;
     let variable;
+    let res;
     switch (action.type) {
         case "FETCH_SIDEBAR_LIST_RESULT":
             // console.log(action.data?.data?.documents);
@@ -26,10 +28,28 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 // sidebar: action.data?.data?.documents,
             };
-        case "SEARCH_LIST_RESULT":
+        
+        case "PERMENT_DELETE_SIDEBAR_LIST_RESULT":
+            console.log(action.data?.data);
+
+            index = _.findIndex(state.sidebar, {
+                _id: action.data?.data?.permantDeleteDocument._id,
+            });
+            state.sidebar.splice(index, 1);
             return {
                 ...state,
-                searchResult: action.data?.data?.searchDocuments,
+                // sidebar: action.data?.data?.documents,
+            };
+        
+        case "SEARCH_LIST_RESULT":
+            res = action.data?.data?.searchDocuments;
+            res.forEach((item, i) => {
+                variable = _.groupBy(item.highlights, "path");
+                res[i].highlights = variable;
+            });
+            return {
+                ...state,
+                searchResult: res,
             };
 
         case "SEARCH_KEYWORD":
@@ -77,7 +97,6 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 path: action.payload.path,
             };
-
 
         default:
             return state;
