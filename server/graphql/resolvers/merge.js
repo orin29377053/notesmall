@@ -1,6 +1,6 @@
-const Document = require("../../route/models/document");
-const Tag = require("../../route/models/tag");
-const Project = require("../../route/models/project");
+const Document = require("../../models/document");
+const Tag = require("../../models/tag");
+const Project = require("../../models/project");
 const Dataloader = require("dataloader");
 const dataToString = require("../../utils/dataToString");
 

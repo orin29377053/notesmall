@@ -1,4 +1,4 @@
-const Article = require("../../route/models/article");
+const Article = require("../../models/article");
 const dataToString = require("../../utils/dataToString");
 
 module.exports = {

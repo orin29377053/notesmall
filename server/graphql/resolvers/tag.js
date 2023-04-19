@@ -1,6 +1,6 @@
-const Document = require("../../route/models/document");
-const Tag = require("../../route/models/tag");
-const Project = require("../../route/models/project");
+const Document = require("../../models/document");
+const Tag = require("../../models/tag");
+const Project = require("../../models/project");
 const dataToString = require("../../utils/dataToString");
 const { getDocument, getProject } = require("./merge");
 const {tagLoader}=require("./merge")

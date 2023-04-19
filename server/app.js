@@ -9,7 +9,11 @@ const app = express();
 
 // aws
 const fs = require("fs");
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+    S3Client,
+    PutObjectCommand,
+    GetObjectCommand,
+} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const s3 = new S3Client({
     credentials: {
@@ -39,14 +43,14 @@ const {
     ApolloServerPluginLandingPageLocalDefault,
 } = require("apollo-server-core");
 const responseCachePlugin = require("@apollo/server-plugin-response-cache");
-const {cache} = require("./utils/cache");
+const { cache } = require("./utils/cache");
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     resolvers: rootResolver,
     cache: new KeyvAdapter(cache),
     plugins: [
         ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-        ApolloServerPluginCacheControl({ defaultMaxAge: 1}),
+        ApolloServerPluginCacheControl({ defaultMaxAge: 1 }),
         ApolloServerPluginDrainHttpServer({ httpServer }),
         responseCachePlugin.default(),
     ],
@@ -58,6 +62,7 @@ const server = new ApolloServer({
 });
 // mongoose
 const mongoose = require("mongoose");
+const { application } = require("express");
 const url = process.env.MONGOATLAS_URL;
 mongoose
     .connect(url)
@@ -66,12 +71,21 @@ mongoose
         throw error;
     });
 
+// cloud vision
+const vision = require("@google-cloud/vision");
+
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
+const credentials = JSON.parse(process.env.GOOGLE_API_JSON);
+
+app.use("/api/1.0", [require("./route/image_route")]);
+
 app.get("/", (req, res) => {
+    console.log(credentials.project_id);
+
     res.json({ data: "Hello World!" });
 });
 
@@ -151,6 +165,35 @@ app.get("/getImagePresignedUrl", async (req, res) => {
         objectUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${input.Key}`,
     });
 });
+const client = new vision.ImageAnnotatorClient({
+    credentials: {
+        client_email: credentials.client_email,
+        private_key: credentials.private_key,
+    },
+});
+async function imageDetection(client, url) {
+    const [result] = await client.labelDetection({
+        image: {
+            source: {
+                imageUri: url,
+            },
+        },
+    });
+    console.log(result);
+    return result;
+}
+
+app.get("/cloudvision", async (req, res) => {
+    const dcd = await imageDetection(
+        client,
+        "https://orinlin.s3.amazonaws.com/%E6%88%AA%E5%9C%96+2023-04-19+%E4%B8%8A%E5%8D%8811.37.03.png"
+    );
+    // console.log(process.env.GOOGLE_API_JSON)
+
+    // detections.forEach((text) => console.log(text));
+    res.json({ data: dcd });
+});
+
 const graph = async () => {
     await server.start();
     app.use("/graphql", cors(), bodyParser.json(), expressMiddleware(server));
