@@ -3,6 +3,7 @@ const Tag = require("../../route/models/tag");
 const Project = require("../../route/models/project");
 const dataToString = require("../../utils/dataToString");
 const { getDocument, getProject } = require("./merge");
+const {tagLoader}=require("./merge")
 
 const transformTag = async (tag) => {
     return {
@@ -45,7 +46,6 @@ module.exports = {
     },
     Mutation: {
         createTag: async (_, args) => {
-            // console.log("args", args);
             try {
                 const { name, colorCode } = args.tag;
                 const tag = new Tag({
@@ -53,13 +53,14 @@ module.exports = {
                     colorCode,
                 });
                 const newTag = await tag.save();
+                tagLoader.load(newTag._id);
+
                 return transformTag(newTag);
             } catch (error) {
                 throw error;
             }
         },
         updatedTag: async (_, args) => {
-            // console.log(args);
             try {
                 const { _id, name, colorCode, document } = args.tag;
                 const tag = await Tag.findByIdAndUpdate(
@@ -70,13 +71,13 @@ module.exports = {
                 if (!tag) {
                     throw new Error(`Tag with ID ${id} not found`);
                 }
+                tagLoader.clear(_id);
                 return transformTag(tag);
             } catch (error) {
                 throw error;
             }
         },
         deleteTag: async (_, args) => {
-            // console.log(args);
             try {
                 const { id } = args;
                 const tag = await Tag.findByIdAndDelete(id);
@@ -90,6 +91,8 @@ module.exports = {
                     { _id: { $in: tag.document } },
                     { $pull: { tags: id } }
                 );
+                tagLoader.clear(id);
+
 
                 return transformTag(tag);
             } catch (error) {

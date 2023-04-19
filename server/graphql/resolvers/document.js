@@ -4,13 +4,7 @@ const Project = require("../../route/models/project");
 const { documentFuzzySearch } = require("../search");
 const dataToString = require("../../utils/dataToString");
 const { getTag, getProject } = require("./merge");
-const Dataloader = require("dataloader");
-
-const documentLoader = new Dataloader((documentIDs) => {
-    console.log("documentIDs", documentIDs);
-    return Document.find({ _id: { $in: documentIDs } });
-});
-
+const { documentLoader } = require("./merge");
 const tarnsformDocument = async (document) => {
     return {
         ...document._doc,
@@ -30,7 +24,6 @@ const tarnsformDocument = async (document) => {
 module.exports = {
     Query: {
         documents: async (parent, { isDeleted }, _, info) => {
-
             try {
                 const documents = await Document.find().populate("tags");
                 // .where("isDeleted")
@@ -70,7 +63,6 @@ module.exports = {
 
                     return {
                         ...document,
-                        // _id: document.+id,
                         created_at: dataToString(document.created_at),
                         updated_at: dataToString(document.updated_at),
                         tags:
@@ -93,7 +85,6 @@ module.exports = {
     },
     Mutation: {
         createDocument: async (_, args) => {
-            // console.log(args);
             try {
                 const { title, content } = args.document;
                 const document = new Document({
@@ -101,6 +92,7 @@ module.exports = {
                     content,
                 });
                 const newDocument = await document.save();
+                documentLoader.load(newDocument._id.toString());
                 return tarnsformDocument(newDocument);
             } catch (error) {
                 throw error;
@@ -109,7 +101,6 @@ module.exports = {
         updatedDocument: async (_, args) => {
             console.log("there");
 
-            // console.log(args);
             try {
                 const {
                     _id,
@@ -136,7 +127,6 @@ module.exports = {
                 ).populate("tags");
 
                 const newDocument = await document.save();
-                // console.log("newDocument", document);
 
                 if (tags) {
                     await Tag.updateMany(
@@ -158,6 +148,7 @@ module.exports = {
                         { $pull: { documents: _id } }
                     );
                 }
+                documentLoader.clear(_id.toString());
 
                 return tarnsformDocument(newDocument);
             } catch (error) {
@@ -180,6 +171,8 @@ module.exports = {
                 if (!document) {
                     throw new Error(`Document with ID ${id} not found`);
                 }
+                documentLoader.clear(_id.toString());
+
                 return { ...document._doc, _id: document.id };
             } catch (error) {
                 throw error;
@@ -203,6 +196,7 @@ module.exports = {
                     { documents: { $in: id } },
                     { $pull: { documents: { $in: id } } }
                 );
+                documentLoader.clear(_id.toString());
 
                 return { ...document._doc, _id: document.id };
             } catch (error) {
@@ -222,6 +216,7 @@ module.exports = {
                     if (!document) {
                         throw new Error(`Document with ID ${id} not found`);
                     }
+                    documentLoader.clear(id.toString());
                     result.push(id);
                 }
 

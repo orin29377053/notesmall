@@ -4,6 +4,7 @@ const Project = require("../../route/models/project");
 const { documentFuzzySearch } = require("../search");
 const dataToString = require("../../utils/dataToString");
 const { getDocument, getProject, getTag } = require("./merge");
+const {projectLoader}=require("./merge");
 
 const transformProject = async (project) => {
     // console.log("project",project.documents);
@@ -58,6 +59,7 @@ module.exports = {
                     description,
                 });
                 const newProject = await project.save();
+                projectLoader.load(newProject._id);
                 return { ...newProject._doc, _id: newProject.id };
             } catch (error) {
                 throw error;
@@ -81,8 +83,9 @@ module.exports = {
                     },
                     { new: true }
                 );
-                console.log("documents", documents);
                 const newProject = await project.save();
+                projectLoader.clear(newProject._id);
+
                 if (documents) {
                     console.log("dwdw");
                     const oldProject = await Project.findById(_id);
@@ -123,6 +126,7 @@ module.exports = {
                     document.project = null;
                     await document.save();
                 });
+                projectLoader.clear(id);
 
                 return transformProject(project);
             } catch (error) {
