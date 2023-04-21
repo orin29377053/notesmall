@@ -40,10 +40,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Build React App
         run: |
-          
           pwd
-          ls
           cd react/notesmall
+          ls
           npm install
           npm run build
       - name: Deploy app build to S3 bucket
