@@ -28,8 +28,12 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Build React App
         run: |
+          pwd
           cd react/notesmall
           npm install
           npm run build
       - name: Deploy app build to S3 bucket
-        run: aws s3 sync ./build/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete
+        run: |
+          pwd
+          pwd
+          aws s3 sync ./build/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete
