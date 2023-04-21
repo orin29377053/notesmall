@@ -1,23 +1,32 @@
 /** @jsxImportSource @emotion/react */
-import ReadMarkdown from "./ReadMarkdown";
 import "remirror/styles/all.css";
-import React, { useCallback, useState, useRef, useMemo } from "react";
+import React, {
+    useCallback,
+    useMemo,
+    useState,
+    useRef,
+    useEffect,
+} from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
-import { marked } from "marked";
 import debounce from "lodash.debounce";
 import jsx from "refractor/lang/jsx.js";
 import typescript from "refractor/lang/typescript.js";
 import { ExtensionPriority } from "remirror";
-import { getPresignedUrl, handleUpload } from "./ImageUpload";
 import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
-import AddnewDocument from "./AddnewDocument";
-import "../App.css";
-import { editingDocument, updatingTitle, count } from "../action/document";
-import { Row, Stack } from "react-bootstrap";
+import { Button } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Row, Col } from "react-bootstrap";
+import DeleteIcon from "@mui/icons-material/Delete";
+import uploadHandler from "../utils/uploadHandler";
+import TagContent from "./editor/TagContent";
+import ProjectSelector from "./editor/ProjectSelector";
+import TOC from "./editor/TOC";
+import showdown from "showdown";
+import { graphqlAPI } from "../utils/const";
 import {
     BlockquoteExtension,
     BoldExtension,
@@ -61,7 +70,6 @@ import {
     OnChangeJSON,
     OnChangeHTML,
 } from "@remirror/react";
-import { useEffect } from "react";
 
 function EditorToolbar() {
     return (
@@ -82,78 +90,9 @@ function EditorToolbar() {
     );
 }
 
-function uploadHandler(files) {
-    const promises = [];
-
-    for (const { file, progress } of files) {
-        promises.push(
-            () =>
-                new Promise(async (resolve) => {
-                    const reader = new FileReader();
-                    const url = await getPresignedUrl(file.name);
-                    await handleUpload(url.presignedUrl, file);
-
-                    reader.addEventListener(
-                        "load",
-                        (readerEvent) => {
-                            resolve({
-                                src: url.objectUrl,
-                                fileName: file.name,
-                            });
-                        },
-                        { once: true }
-                    );
-                    reader.readAsDataURL(file);
-                })
-        );
-    }
-
-    return promises;
-}
-
-const hooks = [
-    () => {
-        const { getJSON, getMarkdown } = useHelpers();
-        const handleSaveShortcut = useCallback(
-            ({ state }) => {
-                const markdown = getMarkdown();
-
-                // const sss = useSelector(res => res.editingDocument);
-
-                const postdata = { data: markdown };
-                const contentID = "wwswd";
-                // Ded()
-                // console.log(markdown)
-
-                // // post the markdown to the backend server
-                // const query = `
-                // mutation{
-                //     updatedDocument(document: { _id: ${contentID}, content: "${markdown}" }) {
-                //         title
-                //     }}
-                //     `;
-
-                // fetch("http://localhost:8000/graphql", {
-                //     method: "POST",
-                //     body: JSON.stringify({ query }),
-                //     headers: {
-                //         "Content-Type": "application/json",
-                //     },
-                // });
-                // SendDocument()
-                return true; // Prevents any further key handlers from being run.
-            },
-            [getJSON]
-        );
-
-        // "Mod" means platform agnostic modifier key - i.e. Ctrl on Windows, or Cmd on MacOS
-        useKeymap("Mod-s", handleSaveShortcut);
-    },
-];
-
-// update the editor content with the markdown content
 const MdToContent = ({ htmlContents }) => {
     const { setContent } = useRemirrorContext();
+    if (!htmlContents) return;
     setContent(htmlContents);
     return;
 };
@@ -163,39 +102,24 @@ const TextEditor = () => {
     return <div {...getRootProps()} />;
 };
 
-const changeTitle = debounce((id, title) => {
-    if (title) {
-        const query = `
-            mutation{
-                updatedDocument(document: { _id: "${id}", title: "${title}"}) {
-                    title
-                }}
-                `;
-        fetch("http://localhost:8000/graphql", {
-            method: "POST",
-            body: JSON.stringify({ query }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-    } else {
-        //TODO: sync animation
-
-        console.log("please type title");
-    }
-}, 1000);
-
 const SmallEditor = () => {
+    const { editingDocument } = useSelector((state) => state.editor);
+    const { path } = useSelector((state) => state.common);
     const { id } = useParams();
+
+    const location = useLocation();
+    let history = useNavigate();
     const dispatch = useDispatch();
-    // const [htmlContents, setHtmlContent] = useState();
-    // const [oldid, setId] = useState();
-    // const [title, setTitle] = useState("");
-    const document = useSelector((state) => state?.editingDocument);
-    const count = useSelector((state) => state?.count);
-    const title = document?.title;
-    const content = document?.content;
-    console.log("title", title);
+
+    const title = editingDocument?.title;
+    const rawContent = editingDocument?.content;
+    const newID = editingDocument?._id;
+    const isDeleted = editingDocument?.isDeleted;
+
+    const refVContent = useRef({ id: "", html: "" });
+    const refUploading = useRef(true);
+
+    const token = localStorage.getItem("token");
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -210,117 +134,251 @@ const SmallEditor = () => {
         stringHandler: "markdown",
     });
 
+    const currentHtmlsaveToreducer = () => {
+        const turndownService = new TurndownService({
+            // keep: 'code[data-language]',
+            codeBlockStyle: "fenced",
+            fence: "```",
+        });
+        const marked = turndownService.turndown(refVContent.current.html);
+        dispatch({
+            type: "UPDATE_CONTENT",
+            payload: { id: refVContent.current.id, content: marked },
+        });
+    };
+    const currentTitleSaveToreducer = (title) => {
+        dispatch({
+            type: "UPDATE_TITLE",
+            payload: {
+                id: refVContent.current.id,
+                title: title,
+            },
+        });
+    };
+
     const handleEditorChange = async (html) => {
+        refUploading.current = false;
+        refVContent.current.html = html;
         const turndownService = new TurndownService({
             // keep: 'code[data-language]',
             codeBlockStyle: "fenced",
             fence: "```",
         });
         const markdown = turndownService.turndown(html);
+
         const query = `
                 mutation{
                     updatedDocument(document: { _id: "${id}",content: """${markdown}""" , title: "${title}"}) {
                         content
                     }}
                     `;
-        await fetch("http://localhost:8000/graphql", {
+        await fetch(graphqlAPI, {
             method: "POST",
             body: JSON.stringify({ query }),
             headers: {
                 "Content-Type": "application/json",
+                token: token,
             },
         });
-
-        dispatch({ type: "UPDATING_CONTENT", payload: { content: markdown } });
+        refUploading.current = true;
     };
 
-    const getEssay = (id) => {
-        console.log("getid");
-        if (id) {
-            const query = `
-        query{
-            document( id: "${id}") {
-                _id
-                title
-                content
-                updated_at
-            }
+    const Delete = (dispatch, id) => {
+        dispatch({
+            type: "DELETE_SIDEBAR_LIST",
+            payload: {
+                gqlMethod: "mutation",
+                api: "deleteDocument",
+                format: `(document:{ _id: "${id}" ,isDeleted: true})`,
+                response: "_id ",
+            },
+        });
+        history("/");
+    };
+    const PermentDelete = (dispatch, id) => {
+        dispatch({
+            type: "PERMENT_DELETE_DOCUMENT",
+            payload: {
+                gqlMethod: "mutation",
+                api: "permantDeleteDocument",
+                format: `(id:"${id}")`,
+                response: "_id ",
+            },
+        });
+        history("/");
+    };
+
+    useEffect(() => {
+        const pathID = path.replace(/\//g, "");
+        // console.log("pathID", pathID);
+        if (id !== newID) {
+            console.log(id, newID, pathID);
+            console.log("start sync ");
+            dispatch({
+                type: "QUERY_DOCUMENTS",
+                payload: {
+                    gqlMethod: "query",
+                    api: "document",
+                    format: `(id:"${id}")`,
+                    response:
+                        "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
+                },
+            });
+        } else if (id === newID) {
+            console.log(id, newID, pathID);
+
+            console.log("sync success");
+            refVContent.current.id = newID;
+            const converter = new showdown.Converter();
+            const html = converter.makeHtml(rawContent);
+            refVContent.current.html = html;
         }
-        `;
-            fetch("http://localhost:8000/graphql", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query }),
-            })
-                .then((res) => res.json())
-                .then((res) => {
-                    const document = marked(res.data.document.content);
-                    // setHtmlContent(document);
-                    // setId(res.data.document._id);
-                    // setTitle(res.data.document.title);
-                    dispatch(editingDocument(res.data.document));
+    }, [id, newID, path]);
+
+    const changeTitle = useCallback(
+        debounce((id, title) => {
+            if (id === newID && title) {
+                console.log("update");
+                dispatch({
+                    type: "EDIT_TITLE",
+                    payload: {
+                        gqlMethod: "mutation",
+                        api: "updatedDocument",
+                        format: `(document:{ _id: "${id}", title: "${title}" })`,
+                        response:
+                            "_id title content updated_at isDeleted isFavorite isArchived",
+                    },
                 });
+                refUploading.current = true;
+            } else {
+                console.log("no dispatch");
+            }
+        }, 500),
+        [newID]
+    );
+
+    useEffect(() => {
+        if (id === newID) {
+            title && changeTitle(id, title);
         }
-    };
+    }, [title, changeTitle]);
 
     useEffect(() => {
-        getEssay(id);
-    }, [id]);
-
-    useEffect(() => {
-        changeTitle(id, title);
-    }, [title]);
+        const turndownService = new TurndownService({
+            // keep: 'code[data-language]',
+            codeBlockStyle: "fenced",
+            fence: "```",
+        });
+        const marked = turndownService.turndown(refVContent.current.html);
+        dispatch({
+            type: "UPDATE_CONTENT",
+            payload: { id: refVContent.current.id, content: marked },
+        });
+    }, [location]);
 
     return (
         <AllStyledComponent>
-            {/* the className is used to define css variables necessary for the editor */}
-
+            {/* <div>{refUploading.current ? "sync" : "not sync"}</div> */}
             <ThemeProvider>
-                <Remirror
-                    manager={manager}
-                    initialContent={state}
-                    hooks={hooks}
-                    // onChange={handleEditorChange}
-                    // autoRender="false"
-                >
-                    {/* <SendDocument /> */}
-                    {/* <AddnewDocument /> */}
-                    <Row className="px-3 mb-2 mt-3">
-                        <input
-                            
-                            type="text"
-                            value={title}
-                            onChange={(e) => {
-                                if (e.target.value) {
-                                    dispatch({
-                                        type: "UPDATING_TITLE",
-                                        payload: { title: e.target.value },
-                                    });
-                                    // setTitle(e.target.value)
-                                } else {
-                                    alert("please type title");
-                                }
-                            }}
-                            css={css`
-                                padding: 0.25rem;
-                                border: none;
-                                border-bottom: 1px solid #ccc;
-                                font-size: 2rem;
-                                font-weight: 700;
-                                margin-bottom: 1rem;
+                <Row className="pb-3">
+                    <Col md={9}>
+                        <Remirror manager={manager} initialContent={state}>
+                            <Row className="px-3 mb-2 mt-3">
+                                <input
+                                    type="text"
+                                    // defaultValue={title}
+                                    value={title}
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            refUploading.current = false;
+                                            currentHtmlsaveToreducer();
+                                            currentTitleSaveToreducer(
+                                                e.target.value
+                                            );
+                                        } else {
+                                            alert("please type title");
+                                        }
+                                    }}
+                                    css={css`
+                                        padding: 0.25rem;
+                                        border: none;
+                                        border-bottom: 1px solid #ccc;
+                                        font-size: 2rem;
+                                        font-weight: 700;
+                                        margin-bottom: 1rem;
+                                    `}
+                                ></input>
+                            </Row>
 
+                            <Row className="px-1 mb-4">
+                                <EditorToolbar />
+                            </Row>
+                            <MdToContent htmlContents={rawContent} />
+                            <OnChangeHTML
+                                onChange={debounce(handleEditorChange, 500)}
+                            ></OnChangeHTML>
+                            <TextEditor className="px-1" />
+                        </Remirror>
+                    </Col>
+                    <Col
+                        md={3}
+                        css={css`
+                            border-left: 1px solid #ccc;
+                            display: flex;
+                            flex-direction: column;
+                        `}
+                    >
+                        <div
+                            css={css`
+                                margin: 5px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
                             `}
-                        ></input>
-                    </Row>
-                    <Row className="px-1 mb-4">
-                        <EditorToolbar />
-                    </Row>
-                    <MdToContent htmlContents={content} />
-                    <OnChangeHTML
-                        onChange={debounce(handleEditorChange, 1000)}
-                    ></OnChangeHTML>
-                    <TextEditor className="px-1" />
-                </Remirror>
+                        >
+                            {isDeleted === false ? (
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() => {
+                                        Delete(dispatch, id);
+                                    }}
+                                    startIcon={<DeleteIcon />}
+                                    size="small"
+                                >
+                                    Delete
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    color="warning"
+                                    onClick={() => {
+                                        PermentDelete(dispatch, id);
+                                    }}
+                                    startIcon={<DeleteIcon />}
+                                    size="small"
+                                >
+                                    PermentDelete
+                                </Button>
+                            )}
+                            <TagContent
+                                currentHtmlsaveToreducer={
+                                    currentHtmlsaveToreducer
+                                }
+                            />
+                            <ProjectSelector
+                                currentHtmlsaveToreducer={
+                                    currentHtmlsaveToreducer
+                                }
+                            />
+                        </div>
+                        <TOC
+                            tracingDoc={refVContent.current.html}
+                            pathID={id}
+                            reducerID={newID}
+                        />
+                    </Col>
+                </Row>
             </ThemeProvider>
         </AllStyledComponent>
     );
