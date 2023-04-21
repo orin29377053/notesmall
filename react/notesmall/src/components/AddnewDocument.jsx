@@ -1,11 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
 import { css } from "@emotion/react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import PostAddIcon from "@mui/icons-material/PostAdd";
-import { useEffect } from "react";
 const AddnewDocument = () => {
     const dispatch = useDispatch();
     let history = useNavigate();

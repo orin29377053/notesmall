@@ -1,6 +1,5 @@
 import React from "react";
 import ToggleList from "./unit/ToggleList";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import List from "@mui/material/List";

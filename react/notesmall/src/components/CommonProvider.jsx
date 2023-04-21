@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const CommonProvider = ({ children }) => {
-    const { selectedID } = useSelector((state) => state.common);
+    // const { selectedID } = useSelector((state) => state.common);
     const { user ,token} = useSelector((state) => state.user);
     const location = useLocation();
     const dispatch = useDispatch();
     const history = useNavigate();
-    const getTagList = () => {
+    const getTagList = (dispatch) => {
         dispatch({
             type: "FETCH_TAG_LIST",
             payload: {
@@ -18,7 +18,7 @@ const CommonProvider = ({ children }) => {
             },
         });
     };
-    const getProjectList = () => {
+    const getProjectList = (dispatch) => {
         dispatch({
             type: "FETCH_Project_LIST",
             payload: {
@@ -29,7 +29,7 @@ const CommonProvider = ({ children }) => {
             },
         });
     };
-    const getlist = () => {
+    const getlist = (dispatch) => {
         dispatch({
             type: "FETCH_SIDEBAR_LIST",
             payload: {
@@ -40,7 +40,7 @@ const CommonProvider = ({ children }) => {
             },
         });
     };
-    const getUser = () => {
+    const getUser = (dispatch) => {
         dispatch({
             type: "FETCH_USER_INFO",
             payload: {
@@ -62,22 +62,22 @@ const CommonProvider = ({ children }) => {
         });
     };
     if (!user) {
-        getUser();
+        getUser(dispatch);
     }
 
     useEffect(() => {
-        getTagList();
-        getProjectList();
-        getlist();
-        getUser();
+        getTagList(dispatch);
+        getProjectList(dispatch);
+        getlist(dispatch);
+        getUser(dispatch);
     }, []);
 
     useEffect(() => {
         console.log("user", user);
 
-        getTagList();
-        getProjectList();
-        getlist();
+        getTagList(dispatch);
+        getProjectList(dispatch);
+        getlist(dispatch);
         // getUser()
     }, [user]);
 

@@ -5,7 +5,6 @@ import Avatar from "@mui/material/Avatar";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Login from "../user/Login";
-import UserMenu from "../user/UserMenu";
 import { useSelector } from "react-redux";
 import UserInfo from "../user/UserInfo";
 

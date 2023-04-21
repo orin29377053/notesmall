@@ -6,7 +6,6 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CategoryTab from "./sidebar/CategoryTab";
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 

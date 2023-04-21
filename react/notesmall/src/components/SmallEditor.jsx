@@ -2,8 +2,7 @@
 import "remirror/styles/all.css";
 import React, {
     useCallback,
-    useMemo,
-    useState,
+
     useRef,
     useEffect,
 } from "react";
@@ -54,9 +53,7 @@ import {
     Toolbar,
     Remirror,
     ThemeProvider,
-    useHelpers,
     useRemirror,
-    useKeymap,
     useRemirrorContext,
     BasicFormattingButtonGroup,
     DataTransferButtonGroup,
@@ -67,7 +64,6 @@ import {
     ToggleBlockquoteButton,
     InsertHorizontalRuleButton,
     ToggleBulletListButton,
-    OnChangeJSON,
     OnChangeHTML,
 } from "@remirror/react";
 
