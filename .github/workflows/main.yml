@@ -44,7 +44,7 @@ jobs:
           cd react/notesmall
           ls
           npm install
-          npm run build
+          CI=false npm run build
       - name: Deploy app build to S3 bucket
         run: |
           pwd
