@@ -42,6 +42,7 @@ jobs:
         run: |
           
           pwd
+          ls
           cd react/notesmall
           npm install
           npm run build
