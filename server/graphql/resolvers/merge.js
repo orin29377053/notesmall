@@ -3,6 +3,7 @@ const Tag = require("../../models/tag");
 const Project = require("../../models/project");
 const Dataloader = require("dataloader");
 const dataToString = require("../../utils/dataToString");
+const User = require("../../models/user");
 
 const documentLoader = new Dataloader(async (documentIDs) => {
 
@@ -40,6 +41,12 @@ const projectLoader = new Dataloader((projectIDs) => {
     return Project.find({ _id: { $in: projectIDs } });
 });
 
+const userLoader = new Dataloader((userID) => {
+    return User.find({ _id: { $in: userID } });
+});
+
+
+
 const getDocument = async (documentID) => {
     try {
         const document = await documentLoader.load(documentID._id.toString());
@@ -63,6 +70,7 @@ const getDocument = async (documentID) => {
             _id: document._id,
             project: getProject.bind(this, document.project),
             tags: tags,
+            user: getUser.bind(this, document.user),
         };
     } catch (error) {
         throw error;
@@ -76,13 +84,43 @@ const getProject = async (projectID) => {
             throw new Error(`Project with ID ${projectID} not found`);
         }
         const documents = await Promise.all(
-            project.documents.map((documentID) => getDocument(documentID))
+            project.documents?.map((documentID) => getDocument(documentID))
         );
         return {
             ...project._doc,
             _id: project._id,
             created_at: dataToString(project._doc.created_at),
             documents: documents,
+            user: getUser.bind(this, project.user),
+
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+const getUser = async (userID) => {
+    try {
+        const user = await userLoader.load(userID.toString());
+        // console.log("user", user);
+        if (!user) {
+            throw new Error(`Project with ID ${userID} not found`);
+        }
+        const documents = await Promise.all(
+            user.documents?.map((documentID) => getDocument(documentID))
+        );
+        const projects = await Promise.all(
+            user.projects?.map((projectID) => getProject(projectID))
+        );
+
+        return {
+            ...user._doc,
+            _id: user._id,
+            password: null,
+            created_at: dataToString(user._doc.created_at),
+            documents: documents,
+            project: projects,
         };
     } catch (error) {
         throw error;
@@ -106,9 +144,30 @@ const getTag = async (tagID) => {
     }
 };
 
+const checkUserID = (doc, userID) => {
+    try {
+        
+        console.log("doc.user", doc);
+        if (doc.user.toString() !== userID) {
+            //TODO: throw error
+            console.log("???")
+            return 
+        } else {
+            console.log("OK!!!")
+            return 
+        }
+    } catch {
+        return
+    }
+};
+
+
 exports.getDocument = getDocument;
 exports.getProject = getProject;
 exports.getTag = getTag;
+exports.getUser = getUser;
 exports.documentLoader = documentLoader;
 exports.projectLoader = projectLoader;
 exports.tagLoader = tagLoader;
+exports.userLoader = userLoader;
+exports.checkUserID = checkUserID;

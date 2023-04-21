@@ -53,6 +53,7 @@ const editorReducer = (state = initState, action) => {
                 },
             };
         case "CREATE_DOCUMENT_RESULT":
+            action.helper.history(`/${action.data.data.createDocument._id}`)
             return {
                 ...state,
                 editingDocument: action.data?.data.createDocument,

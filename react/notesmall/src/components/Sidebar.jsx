@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import "../App.css";
 import AddnewDocument from "./AddnewDocument";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";

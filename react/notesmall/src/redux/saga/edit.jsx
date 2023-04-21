@@ -48,6 +48,7 @@ function* fetchCreateDocument(action) {
         path: GRAPHQL_URL,
         reducer: "CREATE_DOCUMENT_RESULT",
         queryString: action.payload,
+        helper: action.helper,
     });
 }
 function* fetchUpdateProject(action) {

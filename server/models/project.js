@@ -38,6 +38,11 @@ const projectSchema = new Schema({
             ref: "Document",
         },
     ],
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+    },
+    
 });
 
 module.exports = mongoose.model("Project", projectSchema);

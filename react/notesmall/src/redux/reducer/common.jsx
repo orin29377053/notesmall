@@ -14,7 +14,7 @@ const commonReducer = (state = initState, action) => {
     let res;
     switch (action.type) {
         case "FETCH_SIDEBAR_LIST_RESULT":
-            // console.log(action.data?.data?.documents);
+            console.log(action);
             return {
                 ...state,
                 sidebar: action.data?.data?.documents,

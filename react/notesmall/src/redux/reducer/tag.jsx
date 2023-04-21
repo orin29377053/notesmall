@@ -4,7 +4,7 @@ const initState = {
 const tagReducer = (state = initState, action) => {
     switch (action.type) {
         case "TAG_LIST_RESULT":
-            // console.log(action);
+            console.log(action);
             return {
                 ...state,
                 taglist: action.data.data.tags,

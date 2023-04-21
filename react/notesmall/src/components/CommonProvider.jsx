@@ -4,8 +4,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const CommonProvider = ({ children }) => {
     const { selectedID } = useSelector((state) => state.common);
+    const { user ,token} = useSelector((state) => state.user);
     const location = useLocation();
     const dispatch = useDispatch();
+    const history = useNavigate();
     const getTagList = () => {
         dispatch({
             type: "FETCH_TAG_LIST",
@@ -22,7 +24,8 @@ const CommonProvider = ({ children }) => {
             payload: {
                 gqlMethod: "query",
                 api: "projects",
-                response: "_id name  documents {_id title content updated_at isDeleted}",
+                response:
+                    "_id name  documents {_id title content updated_at isDeleted}",
             },
         });
     };
@@ -32,24 +35,63 @@ const CommonProvider = ({ children }) => {
             payload: {
                 gqlMethod: "query",
                 api: "documents",
-                format: "(isDeleted: false)",
                 response:
                     "_id title updated_at isDeleted isFavorite isArchived",
             },
         });
     };
+    const getUser = () => {
+        dispatch({
+            type: "FETCH_USER_INFO",
+            payload: {
+                gqlMethod: "query",
+                api: "me",
+                response: `_id 
+                    email 
+                    token 
+                    role
+                    documents{
+                        _id title updated_at isDeleted isFavorite isArchived
+                    }
+                    projects{
+                        _id name  documents {
+                            _id title content updated_at isDeleted
+                        }
+                    }`,
+            },
+        });
+    };
+    if (!user) {
+        getUser();
+    }
+
     useEffect(() => {
         getTagList();
         getProjectList();
         getlist();
+        getUser();
     }, []);
 
-    let history = useNavigate();
     useEffect(() => {
-        history(`/${selectedID}`);
-    }, [selectedID]);
+        console.log("user", user);
+
+        getTagList();
+        getProjectList();
+        getlist();
+        // getUser()
+    }, [user]);
+
+    // if localstorge toke is chaged, update the user info
 
     useEffect(() => {
+        const localToken = localStorage.getItem("token");
+        if (!localToken && token) {
+            console.log(token);
+            dispatch({ type: "LOGOUT" });
+            //reload
+            history("/home");
+            // window.location.reload();
+        }
         dispatch({
             type: "UPDATE_PATH",
             payload: { path: location.pathname },

@@ -17,7 +17,6 @@ import { ExtensionPriority } from "remirror";
 import { AllStyledComponent } from "@remirror/styles/emotion";
 import { useSelector, useDispatch } from "react-redux";
 import TurndownService from "turndown";
-import "../App.css";
 import { Button } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
@@ -27,7 +26,7 @@ import TagContent from "./editor/TagContent";
 import ProjectSelector from "./editor/ProjectSelector";
 import TOC from "./editor/TOC";
 import showdown from "showdown";
-
+import { graphqlAPI } from "../utils/const";
 import {
     BlockquoteExtension,
     BoldExtension,
@@ -120,6 +119,8 @@ const SmallEditor = () => {
     const refVContent = useRef({ id: "", html: "" });
     const refUploading = useRef(true);
 
+    const token = localStorage.getItem("token");
+
     const { manager, state } = useRemirror({
         extensions: [
             ...extensions(),
@@ -171,11 +172,12 @@ const SmallEditor = () => {
                         content
                     }}
                     `;
-        await fetch("http://localhost:8000/graphql", {
+        await fetch(graphqlAPI, {
             method: "POST",
             body: JSON.stringify({ query }),
             headers: {
                 "Content-Type": "application/json",
+                token: token,
             },
         });
         refUploading.current = true;
@@ -210,7 +212,7 @@ const SmallEditor = () => {
         const pathID = path.replace(/\//g, "");
         // console.log("pathID", pathID);
         if (id !== newID) {
-            console.log(id,newID,pathID);
+            console.log(id, newID, pathID);
             console.log("start sync ");
             dispatch({
                 type: "QUERY_DOCUMENTS",
@@ -223,7 +225,7 @@ const SmallEditor = () => {
                 },
             });
         } else if (id === newID) {
-            console.log(id,newID,pathID);
+            console.log(id, newID, pathID);
 
             console.log("sync success");
             refVContent.current.id = newID;
@@ -278,7 +280,7 @@ const SmallEditor = () => {
         <AllStyledComponent>
             {/* <div>{refUploading.current ? "sync" : "not sync"}</div> */}
             <ThemeProvider>
-                <Row>
+                <Row className="pb-3">
                     <Col md={9}>
                         <Remirror manager={manager} initialContent={state}>
                             <Row className="px-3 mb-2 mt-3">

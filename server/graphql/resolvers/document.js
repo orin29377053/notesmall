@@ -1,16 +1,44 @@
 const Document = require("../../models/document");
 const Tag = require("../../models/tag");
 const Project = require("../../models/project");
+const User = require("../../models/user");
 const { documentFuzzySearch } = require("../search");
 const dataToString = require("../../utils/dataToString");
-const { getTag, getProject } = require("./merge");
-const { documentLoader } = require("./merge");
+const { getTag, getProject, getUser, documentLoader,checkUserID } = require("./merge");
+const { GraphQLError } = require("graphql");
+
+
+const {
+    imageDetection,
+    ImageAnnotatorClient,
+} = require("../../utils/cloudVision");
+
+function getAddDeleteUrls(oldArray, checkArray) {
+    let add = [];
+    let deleteUrls = [];
+
+    for (let checkUrl of checkArray) {
+        if (!oldArray.some((oldItem) => oldItem.url === checkUrl)) {
+            add.push(checkUrl);
+        }
+    }
+
+    for (let oldItem of oldArray) {
+        if (!checkArray.includes(oldItem.url)) {
+            deleteUrls.push(oldItem.url);
+        }
+    }
+
+    return [add, deleteUrls];
+}
+
 const tarnsformDocument = async (document) => {
     return {
         ...document._doc,
         _id: document.id,
         created_at: dataToString(document._doc.created_at),
         updated_at: dataToString(document._doc.updated_at),
+        user: document.user ? getProject.bind(this, document.user) : null,
         tags:
             document.tags?.length > 0
                 ? await Promise.all(document.tags.map((tagID) => getTag(tagID)))
@@ -18,14 +46,33 @@ const tarnsformDocument = async (document) => {
         project: document.project
             ? getProject.bind(this, document.project)
             : null,
+        images:
+            document.images?.length > 0
+                ? document.images?.map((image) => {
+                      return {
+                          ...image._doc,
+                          created_at: dataToString(image.created_at),
+                      };
+                  })
+                : [],
+        user: document.user ? getUser.bind(this, document.user) : null,
     };
 };
-
 module.exports = {
     Query: {
-        documents: async (parent, { isDeleted }, _, info) => {
+        documents: async (parent, { isDeleted }, { isAuth, userID }) => {
+            if (!isAuth) {
+                // throw new Error("Unauthenticated");
+                console.log("no auth");
+            }
+
+            //fliter id
+            console.log("userID", userID);
+
             try {
-                const documents = await Document.find().populate("tags");
+                const documents = userID?await Document.find()
+                    .where("user")
+                    .equals(userID):await Document.find();
                 // .where("isDeleted")
                 // .equals(isDeleted);
                 return documents.map(async (document) => {
@@ -40,25 +87,25 @@ module.exports = {
 
             try {
                 const document = await Document.findById(id);
-                // const document1 = await Document.find({ _id: { $in: id } });
-
                 // console.log("document", document);
-                if (!document) {
-                    throw new Error(`Document with ID ${id} not found`);
-                }
+
                 return tarnsformDocument(document);
             } catch (error) {
-                throw error;
+                throw new GraphQLError(`Document with ID ${id} not found`, {
+                    extensions: { code: 400, id: id },
+                });
             }
         },
-        searchDocuments: async (parent, { keyword }) => {
+        searchDocuments: async (parent, { keyword },{ isAuth, userID }) => {
             try {
-                const query = documentFuzzySearch(keyword);
+                console.log("keyword", keyword,userID);
+                const query = documentFuzzySearch(keyword,userID);
                 const documents = await Document.aggregate(query);
+                console.log("documents", documents);
                 return documents.map(async (document) => {
                     console.log("document", document.highlights);
                     document.highlights.map((highlight) => {
-                        console.log("highlight", highlight.texts);
+                        // console.log("highlight", highlight.texts);
                     });
 
                     return {
@@ -84,21 +131,28 @@ module.exports = {
         },
     },
     Mutation: {
-        createDocument: async (_, args) => {
+        createDocument: async (_, args,{ isAuth, userID }) => {
             try {
                 const { title, content } = args.document;
                 const document = new Document({
                     title,
                     content,
+                    user: userID,
                 });
                 const newDocument = await document.save();
+
+                await User.findByIdAndUpdate(userID, {
+                    $push: { documents: newDocument._id },
+                });
+
+
                 documentLoader.load(newDocument._id.toString());
                 return tarnsformDocument(newDocument);
             } catch (error) {
                 throw error;
             }
         },
-        updatedDocument: async (_, args) => {
+        updatedDocument: async (_, args,{ isAuth, userID }) => {
             console.log("there");
 
             try {
@@ -110,8 +164,54 @@ module.exports = {
                     project,
                     isArchived,
                     isFavorite,
+                    user,
                 } = args.document;
                 const updated_at = Date.now();
+
+                // let pattern = /\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+                let pattern =
+                    /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
+                
+                
+
+                const documentded = await Document.findById(_id);
+
+                checkUserID(documentded,userID);
+
+                let imageslist = documentded.images;
+                if (content) {
+                    let urls = [];
+                    for (let match of content.matchAll(pattern)) {
+                        urls.push(match[1]);
+                    }
+                    console.log("urls", urls);
+
+                    console.log("imageslist", imageslist);
+
+                    const [add, dele] = getAddDeleteUrls(imageslist, urls);
+                    console.log("add", add);
+                    console.log("dele", dele);
+
+                    for (let url of add) {
+                        const autoTags = await imageDetection(
+                            ImageAnnotatorClient,
+                            url
+                        );
+                        imageslist.push({
+                            url: url,
+                            name: "image",
+                            autoTags: autoTags,
+                        });
+                    }
+
+                    for (let url of dele) {
+                        imageslist = imageslist.filter(
+                            (image) => image.url !== url
+                        );
+                    }
+                }
+                console.log("imageslist", imageslist);
+
                 const document = await Document.findByIdAndUpdate(
                     _id,
                     {
@@ -122,11 +222,25 @@ module.exports = {
                         project,
                         isArchived,
                         isFavorite,
+                        images: imageslist,
+                        user,
                     },
                     { new: true }
                 ).populate("tags");
 
+
                 const newDocument = await document.save();
+
+                if (user) {
+                    await User.updateMany(
+                        { _id: { $in: user } },
+                        { $addToSet: { documents: _id } }
+                    );
+                    await User.updateMany(
+                        { _id: { $nin: user } },
+                        { $pull: { documents: _id } }
+                    );
+                }
 
                 if (tags) {
                     await Tag.updateMany(
@@ -152,58 +266,74 @@ module.exports = {
 
                 return tarnsformDocument(newDocument);
             } catch (error) {
-                console.log("??");
+                console.log(error);
 
                 throw error;
             }
         },
-        deleteDocument: async (_, args) => {
-            // console.log(args);
+        deleteDocument: async (_, args,{ isAuth, userID }) => {
 
             try {
                 const { _id, isDeleted } = args.document;
-                // console.log(_id, isDeleted);
-                const document = await Document.findByIdAndUpdate(
+                const document = await Document.findById(_id);
+                checkUserID(document,userID);
+
+                
+                const newdocument = await Document.findByIdAndUpdate(
                     _id,
                     { isDeleted },
                     { new: true }
                 );
-                if (!document) {
+                if (!newdocument) {
                     throw new Error(`Document with ID ${id} not found`);
                 }
                 documentLoader.clear(_id.toString());
 
-                return { ...document._doc, _id: document.id };
+                return { ...newdocument._doc, _id: newdocument.id };
             } catch (error) {
                 throw error;
             }
         },
-        permantDeleteDocument: async (_, { id }) => {
+        permantDeleteDocument: async (_, { id },{ isAuth, userID }) => {
             try {
-                const document = await Document.findByIdAndDelete(id);
+                const document = await Document.findById(id);
+                checkUserID(document,userID);
+                const permantDeleDocument = await Document.findByIdAndDelete(id);
 
-                console.log("document", document);
-                if (!document) {
+                console.log("document", permantDeleDocument);
+                if (!permantDeleDocument) {
                     throw new Error(`Document with ID ${id} not found`);
                 }
-                //tags
-                await Tag.updateMany(
-                    { document: { $in: id } },
-                    { $pull: { document: { $in: id } } }
-                );
-                //project
-                await Project.updateMany(
-                    { documents: { $in: id } },
-                    { $pull: { documents: { $in: id } } }
-                );
-                documentLoader.clear(_id.toString());
 
-                return { ...document._doc, _id: document.id };
+                try {
+                    //tags
+                    await Tag.updateMany(
+                        { document: { $in: id } },
+                        { $pull: { document: { $in: id } } }
+                    );
+                    //project
+                    await Project.updateMany(
+                        { documents: { $in: id } },
+                        { $pull: { documents: { $in: id } } }
+                    );
+
+                    //user
+                    await User.updateMany(
+                        { documents: { $in: id } },
+                        { $pull: { documents: { $in: id } } }
+                    );
+                } catch {
+                    throw new Error("Deleting document failed");
+                }
+
+                documentLoader.clear(id);
+
+                return { ...permantDeleDocument._doc, _id: permantDeleDocument.id };
             } catch (error) {
                 throw error;
             }
         },
-        permantDeleteALLDocument: async (_, args) => {
+        permantDeleteALLDocument: async (_, args,{ isAuth, userID }) => {
             try {
                 const { isDeleted } = args.document;
                 const deletedDocuments = await Document.find({ isDeleted });
@@ -219,17 +349,25 @@ module.exports = {
                     documentLoader.clear(id.toString());
                     result.push(id);
                 }
+                try {
+                    //tags
+                    await Tag.updateMany(
+                        { document: { $in: deletedDocumentIds } },
+                        { $pull: { document: { $in: deletedDocumentIds } } }
+                    );
+                    //project
+                    await Project.updateMany(
+                        { documents: { $in: deletedDocumentIds } },
+                        { $pull: { documents: { $in: deletedDocumentIds } } }
+                    );
 
-                //tags
-                await Tag.updateMany(
-                    { document: { $in: deletedDocumentIds } },
-                    { $pull: { document: { $in: deletedDocumentIds } } }
-                );
-                //project
-                await Project.updateMany(
-                    { documents: { $in: deletedDocumentIds } },
-                    { $pull: { documents: { $in: deletedDocumentIds } } }
-                );
+                    await User.updateMany(
+                        {},
+                        { $pull: { documents: { $in: deletedDocumentIds } } }
+                    );
+                } catch {
+                    console.log("error");
+                }
 
                 return result;
             } catch (error) {

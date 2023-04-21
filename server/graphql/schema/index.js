@@ -21,6 +21,8 @@ module.exports = buildSchema(`
     project: Project 
     highlights: [Highlight!]
     score: Float!
+    images: [images]
+    user: User
   }
 
   type Project @cacheControl(maxAge: 1 scope: PUBLIC inheritMaxAge: true) {
@@ -32,6 +34,7 @@ module.exports = buildSchema(`
     created_at: String!
     updated_at: String!
     documents: [Document]
+    user: User
   }
 
   type Tag  @cacheControl(maxAge: 1 scope: PUBLIC inheritMaxAge: true) {
@@ -50,6 +53,16 @@ module.exports = buildSchema(`
     score: Float!
   }
 
+  type images{
+    _id: ID!
+    url: String!
+    name: String!
+    created_at: String!
+    autoTags: [String!]
+
+  }
+
+
   type Highlight {
     path: String!
     score: Float!
@@ -59,6 +72,21 @@ module.exports = buildSchema(`
     value: String!
     type: String!
   }
+
+  type User {
+    _id: ID!
+    name: String
+    email: String!
+    password: String
+    role: UserRoles!
+    documents: [Document!]
+    projects: [Project!]
+    searchHistory: [String!]
+    created_at: String!
+    token:String
+
+  }
+  
 
 
 
@@ -84,6 +112,7 @@ module.exports = buildSchema(`
     isArchived: Boolean
     tags: [ID]
     project: ID
+    user: ID
   }
 
   input ProjectInput {
@@ -93,18 +122,20 @@ module.exports = buildSchema(`
     isDeleted: Boolean
     isArchived: Boolean
     documents: [ID]
+    user: ID
   }
 
 
   type Query {
     articles:[Article!]
-    documents(isDeleted:Boolean!):[Document!] 
+    documents(isDeleted:Boolean):[Document!] 
     document(id: ID!): Document
     searchDocuments(keyword: String!): [Document!]
     tag(id:ID!): Tag
     tags:[Tag!]
     projects:[Project!]
     project(id:ID!): Project
+    me: User
 
   }
 
@@ -121,6 +152,8 @@ module.exports = buildSchema(`
     permantDeleteDocument(id:ID!): Document
     updateProject(project:ProjectInput): Project
     deleteProject(id:ID!): Project
+    signup(email: String!, password: String!): User
+    signin(email: String!, password: String!): User
 
   }
 
@@ -132,6 +165,12 @@ module.exports = buildSchema(`
     PUBLIC
     PRIVATE
   }
+  enum UserRoles {
+    admin
+    user
+    guest
+  }
+
   
   directive @cacheControl(
     maxAge: Int

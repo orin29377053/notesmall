@@ -1,4 +1,7 @@
-const documentFuzzySearch = (keyword) => {
+
+const mongoose = require("mongoose");
+
+const documentFuzzySearch = (keyword, ID) => {
     return [
         {
             $search: {
@@ -32,6 +35,7 @@ const documentFuzzySearch = (keyword) => {
                     $gt: 0,
                 },
                 isDeleted: false,
+                user: new mongoose.Types.ObjectId(ID),
             },
         },
     ];

@@ -36,27 +36,28 @@
         transform: rotate(360deg);
     }
 }
-/* .body {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-} */
 
 .sidebar {
     width: 18%;
-    /* background-color: #e9ecf3; */
-    /* color: white; */
-    height: 100vh;
+    height: calc(99vh - 50px);
     position: fixed;
     overflow: auto;
     border-right: 1px solid #e7ebf0;
+    position: fixed;
+    top: 50px;
+    left: 0px;
+    z-index: 100;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
-.content {
+.main-content {
+    position: fixed;
+    overflow: auto;
+    height: calc(99vh - 50px);
     width: 82%;
-    /* let content padding on the sidebar */
-    margin-left: 18%;
-    padding: 20px;
+    top: 50px;
+    left: 18%;
 }
 
 .selectedSidebar {

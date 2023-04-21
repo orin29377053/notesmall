@@ -4,24 +4,8 @@ const bodyParser = require("body-parser");
 
 const http = require("http");
 require("dotenv").config();
-const { marked } = require("marked");
 const app = express();
-
-// aws
-const fs = require("fs");
-const {
-    S3Client,
-    PutObjectCommand,
-    GetObjectCommand,
-} = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const s3 = new S3Client({
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-    region: process.env.AWS_REGION,
-});
+const jwt = require("jsonwebtoken");
 
 // apollo server
 const { ApolloServer } = require("@apollo/server");
@@ -57,8 +41,7 @@ const server = new ApolloServer({
     // debug: true,
     csrfPrevention: true,
     introspection: true,
-
-    // cacheControl: true
+    // includeStacktraceInErrorResponses: false,
 });
 // mongoose
 const mongoose = require("mongoose");
@@ -73,104 +56,25 @@ mongoose
 
 // cloud vision
 const vision = require("@google-cloud/vision");
-
-app.use(express.static("public"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cors());
-
 const credentials = JSON.parse(process.env.GOOGLE_API_JSON);
-
-app.use("/api/1.0", [require("./route/image_route")]);
-
-app.get("/", (req, res) => {
-    console.log(credentials.project_id);
-
-    res.json({ data: "Hello World!" });
-});
-
-app.get("/marked", (req, res) => {
-    const mdfile = fs.readFileSync("test.md", "utf8");
-    const htmlContent = marked(mdfile);
-    res.json({ data: htmlContent });
-});
-
-app.post("/marked", (req, res) => {
-    const mdfile = req.body.data;
-    console.log(req.body.data);
-    fs.writeFile("test.md", mdfile, (err) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("Error saving file");
-        } else {
-            console.log(`File test.md saved successfully`);
-            res.send("OK");
-        }
-    });
-});
-
-app.get("/imageupload", async (req, res) => {
-    const image = fs.readFileSync("1678240546826-480282.jpeg");
-
-    const input = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: "1678240546826-480282.jpeg",
-    };
-    const command = new PutObjectCommand(input);
-
-    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    const result = await fetch(url, {
-        method: "PUT",
-        body: image,
-        headers: { "content-type": "image/jpeg" },
-    });
-    const objectUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${input.Key}`;
-
-    res.json({ objectUrl: objectUrl });
-});
-
-app.get("/markdownupload", async (req, res) => {
-    const mdfile = fs.readFileSync("test.md", "utf8");
-
-    console.log(mdfile);
-    const input = {
-        Body: mdfile,
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: "test.md",
-    };
-    const command = new PutObjectCommand(input);
-
-    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    const result = await fetch(url, {
-        method: "PUT",
-        body: mdfile,
-        headers: { "content-type": "text/plain" },
-    });
-    console.log(result);
-    const objectUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${input.Key}`;
-    res.json({ objectUrl: objectUrl });
-});
-
-app.get("/getImagePresignedUrl", async (req, res) => {
-    const fileName = req.query.fileName;
-
-    const input = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: fileName,
-    };
-    const command = new PutObjectCommand(input);
-    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    res.json({
-        presignedUrl: url,
-        objectUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${input.Key}`,
-    });
-});
 const client = new vision.ImageAnnotatorClient({
     credentials: {
         client_email: credentials.client_email,
         private_key: credentials.private_key,
     },
 });
+
+app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+
+app.use("/api/1.0", [require("./route/image_route")]);
+
+app.get("/", (req, res) => {
+    res.json({ data: "Hello World!" });
+});
+
 async function imageDetection(client, url) {
     const [result] = await client.labelDetection({
         image: {
@@ -194,13 +98,39 @@ app.get("/cloudvision", async (req, res) => {
     res.json({ data: dcd });
 });
 
+app.use(function (err, req, res, next) {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
+});
+
 const graph = async () => {
     await server.start();
-    app.use("/graphql", cors(), bodyParser.json(), expressMiddleware(server));
+    app.use(
+        "/graphql",
+        cors(),
+        bodyParser.json(),
+        expressMiddleware(server, {
+            context: ({ req }) => {
+                const token = req.headers.token;
+                if (!token) {
+                    return { isAuth: false,userID:process.env.GUESTID };
+                }
+                try {
+                    const user = jwt.verify(token, process.env.SECRET);
+                    console.log(user);
+                    return { isAuth: true ,userID:user.id};
+                } catch {
+                    return { isAuth: false,userID:process.env.GUESTID };
+
+                    // throw new Error("Authentication failed!");
+                }
+            },
+        })
+    );
 };
 graph();
 
-httpServer.listen(process.env.PORT, () => {
+httpServer.listen(process.env.PORT, async () => {
     console.log(`🚀 Server ready at http://localhost:${process.env.PORT}/`);
 });
 // app.listen(process.env.PORT, () => {

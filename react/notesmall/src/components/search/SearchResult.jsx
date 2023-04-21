@@ -6,6 +6,10 @@ import DocumentCard from "../Card";
 import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 import { Row, Col } from "react-bootstrap";
+function removeLinkInBrackets(text) {
+    const pattern = /\[(.*?)\]\((.*?)\)/g;
+    return text.replace(pattern, "$1");
+}
 
 const SearchResult = ({ searchResult }) => (
     <>
@@ -31,7 +35,7 @@ const SearchResult = ({ searchResult }) => (
                     <Col md={4}>
                         <DocumentCard
                             title={item.title}
-                            content={sanitizeContent(item.content)}
+                            content={sanitizeContent(removeLinkInBrackets(item.content))}
                             _id={item._id}
                             image={extractImageURL(item.content)}
                         />

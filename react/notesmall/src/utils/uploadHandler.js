@@ -1,11 +1,14 @@
 
+const { imageAPI } = require('./const')
+
 async function getPresignedUrl(fileName) {
     const rawUrl = await fetch(
-        `http://localhost:8000/getImagePresignedUrl?fileName=${fileName}`
+        `${imageAPI}api/1.0/image/getImagePresignedUrl?fileName=${fileName}`
     );
     const url = await rawUrl.json();
     return url;
 }
+
 async function handleUpload(url, image) {
     console.log("image", image);
     try {
@@ -34,7 +37,12 @@ export default function uploadHandler(files) {
             () =>
                 new Promise(async (resolve) => {
                     const reader = new FileReader();
-                    const url = await getPresignedUrl(file.name);
+                    console.log("file", file)
+
+                    let newFilename = file.name.replace(/[\s\)]/g, '');
+                    console.log("wdwd",newFilename)
+
+                    const url = await getPresignedUrl(newFilename);
                     await handleUpload(url.presignedUrl, file);
 
                     reader.addEventListener(
@@ -42,7 +50,7 @@ export default function uploadHandler(files) {
                         (readerEvent) => {
                             resolve({
                                 src: url.objectUrl,
-                                fileName: file.name,
+                                fileName: newFilename,
                             });
                         },
                         { once: true }
