@@ -1,2 +1,2 @@
-export const graphqlAPI = "http://localhost:8000/graphql"
-export const imageAPI = "http://localhost:8000/"
+export const graphqlAPI = `${process.env.REACT_APP_API_URL}graphql`
+export const imageAPI = process.env.REACT_APP_API_URL
