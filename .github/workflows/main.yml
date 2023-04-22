@@ -37,6 +37,8 @@ jobs:
           ls
           npm install
           CI=false npm run build
+        env:
+          REACT_APP_TEST: ${{ secrets.REACT_APP_TEST }}
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
