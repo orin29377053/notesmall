@@ -1,16 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DocumentCard from "../Card";
+import DocumentCard from "../common/Card"
 import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 import { css } from "@emotion/react";
-import Chip from "@mui/material/Chip";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ProjectList from "./ProjectList";
 
 const ItemCard = ({ item }) => {

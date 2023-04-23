@@ -23,7 +23,9 @@ const AddnewDocument = () => {
     };
 
     return (
-        <Button
+        <div onClick={() => add(useSelector)}>
+New
+        {/* <Button
             variant="text"
             size="small"
             onClick={() => add(useSelector)}
@@ -38,7 +40,8 @@ const AddnewDocument = () => {
             `}
         >
             New
-        </Button>
+        </Button> */}
+        </div>
     );
 };
 

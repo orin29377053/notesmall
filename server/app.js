@@ -103,6 +103,18 @@ app.use(function (err, req, res, next) {
     res.status(500).send("Internal Server Error");
 });
 
+function tokenVerify(token, secret) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, secret, function (err, decoded) {
+            if (err) {
+                reject(err);
+            } else if (decoded) {
+                resolve(decoded);
+            }
+        });
+    });
+}
+
 const graph = async () => {
     await server.start();
     app.use(
@@ -110,16 +122,19 @@ const graph = async () => {
         cors(),
         bodyParser.json(),
         expressMiddleware(server, {
-            context: ({ req }) => {
+            context: async({ req }) => {
                 const token = req.headers.token;
+                // console.log(token);
                 if (!token) {
                     return { isAuth: false,userID:process.env.GUESTID };
                 }
                 try {
-                    const user = jwt.verify(token, process.env.SECRET);
-                    console.log(user);
+                    
+                    const user = await tokenVerify(token, process.env.SECRET);
                     return { isAuth: true ,userID:user.id};
-                } catch {
+                } catch(e) {
+                    console.log(e);
+                    //TODO:error handling
                     return { isAuth: false,userID:process.env.GUESTID };
 
                     // throw new Error("Authentication failed!");

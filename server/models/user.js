@@ -16,7 +16,7 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ["admin", "user"],
+        enum: ["admin", "user", "guest"],
         default: "user",
         required: true,
     },
@@ -43,6 +43,13 @@ const userSchema = new Schema({
             type: String,
         },
     ],
+    tags: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Tag",
+        },
+    ],
+    
 
 });
 

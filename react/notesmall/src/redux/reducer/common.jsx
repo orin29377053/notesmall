@@ -14,7 +14,6 @@ const commonReducer = (state = initState, action) => {
     let res;
     switch (action.type) {
         case "FETCH_SIDEBAR_LIST_RESULT":
-            console.log(action);
             return {
                 ...state,
                 sidebar: action.data?.data?.documents,
@@ -30,7 +29,6 @@ const commonReducer = (state = initState, action) => {
             };
         
         case "PERMENT_DELETE_SIDEBAR_LIST_RESULT":
-            console.log(action.data?.data);
 
             index = _.findIndex(state.sidebar, {
                 _id: action.data?.data?.permantDeleteDocument._id,
@@ -82,6 +80,7 @@ const commonReducer = (state = initState, action) => {
             };
 
         case "UPDATE_DOCUMENT_TITLE":
+
             // console.log(action.data.data.updatedDocument);
             // console.log(state.sidebar);
             return {

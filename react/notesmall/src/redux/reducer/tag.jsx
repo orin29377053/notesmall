@@ -4,14 +4,12 @@ const initState = {
 const tagReducer = (state = initState, action) => {
     switch (action.type) {
         case "TAG_LIST_RESULT":
-            console.log(action);
             return {
                 ...state,
                 taglist: action.data.data.tags,
             };
         case "ADD_TAG":
-            console.log(state.taglist);
-            console.log(action.data.data.createTag);
+
             return {
                 ...state,
                 taglist: [...state.taglist, action.data.data.createTag],

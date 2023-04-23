@@ -25,7 +25,6 @@ function* fetch(action) {
 }
 
 function* fetchUpdateTags(action) {
-    console.log(action);
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

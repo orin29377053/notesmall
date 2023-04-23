@@ -1,8 +1,7 @@
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DocumentCard from "../Card";
+import DocumentCard from "../common/Card";
 import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 import { css } from "@emotion/react";
@@ -26,12 +25,20 @@ const style = {
 
 const ItemCard = ({ item }) => {
     return item?.documents?.map((doc) => (
-        <DocumentCard
-            title={doc.title}
-            content={sanitizeContent(doc.content)}
-            _id={doc._id}
-            image={extractImageURL(doc.content)}
-        />
+        <div
+            css={css`
+                background-color: #f5f5f5;
+                padding: 10px;
+                margin-top: 10px;
+            `}
+        >
+            <DocumentCard
+                title={doc.title}
+                content={sanitizeContent(doc.content)}
+                _id={doc._id}
+                image={extractImageURL(doc.content)}
+            />
+        </div>
     ));
 };
 
@@ -85,7 +92,7 @@ const ProjectList = ({ list }) => {
                 response: "_id name  documents {_id title content isDeleted}",
             },
         });
-    }; 
+    };
 
     return (
         <div>
@@ -171,13 +178,17 @@ const ProjectList = ({ list }) => {
                     </div>
                 </Box>
             </Modal>
+            <div
+            css={css`
+            display: flex;
+            flex-wrap: wrap;
+        `}>
+
             <ItemCard
-                css={css`
-                    width: 100%;
-                    margin-left: 20px;
-                `}
+                
                 item={selectedButton}
             />
+            </div>
         </div>
     );
 };

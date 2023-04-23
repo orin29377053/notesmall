@@ -44,7 +44,7 @@ const CategoryTab = () => {
     };
 
     return (
-        <Box sx={{ width: "100%", typography: "body1" }}>
+        <Box sx={{ width: "100%", typography: "body1" }} className="p-1">
             <TabContext value={value}>
                 <Box
                     sx={{
@@ -54,51 +54,20 @@ const CategoryTab = () => {
                 >
                     <TabList
                         onChange={handleChange}
-                        aria-label="lab API tabs example"
-                        css={css`
-                            padding: 0px 0px 0px 0px;
-                            justify-content: space-around;
-                        `}
+                        className="hello"
+                        variant="fullWidth"
                     >
                         <Tab
                             icon={<InsertDriveFileOutlinedIcon />}
                             value="main"
-                            css={css`
-                                padding: 0px 0px 0px 0px;
-                            `}
-                            sx={{
-                                alignContent: "center",
-                                // maxWidth:50,
-                                minWidth: 45,
-                            }}
                         />
                         <Tab
                             icon={<StarBorderOutlinedIcon />}
                             value="favorite"
-                            css={css`
-                                padding: 0px 0px 0px 0px;
-                                width: 30px;
-                            `}
-                            sx={
-                                {
-                                    // maxWidth: 30,
-                                    minWidth: 45,
-                                }
-                            }
                         />
                         <Tab
                             icon={<AccountTreeOutlinedIcon />}
                             value="project"
-                            css={css`
-                                padding: 0px 0px 0px 0px;
-                                width: 30px;
-                            `}
-                            sx={
-                                {
-                                    // maxWidth: 30,
-                                    minWidth: 45,
-                                }
-                            }
                         />
                     </TabList>
                 </Box>

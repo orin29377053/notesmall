@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
 
 import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
@@ -48,11 +49,15 @@ const Search = () => {
 
     const { searchResult } = useSelector((state) => state.common);
     return (
-        <div>
+        <div css={css`
+        margin: 20px;
+        
+        ` }>
             <TextField
                 id="outlined-basic"
-                label="搜尋筆記"
+                label="Search"
                 variant="outlined"
+                size="small"
                 onChange={(e) => {
                     dispatch({
                         type: "SEARCH_KEYWORD",
@@ -60,7 +65,10 @@ const Search = () => {
                     });
                 }}
             />
-            <div>
+            <div css={css`
+        margin-top: 1px;
+        
+        `}>
                 <SearchResult searchResult={searchResult} />
             </div>
             {/* <Test /> */}

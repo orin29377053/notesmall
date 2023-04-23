@@ -101,9 +101,11 @@ const getProject = async (projectID) => {
 
 
 const getUser = async (userID) => {
+
     try {
         const user = await userLoader.load(userID.toString());
         // console.log("user", user);
+
         if (!user) {
             throw new Error(`Project with ID ${userID} not found`);
         }
@@ -113,6 +115,9 @@ const getUser = async (userID) => {
         const projects = await Promise.all(
             user.projects?.map((projectID) => getProject(projectID))
         );
+        const tags = await Promise.all(
+            user.tags?.map((tagID) => getTag(tagID))
+        );
 
         return {
             ...user._doc,
@@ -121,6 +126,7 @@ const getUser = async (userID) => {
             created_at: dataToString(user._doc.created_at),
             documents: documents,
             project: projects,
+            tags:tags
         };
     } catch (error) {
         throw error;
@@ -138,6 +144,8 @@ const getTag = async (tagID) => {
         return {
             ...tag._doc,
             _id: tag._id,
+            user: getUser.bind(this, tag.user),
+
         };
     } catch (error) {
         throw error;
@@ -145,9 +153,11 @@ const getTag = async (tagID) => {
 };
 
 const checkUserID = (doc, userID) => {
+    console.log("doc.user", doc.user);
+    console.log("userID", userID);
     try {
         
-        console.log("doc.user", doc);
+        // console.log("doc.user", doc);
         if (doc.user.toString() !== userID) {
             //TODO: throw error
             console.log("???")

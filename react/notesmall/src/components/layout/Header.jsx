@@ -13,11 +13,10 @@ const style = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 600,
     bgcolor: "background.paper",
     // border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
+    boxShadow: 10,
+    p: 3,
 };
 const userInfoStyle = {
     position: "absolute",
@@ -27,8 +26,8 @@ const userInfoStyle = {
     width: 500,
     bgcolor: "background.paper",
     // border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
+    boxShadow: 10,
+    p: 3,
 };
 const Header = () => {
     const { user } = useSelector((state) => state.user);
@@ -42,20 +41,15 @@ const Header = () => {
     const handleClose = () => {
         setOpen(false);
     };
-    console.log(role);
 
-    useEffect(() => {
-        console.log("swsw", user);
-    }, [user]);
+    useEffect(() => {}, [user]);
 
     return (
         <div
             css={css`
-                border-bottom: 1px solid #494949;
+                background-image: none;
                 padding: 5px 20px;
-                background-color: #3f51b5;
-                color: white;
-                height: 50px;
+                height: 60px;
                 position: fixed;
                 top: 0px;
                 left: 0px;
@@ -64,6 +58,12 @@ const Header = () => {
                 justify-content: space-between;
                 align-items: center;
                 z-index: 100;
+                backdrop-filter: blur(8px);
+                border-style: solid;
+                border-color: rgb(231, 235, 240);
+                border-width: 0px 0px thin;
+                background-color: rgba(255, 255, 255, 0.9);
+                color: rgb(45, 56, 67);
             `}
         >
             Header
@@ -77,43 +77,36 @@ const Header = () => {
                     css={css`
                         display: flex;
                         border: 1px solid white;
-                        padding: 3px 8px;
+                        padding: 8px 10px;
                         border-radius: 20px;
                         align-items: center;
                         cursor: pointer;
                         :hover {
-                            background-color: #fff;
-                            color: #3f51b5;
+                            background-color: #f1f3f4;
+                            color: #1976d2;
                         }
                     `}
                     onClick={handleOpen}
                 >
+                    <div
+                        css={css`
+                            margin-left: 10px;
+                            font-size: 16px;
+                            font-weight: 700;
+                            color: #1976d2;
+                            margin-right: 10px;
+                        `}
+                    >
+                        {role === "guest"
+                            ? "Welcome to Notesmall"
+                            : user?.email}
+                    </div>
+
                     <Avatar
                         alt="Orin"
                         src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
                         sx={{ width: 30, height: 30 }}
                     />
-                    {role === "guest" ? (
-                        <div
-                            css={css`
-                                margin-left: 10px;
-                                font-size: 14px;
-                                font-weight: 600;
-                            `}
-                        >
-                            Welcome to Notesmall
-                        </div>
-                    ) : (
-                        <div
-                            css={css`
-                                margin-left: 10px;
-                                font-size: 14px;
-                                font-weight: 600;
-                            `}
-                        >
-                            {user?.email}
-                        </div>
-                    )}
                 </div>
 
                 <Modal
@@ -131,16 +124,7 @@ const Header = () => {
                             <Login setOpen={setOpen} />
                         </Box>
                     )}
-
-                    {/* <Box sx={style}>
-                        {role !== "guest" ? (
-                            <UserInfo user={user} />
-                        ) : (
-                            <Login setOpen={setOpen} />
-                        )}
-                    </Box> */}
                 </Modal>
-                {/* <UserMenu /> */}
             </div>
         </div>
     );

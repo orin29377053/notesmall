@@ -14,7 +14,6 @@ function* fetch(action) {
 
 
 function* addTag(action) {
-    console.log(action)
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

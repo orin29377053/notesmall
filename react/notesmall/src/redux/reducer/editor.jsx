@@ -67,7 +67,6 @@ const editorReducer = (state = initState, action) => {
                 },
             };
         case "UPDATE_DOCUMENT_PROJECT":
-            console.log("123",action.data.data.updatedDocument)
             return {
                 ...state,
                 editingDocument: {

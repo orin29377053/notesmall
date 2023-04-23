@@ -43,6 +43,7 @@ module.exports = buildSchema(`
     colorCode: String  
     created_at: String! 
     document: [Document] 
+    user: User
   }
 
   type SearchResult {
@@ -83,6 +84,7 @@ module.exports = buildSchema(`
     projects: [Project!]
     searchHistory: [String!]
     created_at: String!
+    tags: [Tag!]
     token:String
 
   }
@@ -95,6 +97,7 @@ module.exports = buildSchema(`
     name: String!
     colorCode: String
     document: [ID]
+    user: ID
   }
 
 

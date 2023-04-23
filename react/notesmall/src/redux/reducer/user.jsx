@@ -6,7 +6,6 @@ const initState = {
 const UserReducer = (state = initState, action) => {
     switch (action.type) {
         case "FETCH_SIGN_IN_RESULT":
-            console.log(action);
             window.localStorage.setItem("token", action.data.data.signin.token);
             return {
                 ...state,
@@ -15,7 +14,6 @@ const UserReducer = (state = initState, action) => {
             };
 
         case "FETCH_SIGN_UP_RESULT":
-            console.log(action);
             window.localStorage.setItem("token", action.data.data.signup.token);
             return {
                 ...state,
@@ -23,7 +21,6 @@ const UserReducer = (state = initState, action) => {
                 token: action.data.data.signup.token,
             };
         case "FETCH_USER_INFO_RESULT":
-            console.log(action);
 
             window.localStorage.setItem("token", action.data.data.me.token);
 

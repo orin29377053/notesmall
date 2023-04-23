@@ -1,5 +1,5 @@
 const secret = process.env.SECRET;
-const expireTime = 10;
+const expireTime = 3600;
 const saltRounds = process.env.SALT;
 const guest = process.env.GUESTID;
 const jwt = require("jsonwebtoken");
@@ -18,9 +18,10 @@ const tarnsformUser = (user) => {
         id: user._id,
         password: null,
         created_at: dataToString(user.created_at),
-        token: createToken(user._id, user.email, secret, expireTime),
+        token: createToken(user._id, user.email, secret, (user.role!=="guest")?expireTime:"365d"),
         documents: user.documents?.map((documentID) => getDocument(documentID)),
         projects: user.projects?.map((projectID) => getProject(projectID)),
+        tags: user.tags?.map((tagID) => getTag(tagID)),
 
     };
 };

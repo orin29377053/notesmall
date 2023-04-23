@@ -2,12 +2,14 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Header from "./Header";
 import Sidebar from "../Sidebar";
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
 // import Sidebar from "./Sidebar";
 // import Footer from "./Footer";
 
 const Layout = ({ children }) => {
     return (
-        <Container fluid className="p-0">
+        <Container fluid className="p-0" >
             <Header />
             <Row className="m-0">
                 <Sidebar />

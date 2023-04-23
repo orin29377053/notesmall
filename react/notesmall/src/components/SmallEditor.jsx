@@ -1,11 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import "remirror/styles/all.css";
-import React, {
-    useCallback,
-
-    useRef,
-    useEffect,
-} from "react";
+import React, { useCallback, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
@@ -24,6 +19,9 @@ import uploadHandler from "../utils/uploadHandler";
 import TagContent from "./editor/TagContent";
 import ProjectSelector from "./editor/ProjectSelector";
 import TOC from "./editor/TOC";
+import Chip from "@mui/material/Chip";
+import getTextColorFromBackground from "../utils/getTextColorFromBackground";
+
 import showdown from "showdown";
 import { graphqlAPI } from "../utils/const";
 import {
@@ -115,7 +113,7 @@ const SmallEditor = () => {
     const refVContent = useRef({ id: "", html: "" });
     const refUploading = useRef(true);
 
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
 
     const { manager, state } = useRemirror({
         extensions: [
@@ -153,6 +151,13 @@ const SmallEditor = () => {
     };
 
     const handleEditorChange = async (html) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            dispatch({ type: "LOGOUT" });
+            history("/home");
+            return;
+        }
+
         refUploading.current = false;
         refVContent.current.html = html;
         const turndownService = new TurndownService({
@@ -204,37 +209,49 @@ const SmallEditor = () => {
         history("/");
     };
 
-    useEffect(() => {
-        const pathID = path.replace(/\//g, "");
-        // console.log("pathID", pathID);
-        if (id !== newID) {
-            console.log(id, newID, pathID);
-            console.log("start sync ");
-            dispatch({
-                type: "QUERY_DOCUMENTS",
-                payload: {
-                    gqlMethod: "query",
-                    api: "document",
-                    format: `(id:"${id}")`,
-                    response:
-                        "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
-                },
-            });
-        } else if (id === newID) {
-            console.log(id, newID, pathID);
+    // useEffect(() => {
+    //     const pathID = path.replace(/\//g, "");
+    //     // console.log("pathID", pathID);
+    //     if (id !== newID) {
+    //         console.log(id, newID, pathID);
+    //         console.log("start sync ");
+    //         dispatch({
+    //             type: "QUERY_DOCUMENTS",
+    //             payload: {
+    //                 gqlMethod: "query",
+    //                 api: "document",
+    //                 format: `(id:"${id}")`,
+    //                 response:
+    //                     "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
+    //             },
+    //         });
+    //     } else if (id === newID) {
+    //         console.log(id, newID, pathID);
 
-            console.log("sync success");
-            refVContent.current.id = newID;
-            const converter = new showdown.Converter();
-            const html = converter.makeHtml(rawContent);
-            refVContent.current.html = html;
-        }
-    }, [id, newID, path]);
+    //         console.log("sync success");
+    //         refVContent.current.id = newID;
+    //         const converter = new showdown.Converter();
+    //         const html = converter.makeHtml(rawContent);
+    //         refVContent.current.html = html;
+    //     }
+    // }, [id, newID, path]);
+
+    useEffect(() => {
+        dispatch({
+            type: "QUERY_DOCUMENTS",
+            payload: {
+                gqlMethod: "query",
+                api: "document",
+                format: `(id:"${id}")`,
+                response:
+                    "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
+            },
+        });
+    }, [id]);
 
     const changeTitle = useCallback(
         debounce((id, title) => {
             if (id === newID && title) {
-                console.log("update");
                 dispatch({
                     type: "EDIT_TITLE",
                     payload: {
@@ -247,7 +264,6 @@ const SmallEditor = () => {
                 });
                 refUploading.current = true;
             } else {
-                console.log("no dispatch");
             }
         }, 500),
         [newID]
@@ -270,7 +286,7 @@ const SmallEditor = () => {
             type: "UPDATE_CONTENT",
             payload: { id: refVContent.current.id, content: marked },
         });
-    }, [location]);
+    }, [location, path]);
 
     return (
         <AllStyledComponent>
@@ -357,11 +373,33 @@ const SmallEditor = () => {
                                     PermentDelete
                                 </Button>
                             )}
-                            <TagContent
-                                currentHtmlsaveToreducer={
-                                    currentHtmlsaveToreducer
-                                }
-                            />
+                            <div css={css`
+                            display: flex;
+                            align-items: center;
+                            ` }>
+                                <TagContent
+                                    currentHtmlsaveToreducer={
+                                        currentHtmlsaveToreducer
+                                    }
+                                />
+                                <div>
+                                    {editingDocument?.tags?.map((item) => (
+                                        <Chip
+                                            key={item._id}
+                                            label={item.name}
+                                            css={css`
+                                                background-color: ${item.colorCode};
+                                                margin: 5px;
+                                                color: ${getTextColorFromBackground(
+                                                    item.colorCode.slice(1)
+                                                )};
+                                            `}
+                                            variant="outlined"
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            {console.log(editingDocument, "wdwdw")}
                             <ProjectSelector
                                 currentHtmlsaveToreducer={
                                     currentHtmlsaveToreducer

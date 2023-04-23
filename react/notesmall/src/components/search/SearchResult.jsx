@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 
 import SearchDetails from "./SearchDetails";
-import DocumentCard from "../Card";
+import DocumentCard from "../common/Card";
 import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 import { Row, Col } from "react-bootstrap";
@@ -17,8 +17,8 @@ const SearchResult = ({ searchResult }) => (
             <div key={item._id}>
                 <Row
                     css={css`
-                        height: 300px;
-                        align-items: center;
+                        height: 320px;
+                        align-items: stretch;
                     `}
                 >
                     <Col

@@ -51,7 +51,7 @@ const CommonProvider = ({ children }) => {
                     token 
                     role
                     documents{
-                        _id title updated_at isDeleted isFavorite isArchived
+                        _id title updated_at isDeleted isFavorite isArchived created_at
                     }
                     projects{
                         _id name  documents {
@@ -73,7 +73,6 @@ const CommonProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        console.log("user", user);
 
         getTagList(dispatch);
         getProjectList(dispatch);
@@ -86,7 +85,6 @@ const CommonProvider = ({ children }) => {
     useEffect(() => {
         const localToken = localStorage.getItem("token");
         if (!localToken && token) {
-            console.log(token);
             dispatch({ type: "LOGOUT" });
             //reload
             history("/home");

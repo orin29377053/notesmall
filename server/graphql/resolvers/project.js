@@ -105,7 +105,6 @@ module.exports = {
                 projectLoader.clear(newProject._id);
 
                 if (documents) {
-                    console.log("dwdw");
                     const oldDocuments = oldProject.documents;
                     const newDocuments = documents;
                     const deletedDocuments = oldDocuments.filter(

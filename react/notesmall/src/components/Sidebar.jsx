@@ -5,9 +5,10 @@ import AddnewDocument from "./AddnewDocument";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
-import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
+import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import CategoryTab from "./sidebar/CategoryTab";
-import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 
 const Sidebar = () => {
     let history = useNavigate();
@@ -15,30 +16,95 @@ const Sidebar = () => {
         <div className="sidebar">
             <div
                 css={css`
-                    padding: 5px 20px;
-                    border-bottom: 1px solid #E7EBF0;
-
+                    padding: 5px 10px;
+                    border-bottom: 1px solid #e7ebf0;
+                    display: flex;
+                    justify-content: space-between;
+                    flex-direction: column;
+                    align-items: flex-start;
                 `}
             >
-                <Button
-                    variant="text"
-                    color="warning"
-                    onClick={() => history("/search")}
-                    size="small"
+                <div
                     css={css`
-                        margin: 0 3px;
-                        color: black !important;
+                        cursor: pointer;
+                        display: flex;
+                        padding: 2px;
+                        padding-left: 3px;
+                        padding-right: 100px;
+                        border-radius: 5px;
+                        margin-bottom: 5px;
                         &:hover {
-                            color: black !important;
-                            background-color: #c5c5c5;
+                            background-color: #ECF1FE;
+                            color: #1976d2;
+                            font-weight: 700;
                         }
+                        font-size: 15px;
+                        align-items: center;
+                        width: 100%;
+
                     `}
-                    startIcon={<SearchIcon />}
+                    onClick={() => history("/search")}
                 >
+                    <SearchIcon
+                        css={css`
+                            margin-right: 5px;
+                            color: #82b1ff;
+                        font-size: 18px;
+                        
+
+                        `}
+                    />
                     Search
-                </Button>
-                
-                <Button
+                    {/* <Button
+                        variant="text"
+                        color="warning"
+                        onClick={() => history("/search")}
+                        size="small"
+                        css={css`
+                            margin: 0 3px;
+                            color: #1976d2 !important;
+
+                            &:hover {
+                                background-color: #f1f3f4;
+                            }
+                        `}
+                        startIcon={<SearchIcon />}
+                    >
+                        Search
+                    </Button> */}
+                </div>
+                <div
+                    onClick={() => history("/tag")}
+                    css={css`
+                        cursor: pointer;
+                        display: flex;
+                        padding: 2px;
+                        padding-left: 3px;
+                        padding-right: 100px;
+                        border-radius: 5px;
+                        margin-bottom: 5px;
+                        &:hover {
+                            background-color: #ECF1FE;
+                            color: #1976d2;
+                            font-weight: 700;
+                        }
+                        font-size: 15px;
+                        align-items: center;
+                        width: 100%;
+
+
+                    `}
+                >
+                    <TurnedInNotIcon
+                        css={css`
+                            margin-right: 5px;
+                            color: #82b1ff;
+                            font-size: 18px;
+
+                        `}
+                    />
+                    Tag
+                    {/* <Button
                     variant="text"
                     color="warning"
                     onClick={() => history("/tag")}
@@ -54,25 +120,88 @@ const Sidebar = () => {
                     startIcon={<TurnedInNotIcon />}
                 >
                     Tag
-                </Button>
-                <Button
-                    variant="text"
-                    color="warning"
+                </Button> */}
+                </div>
+                <div
                     onClick={() => history("/project")}
-                    size="small"
                     css={css`
-                        margin: 0 3px;
-                        color: black !important;
+                        cursor: pointer;
+                        display: flex;
+                        padding: 2px;
+                        padding-left: 3px;
+                        padding-right: 100px;
+                        border-radius: 5px;
+                        margin-bottom: 5px;
                         &:hover {
-                            color: black !important;
-                            background-color: #c5c5c5;
+                            background-color: #ECF1FE;
+                            color: #1976d2;
+                            font-weight: 700;
                         }
+                        font-size: 15px;
+                        align-items: center;
+                        width: 100%;
+
+
                     `}
-                    startIcon={<AccountTreeOutlinedIcon />}
                 >
+                    <AccountTreeOutlinedIcon
+                        css={css`
+                            margin-right: 5px;
+                            color: #82b1ff;
+                            font-size: 18px;
+                            
+
+                        `}
+                    />
                     Project
-                </Button>
-                <AddnewDocument />
+                    {/* <Button
+                        variant="text"
+                        color="warning"
+                        onClick={() => history("/project")}
+                        size="small"
+                        css={css`
+                            margin: 0 3px;
+                            color: black !important;
+                            &:hover {
+                                color: black !important;
+                                background-color: #c5c5c5;
+                            }
+                        `}
+                        startIcon={<AccountTreeOutlinedIcon />}
+                    >
+                        Project
+                    </Button> */}
+                </div>
+                <div
+                    css={css`
+                        cursor: pointer;
+                        display: flex;
+                        padding: 2px;
+                        padding-left: 3px;
+                        padding-right: 100px;
+                        border-radius: 5px;
+                        margin-bottom: 5px;
+                        &:hover {
+                            background-color: #ECF1FE;
+                            color: #1976d2;
+                            font-weight: 700;
+                        }
+                        font-size: 15px;
+                        align-items: center;
+                        width: 100%;
+
+
+                    `}
+                >
+                    <PostAddIcon
+                        css={css`
+                            margin-right: 5px;
+                            color: #82b1ff;
+                            font-size: 18px;
+                        `}
+                    />
+                    <AddnewDocument />
+                </div>
             </div>
             {/* <Getlist /> */}
             <CategoryTab />

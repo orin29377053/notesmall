@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const tagSchema = new Schema({
-
     name: {
         type: String,
         required: true,
@@ -23,7 +22,11 @@ const tagSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Document",
         },
-    ]
+    ],
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+    },
 });
 tagSchema.pre("find", function (next) {
     console.log("Tag search started");
