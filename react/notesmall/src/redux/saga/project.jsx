@@ -12,7 +12,7 @@ export function* getProjectList(action) {
     });
 }
 
-function* createNewPorject(action) {
+function* createNewProject(action) {
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -24,7 +24,7 @@ function* createNewPorject(action) {
 function* someOtherGenerator() {
     console.log("data~~~");
 }
-function* deletePorject(action) {
+function* deleteProject(action) {
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -32,7 +32,7 @@ function* deletePorject(action) {
         queryString: action.payload,
     });
 }
-function* updatePorject(action) {
+function* updateProject(action) {
     yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -46,9 +46,9 @@ function* updatePorject(action) {
 
 function* mySaga() {
     yield takeLatest("FETCH_Project_LIST", getProjectList);
-    yield takeLatest("FETCH_CREATE_PROJECT", createNewPorject);
-    yield takeLatest("FETCH_DELETE_PROJECT", deletePorject);
-    yield takeLatest("FETCH_UPDATE_PROJECT", updatePorject);
+    yield takeLatest("FETCH_CREATE_PROJECT", createNewProject);
+    yield takeLatest("FETCH_DELETE_PROJECT", deleteProject);
+    yield takeLatest("FETCH_UPDATE_PROJECT", updateProject);
 
 
 }

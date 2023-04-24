@@ -36,7 +36,7 @@ const CommonProvider = ({ children }) => {
                 gqlMethod: "query",
                 api: "documents",
                 response:
-                    "_id title updated_at isDeleted isFavorite isArchived",
+                    "_id title updated_at isDeleted isFavorite isArchived content",
             },
         });
     };
@@ -50,6 +50,7 @@ const CommonProvider = ({ children }) => {
                     email 
                     token 
                     role
+                    created_at
                     documents{
                         _id title updated_at isDeleted isFavorite isArchived created_at
                     }

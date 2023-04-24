@@ -27,7 +27,6 @@ const ItemCard = ({ item }) => {
     return item?.documents?.map((doc) => (
         <div
             css={css`
-                background-color: #f5f5f5;
                 padding: 10px;
                 margin-top: 10px;
             `}
@@ -83,6 +82,7 @@ const ProjectList = ({ list }) => {
         });
     };
     const updateProject = (id) => {
+        
         dispatch({
             type: "FETCH_UPDATE_PROJECT",
             payload: {

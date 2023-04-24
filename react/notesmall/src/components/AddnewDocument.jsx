@@ -16,7 +16,7 @@ const AddnewDocument = () => {
                 api: "createDocument",
                 format: `(document: {title: "new document",content: "new document"})`,
                 response:
-                    "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
+                "_id title content updated_at created_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived images{ url}",
             },
             helper: { history },
         });

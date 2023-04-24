@@ -19,30 +19,29 @@ const SearchResult = ({ searchResult }) => (
     font-weight: 700;
 
     `}>
-        {searchResult.length>1?"There are":"There is"}  {searchResult.length} {searchResult.length>1?"documents":"document"}{searchResult.length>1?" have ":"has"}  your search term
+        {searchResult.length>1?"There are":"There is"}  {searchResult.length} {searchResult.length>1?"documents":"document"}{searchResult.length>1?" have ":" have"}  your search term
     </div>
         {searchResult?.map((item, i) => (
             <div key={item._id}>
-                <Row
+                <Row 
                     css={css`
                         align-items: stretch;
                     `}
+                    
                 >
                     <Col
                         md={8}
                         css={css`
-                            height: 280px;
                             overflow: auto;
                             padding: 10px;
                             border-radius: 5px;
                             border: 1px solid #e0e0e0;
-                            margin-top: 10px;
-                            height: 300px;
+                            max-height: 285px;
                         `}
                     >
                         <SearchDetails highlights={item.highlights} />
                     </Col>
-                    <Col md={4}>
+                    <Col md={4} >
                         <DocumentCard
                             title={item.title}
                             content={sanitizeContent(

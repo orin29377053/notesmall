@@ -22,6 +22,7 @@ import TOC from "./editor/TOC";
 import Chip from "@mui/material/Chip";
 import getTextColorFromBackground from "../utils/getTextColorFromBackground";
 import EditorInformation from "./editor/EditorInformation";
+import showdown from "showdown";
 
 import { graphqlAPI } from "../utils/const";
 import {
@@ -141,13 +142,15 @@ const SmallEditor = () => {
         });
     };
     const currentTitleSaveToreducer = (title) => {
-        dispatch({
-            type: "UPDATE_TITLE",
-            payload: {
-                id: refVContent.current.id,
-                title: title,
-            },
-        });
+        if (refVContent.current.id === id) {
+            dispatch({
+                type: "UPDATE_TITLE",
+                payload: {
+                    id: refVContent.current.id,
+                    title: title,
+                },
+            });
+        }
     };
 
     const handleEditorChange = async (html) => {
@@ -235,6 +238,15 @@ const SmallEditor = () => {
     //         refVContent.current.html = html;
     //     }
     // }, [id, newID, path]);
+
+    useEffect(() => {
+        if (!rawContent) { return };
+        console.log("rawContent", rawContent);
+        refVContent.current.id = id;
+        const converter = new showdown.Converter();
+        const html = converter.makeHtml(rawContent);
+        refVContent.current.html = html;
+    }, [rawContent]);
 
     useEffect(() => {
         dispatch({

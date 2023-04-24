@@ -76,15 +76,17 @@ const EditorInformation = () => {
 
 
     useEffect(() => {
+        console.log("qqq")
+        console.log("editingDocument", editingDocument)
         if (Object.keys(editingDocument).length !== 0) {
             setUpdated_at(getFormattedTime(editingDocument?.updated_at));
             setCreated_at(getFormattedTime(editingDocument?.created_at));
-            setTitle(editingDocument.title);
-            setContentlength(editingDocument.content.length);
-            setImageslength(editingDocument.images.length);
-            setIsFavorite(editingDocument.isFavorite);
-            setIsDeleted(editingDocument.isDeleted);
-            setId(editingDocument._id)
+            setTitle(editingDocument?.title);
+            setContentlength(editingDocument?.content.length||0);
+            setImageslength(editingDocument?.images.length||0);
+            setIsFavorite(editingDocument?.isFavorite);
+            setIsDeleted(editingDocument?.isDeleted);
+            setId(editingDocument?._id)
         }
     }, [editingDocument, path]);
 

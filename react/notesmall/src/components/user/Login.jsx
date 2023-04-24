@@ -38,6 +38,7 @@ const Login = ({ setOpen }) => {
                 email 
                 token
                 role 
+                created_at
                 documents{
                     _id title updated_at isDeleted isFavorite isArchived created_at
                 }
