@@ -48,7 +48,7 @@ const Sidebar = () => {
                     <SearchIcon
                         css={css`
                             margin-right: 5px;
-                            color: #82b1ff;
+                            color: #1976d2;
                         font-size: 18px;
                         
 
@@ -98,12 +98,12 @@ const Sidebar = () => {
                     <TurnedInNotIcon
                         css={css`
                             margin-right: 5px;
-                            color: #82b1ff;
+                            color: #1976d2;
                             font-size: 18px;
 
                         `}
                     />
-                    Tag
+                    Tags
                     {/* <Button
                     variant="text"
                     color="warning"
@@ -147,13 +147,13 @@ const Sidebar = () => {
                     <AccountTreeOutlinedIcon
                         css={css`
                             margin-right: 5px;
-                            color: #82b1ff;
+                            color:#1976d2;
                             font-size: 18px;
                             
 
                         `}
                     />
-                    Project
+                    Projects
                     {/* <Button
                         variant="text"
                         color="warning"
@@ -196,7 +196,7 @@ const Sidebar = () => {
                     <PostAddIcon
                         css={css`
                             margin-right: 5px;
-                            color: #82b1ff;
+                            color:#1976d2;
                             font-size: 18px;
                         `}
                     />

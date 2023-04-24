@@ -21,8 +21,8 @@ import ProjectSelector from "./editor/ProjectSelector";
 import TOC from "./editor/TOC";
 import Chip from "@mui/material/Chip";
 import getTextColorFromBackground from "../utils/getTextColorFromBackground";
+import EditorInformation from "./editor/EditorInformation";
 
-import showdown from "showdown";
 import { graphqlAPI } from "../utils/const";
 import {
     BlockquoteExtension,
@@ -184,30 +184,30 @@ const SmallEditor = () => {
         refUploading.current = true;
     };
 
-    const Delete = (dispatch, id) => {
-        dispatch({
-            type: "DELETE_SIDEBAR_LIST",
-            payload: {
-                gqlMethod: "mutation",
-                api: "deleteDocument",
-                format: `(document:{ _id: "${id}" ,isDeleted: true})`,
-                response: "_id ",
-            },
-        });
-        history("/");
-    };
-    const PermentDelete = (dispatch, id) => {
-        dispatch({
-            type: "PERMENT_DELETE_DOCUMENT",
-            payload: {
-                gqlMethod: "mutation",
-                api: "permantDeleteDocument",
-                format: `(id:"${id}")`,
-                response: "_id ",
-            },
-        });
-        history("/");
-    };
+    // const Delete = (dispatch, id) => {
+    //     dispatch({
+    //         type: "DELETE_SIDEBAR_LIST",
+    //         payload: {
+    //             gqlMethod: "mutation",
+    //             api: "deleteDocument",
+    //             format: `(document:{ _id: "${id}" ,isDeleted: true})`,
+    //             response: "_id ",
+    //         },
+    //     });
+    //     history("/");
+    // };
+    // const PermentDelete = (dispatch, id) => {
+    //     dispatch({
+    //         type: "PERMENT_DELETE_DOCUMENT",
+    //         payload: {
+    //             gqlMethod: "mutation",
+    //             api: "permantDeleteDocument",
+    //             format: `(id:"${id}")`,
+    //             response: "_id ",
+    //         },
+    //     });
+    //     history("/");
+    // };
 
     // useEffect(() => {
     //     const pathID = path.replace(/\//g, "");
@@ -244,7 +244,7 @@ const SmallEditor = () => {
                 api: "document",
                 format: `(id:"${id}")`,
                 response:
-                    "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
+                    "_id title content updated_at created_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived images{ url}",
             },
         });
     }, [id]);
@@ -276,6 +276,7 @@ const SmallEditor = () => {
     }, [title, changeTitle]);
 
     useEffect(() => {
+        console.log("?");
         const turndownService = new TurndownService({
             // keep: 'code[data-language]',
             codeBlockStyle: "fenced",
@@ -288,12 +289,14 @@ const SmallEditor = () => {
         });
     }, [location, path]);
 
+    console.log("here", editingDocument);
+
     return (
         <AllStyledComponent>
             {/* <div>{refUploading.current ? "sync" : "not sync"}</div> */}
             <ThemeProvider>
-                <Row className="pb-3">
-                    <Col md={9}>
+                <div className="editArea">
+                    <div className="editPart">
                         <Remirror manager={manager} initialContent={state}>
                             <Row className="px-3 mb-2 mt-3">
                                 <input
@@ -331,13 +334,14 @@ const SmallEditor = () => {
                             ></OnChangeHTML>
                             <TextEditor className="px-1" />
                         </Remirror>
-                    </Col>
-                    <Col
+                    </div>
+                    <div
+                        className="editMenu"
                         md={3}
                         css={css`
-                            border-left: 1px solid #ccc;
                             display: flex;
                             flex-direction: column;
+                            margin-top: 1rem;
                         `}
                     >
                         <div
@@ -348,48 +352,82 @@ const SmallEditor = () => {
                                 align-items: flex-start;
                             `}
                         >
-                            {isDeleted === false ? (
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={() => {
-                                        Delete(dispatch, id);
-                                    }}
-                                    startIcon={<DeleteIcon />}
-                                    size="small"
+                            {/* <div css={css``}>
+                                {isDeleted === false ? (
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={() => {
+                                            Delete(dispatch, id);
+                                        }}
+                                        startIcon={<DeleteIcon />}
+                                        size="small"
+                                        css={css`
+                                            border-radius: 20px;
+                                            font-size: 12px;
+                                            font-weight: 700;
+                                        `}
+                                    >
+                                        Delete
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        color="warning"
+                                        onClick={() => {
+                                            PermentDelete(dispatch, id);
+                                        }}
+                                        startIcon={<DeleteIcon />}
+                                        size="small"
+                                        css={css`
+                                            border-radius: 20px;
+                                            font-size: 12px;
+                                            font-weight: 700;
+                                        `}
+                                    >
+                                        Perment Delete
+                                    </Button>
+                                )}
+                            </div>
+                             */}
+
+                            <div
+                                css={css`
+                                    display: flex;
+                                    align-items: flex-start;
+                                    margin-top: 10px;
+                                    border-radius: 5px;
+                                    padding: 5px;
+                                    align-items: flex-start;
+
+                                    flex-direction: row;
+                                `}
+                            >
+                                <div
+                                    css={css`
+                                        display: flex;
+                                        align-items: center;
+                                        margin-right: 10px;
+                                    `}
                                 >
-                                    Delete
-                                </Button>
-                            ) : (
-                                <Button
-                                    variant="contained"
-                                    color="warning"
-                                    onClick={() => {
-                                        PermentDelete(dispatch, id);
-                                    }}
-                                    startIcon={<DeleteIcon />}
-                                    size="small"
-                                >
-                                    PermentDelete
-                                </Button>
-                            )}
-                            <div css={css`
-                            display: flex;
-                            align-items: center;
-                            ` }>
-                                <TagContent
-                                    currentHtmlsaveToreducer={
-                                        currentHtmlsaveToreducer
-                                    }
-                                />
+                                    <TagContent
+                                        currentHtmlsaveToreducer={
+                                            currentHtmlsaveToreducer
+                                        }
+                                    />
+                                </div>
+
                                 <div>
                                     {editingDocument?.tags?.map((item) => (
                                         <Chip
                                             key={item._id}
                                             label={item.name}
+                                            size="small"
                                             css={css`
                                                 background-color: ${item.colorCode};
-                                                margin: 5px;
+                                                margin: 2px;
+                                                padding: 1px;
+                                                font-weight: 700;
                                                 color: ${getTextColorFromBackground(
                                                     item.colorCode.slice(1)
                                                 )};
@@ -399,20 +437,39 @@ const SmallEditor = () => {
                                     ))}
                                 </div>
                             </div>
-                            {console.log(editingDocument, "wdwdw")}
-                            <ProjectSelector
-                                currentHtmlsaveToreducer={
-                                    currentHtmlsaveToreducer
-                                }
-                            />
+                            <div
+                                css={css`
+                                    margin-left: 5px;
+                                `}
+                            >
+                                <ProjectSelector
+                                    currentHtmlsaveToreducer={
+                                        currentHtmlsaveToreducer
+                                    }
+                                />
+                            </div>
+                            <div
+                                css={css`
+                                    margin-left: 5px;
+                                `}
+                            >
+                                <TOC
+                                    tracingDoc={refVContent.current.html}
+                                    pathID={id}
+                                    reducerID={newID}
+                                />
+                            </div>
+                            <div
+                                css={css`
+                                    padding: 5px;
+                                    width: 100%;
+                                `}
+                            >
+                                <EditorInformation />
+                            </div>
                         </div>
-                        <TOC
-                            tracingDoc={refVContent.current.html}
-                            pathID={id}
-                            reducerID={newID}
-                        />
-                    </Col>
-                </Row>
+                    </div>
+                </div>
             </ThemeProvider>
         </AllStyledComponent>
     );

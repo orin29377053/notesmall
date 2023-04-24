@@ -12,12 +12,19 @@ function removeLinkInBrackets(text) {
 }
 
 const SearchResult = ({ searchResult }) => (
-    <>
+    <><div css={css`
+    margin-top: 10px;
+    color: #1976d2;
+    font-size: 20px;
+    font-weight: 700;
+
+    `}>
+        {searchResult.length>1?"There are":"There is"}  {searchResult.length} {searchResult.length>1?"documents":"document"}{searchResult.length>1?" have ":"has"}  your search term
+    </div>
         {searchResult?.map((item, i) => (
             <div key={item._id}>
                 <Row
                     css={css`
-                        height: 320px;
                         align-items: stretch;
                     `}
                 >
@@ -28,6 +35,9 @@ const SearchResult = ({ searchResult }) => (
                             overflow: auto;
                             padding: 10px;
                             border-radius: 5px;
+                            border: 1px solid #e0e0e0;
+                            margin-top: 10px;
+                            height: 300px;
                         `}
                     >
                         <SearchDetails highlights={item.highlights} />
@@ -35,7 +45,9 @@ const SearchResult = ({ searchResult }) => (
                     <Col md={4}>
                         <DocumentCard
                             title={item.title}
-                            content={sanitizeContent(removeLinkInBrackets(item.content))}
+                            content={sanitizeContent(
+                                removeLinkInBrackets(item.content)
+                            )}
                             _id={item._id}
                             image={extractImageURL(item.content)}
                         />

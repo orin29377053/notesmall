@@ -133,6 +133,7 @@ const Login = ({ setOpen }) => {
                             id="outlined-adornment-password"
                             type={showPassword ? "text" : "password"}
                             defaultValue={password}
+                            
                             size="small"
                             endAdornment={
                                 <InputAdornment position="end">

@@ -7,6 +7,8 @@ import Box from "@mui/material/Box";
 import Login from "../user/Login";
 import { useSelector } from "react-redux";
 import UserInfo from "../user/UserInfo";
+import logo from "../../image/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const style = {
     position: "absolute",
@@ -14,6 +16,8 @@ const style = {
     left: "50%",
     transform: "translate(-50%, -50%)",
     bgcolor: "background.paper",
+    borderRadius: 3,
+
     // border: "2px solid #000",
     boxShadow: 10,
     p: 3,
@@ -23,13 +27,15 @@ const userInfoStyle = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 500,
+    width: 350,
     bgcolor: "background.paper",
+    borderRadius: 3,
+
     // border: "2px solid #000",
     boxShadow: 10,
-    p: 3,
 };
 const Header = () => {
+    const history = useNavigate();
     const { user } = useSelector((state) => state.user);
     const email = user?.email;
     const role = user?.role;
@@ -66,7 +72,17 @@ const Header = () => {
                 color: rgb(45, 56, 67);
             `}
         >
-            Header
+            <img
+                src={logo}
+                css={css`
+                    width: 150px;
+                    cursor: pointer;
+                `}
+                onClick={() => {
+                    history("/home");
+                }}
+
+            />
             <div
                 css={css`
                     float: right;
@@ -82,7 +98,7 @@ const Header = () => {
                         align-items: center;
                         cursor: pointer;
                         :hover {
-                            background-color: #f1f3f4;
+                            background-color: #ecf1fe;
                             color: #1976d2;
                         }
                     `}
@@ -93,7 +109,6 @@ const Header = () => {
                             margin-left: 10px;
                             font-size: 16px;
                             font-weight: 700;
-                            color: #1976d2;
                             margin-right: 10px;
                         `}
                     >

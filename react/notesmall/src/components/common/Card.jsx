@@ -7,6 +7,8 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import LaunchIcon from '@mui/icons-material/Launch';
+import noImg from "../../image/no_image.png";
+
 export default function DocumentCard({ title, content, _id, image = "" }) {
     return (
         <Link
@@ -20,6 +22,9 @@ export default function DocumentCard({ title, content, _id, image = "" }) {
                 sx={{ maxWidth: 345}}
                 css={css`
                     margin: 10px 0;
+                    border-radius: 5px;
+                    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.2);
+                    height: 300px;
                     
                     &:hover {
                         transform: translateY(-1px);
@@ -32,7 +37,7 @@ export default function DocumentCard({ title, content, _id, image = "" }) {
                     image={
                         image
                             ? image
-                            : "https://orinlin.s3.us-east-1.amazonaws.com/3KrbHm5grv_small.jpg"
+                            : noImg
                     }
                     title="green iguana"
                 />

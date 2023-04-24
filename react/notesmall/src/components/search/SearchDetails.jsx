@@ -1,9 +1,11 @@
 import React from "react";
 import HighlightsCard from "./unit/HighlightsCard";
+import { css } from "@emotion/react";
+/** @jsxImportSource @emotion/react */
 
 const SearchDetails = ({ highlights }) => {
     return (
-        <div>
+        <div >
             {Object.keys(highlights).map((item, index) => (
                 <HighlightsCard key={index} item={highlights[item]} path={item} />
             ))}

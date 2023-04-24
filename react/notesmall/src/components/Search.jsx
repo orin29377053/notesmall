@@ -6,7 +6,7 @@ import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 import SearchResult from "./search/SearchResult";
-
+import searchImage from "../image/Personal files-rafiki.svg";
 
 const fetchToSearch = debounce((dispatch, keyword) => {
     if (keyword) {
@@ -49,29 +49,52 @@ const Search = () => {
 
     const { searchResult } = useSelector((state) => state.common);
     return (
-        <div css={css`
-        margin: 20px;
-        
-        ` }>
-            <TextField
-                id="outlined-basic"
-                label="Search"
-                variant="outlined"
-                size="small"
-                onChange={(e) => {
-                    dispatch({
-                        type: "SEARCH_KEYWORD",
-                        payload: { keyword: e.target.value },
-                    });
-                }}
-            />
-            <div css={css`
-        margin-top: 1px;
-        
-        `}>
-                <SearchResult searchResult={searchResult} />
+        <div
+            css={css`
+                margin: 20px;
+            `}
+        >
+            <div
+                css={css`
+                    display: flex;
+                    align-items: center;
+                `}
+            >
+                <div
+                    css={css`
+                        font-size: 20px;
+                        font-weight: bold;
+                    `}
+                >
+                    I want to know about
+                </div>
+                <TextField
+                    id="outlined-basic"
+                    label="somethings..."
+                    variant="outlined"
+                    size="small"
+                    onChange={(e) => {
+                        dispatch({
+                            type: "SEARCH_KEYWORD",
+                            payload: { keyword: e.target.value },
+                        });
+                    }}
+                    sx={{ ml: 1 }}
+                    
+                />
             </div>
-            {/* <Test /> */}
+            {searchResult?.length > 0 ? (
+                <div
+                    css={css`
+                        margin-top: 1px;
+                    `}
+                >
+                    <SearchResult searchResult={searchResult} />
+                </div>
+            ) : (
+                
+                (<img src={searchImage} width="50%" css={css``} />)
+            )}
         </div>
     );
 };

@@ -33,16 +33,20 @@ const editorReducer = (state = initState, action) => {
         case "UPDATE_CONTENT":
             let newContent
             if (action.payload.content) {
-                newContent=action.payload.content
-            } else {
-                newContent=state.editingDocument.content
-            }
+                newContent = action.payload.content
+                return {
+                    ...state,
+                    editingDocument: {
+                        ...state.editingDocument,
+                        content: newContent,
+                    },
+                };
+                
+            } 
+            
             return {
                 ...state,
-                editingDocument: {
-                    ...state.editingDocument,
-                    content: newContent,
-                },
+                
             };
         case "UPDATE_TAGS_RESULT":
             return {

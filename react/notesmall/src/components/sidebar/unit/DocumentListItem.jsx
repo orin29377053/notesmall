@@ -10,6 +10,7 @@ import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutl
 import Tooltip from "@mui/material/Tooltip";
 
 const DocumentListItem = ({ list }) => {
+    
     return list?.map((item) => (
         <Tooltip
             title={`Last updated: ${item.updated_at
@@ -25,14 +26,37 @@ const DocumentListItem = ({ list }) => {
                     css={css`
                         color: black;
                         text-decoration: none;
+                        border-radius: 5px;
+                        font-size: 15px;
+                        padding: 5px 10px;
+
+                        width: 100%;
+                        &:hover {
+                            background-color: #ecf1fe;
+                            color: #1976d2;
+                            font-weight: 700 !important;
+                        }
+                        & > InsertDriveFileOutlinedIcon:hover {
+                            background-color: #ecf1fe;
+                            color: #1976d2;
+                            font-weight: 700 !important;
+                        }
                     `}
                 >
                     <div
                         css={css`
                             display: flex;
+                            align-items: center;
+                            border-radius: 5px;
+
+                            &:hover {
+                                background-color: #ecf1fe;
+                                color: #1976d2;
+                                font-weight: 700 !important;
+                            }
                         `}
                     >
-                        <ListItemIcon
+                        {/* <ListItemIcon
                             css={css`
                                 align-items: center;
                             `}
@@ -40,20 +64,27 @@ const DocumentListItem = ({ list }) => {
                                 maxWidth: "25px",
                                 minWidth: "25px",
                             }}
-                        >
-                            <InsertDriveFileOutlinedIcon
-                                fontSize="small"
-                                sx={{
-                                    maxWidth: "20px",
-                                }}
-                            />
-                        </ListItemIcon>
-                        <ListItemText
+                        > */}
+                        <InsertDriveFileOutlinedIcon
+                            fontSize="small"
+                            sx={{
+                                maxWidth: "20px",
+                                marginRight: "5px",
+                            }}
+                        />
+                        {/* </ListItemIcon> */}
+                        {item.title}
+                        {/* <ListItemText
                             primary={item.title}
                             css={css`
                                 warpping: break-word;
+                                &:hover {
+                                    background-color: #ecf1fe;
+                                    color: #1976d2;
+                                    font-weight: 700 !important;
+                                }
                             `}
-                        />
+                        /> */}
                     </div>
 
                     {/* <ListItemText

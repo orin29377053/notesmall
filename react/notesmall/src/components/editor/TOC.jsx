@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 
-
-const TOC = ({tracingDoc,pathID,reducerID}) => {
+import TocIcon from "@mui/icons-material/Toc";
+const TOC = ({ tracingDoc, pathID, reducerID }) => {
     const [headings, setHeadings] = useState([]);
-    
 
     useEffect(() => {
         const headingElements = document.querySelectorAll(
@@ -20,38 +19,54 @@ const TOC = ({tracingDoc,pathID,reducerID}) => {
         });
 
         setHeadings(headingsArray);
-    }, [tracingDoc,pathID,reducerID]);
+    }, [tracingDoc, pathID, reducerID]);
 
     return (
         <nav>
-            <div css={css`
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-                        
-                        `}>Content</div>
-            <ul css={css`
-            padding-left: 10px;
-            `}>
+            <div
+                css={css`
+                    margin-bottom: 5px;
+                    font-size: 14px;
+                `}
+            >
+                <TocIcon
+                    css={css`
+                        color: #1976d2;
+                        margin-right: 5px;
+                    `}
+                />
+                Content
+            </div>
+            <ul
+                css={css`
+                    padding-left: 10px;
+                `}
+            >
                 {headings.map((heading, index) => (
-                    <li key={index} css={
-                        css`
-                        list-style: none;
-
-                        
-                        `
-                    }>
-                        <a href={`#:~:text=${heading.text}`} css={css`
-                        text-decoration: none; 
-                        color: black;
-                        font-size: 0.8rem;
-                        :hover{
-                            color: #3f51b5;
-                            text-decoration: underline;
-                            font-size: 0.9rem;
-                        }
-                    
-                        `}>{heading.text}</a>
+                    <li
+                        key={index}
+                        css={css`
+                            list-style: none;
+                        `}
+                    >
+                        <a
+                            href={`#:~:text=${heading.text}`}
+                            css={css`
+                                text-decoration: none;
+                                color: black;
+                                font-size: 0.8rem;
+                                width: 100%;
+                                padding: 5px 10px;
+                                border-radius: 5px;
+                                &:hover {
+                                    background-color: #ecf1fe;
+                                    color: #1976d2;
+                                    font-weight: 700 !important;
+                                }
+                            `}
+                        >
+                            {heading.text}
+                        </a>
                     </li>
                 ))}
             </ul>

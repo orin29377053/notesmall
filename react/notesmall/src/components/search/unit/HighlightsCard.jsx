@@ -21,9 +21,14 @@ const HighlightsCard = ({ item, path }) => {
             }
         });
     };
+    const transformString = {
+        title: "Title",
+        content: "Content",
+        "images.autoTags": "Images autotags",
+    };
 
     return (
-        <Card
+        <div
             css={css`
                 padding: 5px;
                 margin-bottom: 5px;
@@ -37,11 +42,40 @@ const HighlightsCard = ({ item, path }) => {
                     }
                 `}
             >
-                <h6 className="mb-1 fw-bold">{path.toUpperCase()}</h6>
+                <div
+                    css={css`
+                        display: flex;
+                        align-items: center;
+                    `}
+                >
+                    <div
+                        css={css`
+                            border-radius: 12px;
+                            boarder: 2px solid #1976d2;
+                            background-color: #ecf1fe;
+                            padding: 2px 10px 2px 10px;
+                            font-size: 14px;
+                            font-weight: 700;
+                            box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.2);
+                            color: #1976d2;
+                        `}
+                    >
+                        {transformString[path.toString()]}
+                    </div>
+                    <div css={css`
+                    margin-left: 5px;
+                    font-size: 12px;
+                    
+                    `}>
+                        {item.length} {item.length > 1 ? "results" : "result"}{" "}
+                        matching
+                    </div>
+                </div>
                 {item.map((element, i) => (
                     <div
                         css={css`
-                            margin-left: 15px;
+                            margin-left: 5px;
+                            margin-top: 10px;
                         `}
                         className={
                             item.length - 1 !== i ? "needBottomBorder" : ""
@@ -54,7 +88,7 @@ const HighlightsCard = ({ item, path }) => {
                     </div>
                 ))}
             </CardContent>
-        </Card>
+        </div>
     );
 };
 

@@ -13,6 +13,7 @@ import ProjectDocument from "./ProjectDocument";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
+import { padding, sizeHeight } from "@mui/system";
 const CategoryTab = () => {
     const { sidebar } = useSelector((state) => state.common);
     const { projectlist } = useSelector((state) => state.project);
@@ -54,20 +55,24 @@ const CategoryTab = () => {
                 >
                     <TabList
                         onChange={handleChange}
-                        className="hello"
                         variant="fullWidth"
                     >
                         <Tab
                             icon={<InsertDriveFileOutlinedIcon />}
                             value="main"
+                            sx={{ padding:0 }}
                         />
                         <Tab
                             icon={<StarBorderOutlinedIcon />}
                             value="favorite"
+                            sx={{ padding:0}}
+
                         />
                         <Tab
                             icon={<AccountTreeOutlinedIcon />}
                             value="project"
+                            sx={{ padding:0}}
+
                         />
                     </TabList>
                 </Box>

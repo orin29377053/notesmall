@@ -48,26 +48,67 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
             css={css`
                 display: flex;
                 align-items: center;
+                font-size: 14px;
+                border-radius: 5px;
+
+                &:hover {
+                    background-color: #ecf1fe;
+                    color: #1976d2;
+                    font-weight: 700;
+                }
             `}
         >
-            <AccountTreeOutlinedIcon />
+            <div>
+                <AccountTreeOutlinedIcon
+                    css={css`
+                        color: #1976d2;
+                        margin-right: 5px;
+
+                    `}
+                />
+                Project
+            </div>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                 <Select
                     labelId="demo-simple-select-standard-label"
                     id="demo-simple-select-standard"
-                    value={project||""}
+                    value={project || ""}
                     onChange={handleChange}
                     label="project"
+                    css={css`
+                        font-size: 14px;
+                    `}
+                    
                 >
-                    {projectlist.length > 0 && Object.keys(projectlist).map((key) => {
-                        return (
-                            <MenuItem value={projectlist[key]._id} key={key }>
-                                {projectlist[key].name}
-                            </MenuItem>
-                        );
-                    })}
-                    <MenuItem value="none">None</MenuItem>
+                    <MenuItem
+                        dense={true}
+                        value="none"
+                        css={css`
+                            font-size: 14px;
+                            color: gray;
+                            font-style: italic;
+                            
+                        `}
+                        divider={true}
 
+                    >
+                        None
+                    </MenuItem>
+                    {projectlist.length > 0 &&
+                        Object.keys(projectlist).map((key) => {
+                            return (
+                                <MenuItem
+                                    value={projectlist[key]._id}
+                                    key={key}
+                                    css={css`
+                                        font-size: 14px;
+                                    `}
+                                    dense={true}
+                                >
+                                    {projectlist[key].name}
+                                </MenuItem>
+                            );
+                        })}
                 </Select>
             </FormControl>
         </div>
