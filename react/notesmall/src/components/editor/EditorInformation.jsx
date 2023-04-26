@@ -76,8 +76,8 @@ const EditorInformation = () => {
 
 
     useEffect(() => {
-        console.log("qqq")
-        console.log("editingDocument", editingDocument)
+        // console.log("qqq")
+        // console.log("editingDocument", editingDocument)
         if (Object.keys(editingDocument).length !== 0) {
             setUpdated_at(getFormattedTime(editingDocument?.updated_at));
             setCreated_at(getFormattedTime(editingDocument?.created_at));
@@ -95,7 +95,7 @@ const EditorInformation = () => {
             css={css`
                 display: flex;
                 flex-direction: column;
-                font-size: 14px;
+                font-size: 1rem;
                 border-radius: 10px;
                 border: 1.5px solid #e0e0e0;
                 padding: 10px;
@@ -201,7 +201,7 @@ const EditorInformation = () => {
                                         size="small"
                                         css={css`
                                             border-radius: 20px;
-                                            font-size: 12px;
+                                            font-size: 0.5rem;
                                             font-weight: 700;
                                         `}
                                     >

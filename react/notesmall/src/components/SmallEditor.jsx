@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import "remirror/styles/all.css";
-import React, { useCallback, useRef, useEffect } from "react";
+import React, { useCallback, useRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { css } from "@emotion/react";
 import data from "svgmoji/emoji.json";
@@ -109,10 +109,10 @@ const SmallEditor = () => {
     const title = editingDocument?.title;
     const rawContent = editingDocument?.content;
     const newID = editingDocument?._id;
-    const isDeleted = editingDocument?.isDeleted;
 
     const refVContent = useRef({ id: "", html: "" });
     const refUploading = useRef(true);
+    const [oldtitle, setTitle] = useState("");
 
     // const token = localStorage.getItem("token");
 
@@ -154,6 +154,7 @@ const SmallEditor = () => {
     };
 
     const handleEditorChange = async (html) => {
+        console.log("oldtitle", oldtitle);
         const token = localStorage.getItem("token");
         if (!token) {
             dispatch({ type: "LOGOUT" });
@@ -186,69 +187,65 @@ const SmallEditor = () => {
         });
         refUploading.current = true;
     };
-
-    // const Delete = (dispatch, id) => {
-    //     dispatch({
-    //         type: "DELETE_SIDEBAR_LIST",
-    //         payload: {
-    //             gqlMethod: "mutation",
-    //             api: "deleteDocument",
-    //             format: `(document:{ _id: "${id}" ,isDeleted: true})`,
-    //             response: "_id ",
-    //         },
-    //     });
-    //     history("/");
-    // };
-    // const PermentDelete = (dispatch, id) => {
-    //     dispatch({
-    //         type: "PERMENT_DELETE_DOCUMENT",
-    //         payload: {
-    //             gqlMethod: "mutation",
-    //             api: "permantDeleteDocument",
-    //             format: `(id:"${id}")`,
-    //             response: "_id ",
-    //         },
-    //     });
-    //     history("/");
+    // const handleChange = (e) => {
+    //     // console.log("e.target.value", e.target.value);
+    //     // setTitle(e.target.value);
+    //     logTitle()
+    //     console.log(e);
+    //     // handleTitleChange(e.target.value);
     // };
 
-    // useEffect(() => {
-    //     const pathID = path.replace(/\//g, "");
-    //     // console.log("pathID", pathID);
-    //     if (id !== newID) {
-    //         console.log(id, newID, pathID);
-    //         console.log("start sync ");
-    //         dispatch({
-    //             type: "QUERY_DOCUMENTS",
-    //             payload: {
-    //                 gqlMethod: "query",
-    //                 api: "document",
-    //                 format: `(id:"${id}")`,
-    //                 response:
-    //                     "_id title content updated_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived ",
-    //             },
-    //         });
-    //     } else if (id === newID) {
-    //         console.log(id, newID, pathID);
+    const handleTitleChange = debounce(async (value) => {
+        console.log("value", value);
+        console.log("oldtitle", oldtitle);
+        // const token = localStorage.getItem("token");
+        // if (!token) {
+        //     dispatch({ type: "LOGOUT" });
+        //     history("/home");
+        //     return;
+        // }
 
-    //         console.log("sync success");
-    //         refVContent.current.id = newID;
-    //         const converter = new showdown.Converter();
-    //         const html = converter.makeHtml(rawContent);
-    //         refVContent.current.html = html;
-    //     }
-    // }, [id, newID, path]);
+        // refUploading.current = false;
+        // refVContent.current.html = html;
+        // const turndownService = new TurndownService({
+        //     // keep: 'code[data-language]',
+        //     codeBlockStyle: "fenced",
+        //     fence: "```",
+        // });
+        // const markdown = turndownService.turndown(html);
+
+        // const query = `
+        //         mutation{
+        //             updatedDocument(document: { _id: "${id}",content: """${markdown}""" , title: "${title}"}) {
+        //                 content
+        //             }}
+        //             `;
+        // await fetch(graphqlAPI, {
+        //     method: "POST",
+        //     body: JSON.stringify({ query }),
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //         token: token,
+        //     },
+        // });
+        // refUploading.current = true;
+    }, 1000);
 
     useEffect(() => {
-        if (!rawContent) { return };
-        console.log("rawContent", rawContent);
+        console.log("111")
+        if (!rawContent) {
+            return;
+        }
+        console.log("222")
+
         refVContent.current.id = id;
         const converter = new showdown.Converter();
         const html = converter.makeHtml(rawContent);
         refVContent.current.html = html;
-    }, [rawContent]);
+    }, [rawContent,id]);
 
     useEffect(() => {
+        console.log("333")
         dispatch({
             type: "QUERY_DOCUMENTS",
             payload: {
@@ -261,34 +258,40 @@ const SmallEditor = () => {
         });
     }, [id]);
 
-    const changeTitle = useCallback(
-        debounce((id, title) => {
-            if (id === newID && title) {
-                dispatch({
-                    type: "EDIT_TITLE",
-                    payload: {
-                        gqlMethod: "mutation",
-                        api: "updatedDocument",
-                        format: `(document:{ _id: "${id}", title: "${title}" })`,
-                        response:
-                            "_id title content updated_at isDeleted isFavorite isArchived",
-                    },
-                });
-                refUploading.current = true;
-            } else {
-            }
-        }, 500),
-        [newID]
-    );
+    // const changeTitle = useCallback(
+    //     debounce((id, title) => {
+    //         if (id === newID && title) {
+    //             console.log("changeTitle", id, newID);
+    //             dispatch({
+    //                 type: "EDIT_TITLE",
+    //                 payload: {
+    //                     gqlMethod: "mutation",
+    //                     api: "updatedDocument",
+    //                     format: `(document:{ _id: "${id}", title: "${title}" })`,
+    //                     response:
+    //                         "_id title content updated_at isDeleted isFavorite isArchived",
+    //                 },
+    //             });
+    //             refUploading.current = true;
+    //         } else {
+    //         }
+    //     }, 500),
+    //     [newID]
+    // );
 
     useEffect(() => {
-        if (id === newID) {
-            title && changeTitle(id, title);
-        }
-    }, [title, changeTitle]);
+        setTitle(editingDocument.title);
+    }, [editingDocument]);
+
+    // useEffect(() => {
+    //     if (id === newID) {
+    //         console.log(id, newID, title);
+    //         title && changeTitle(id, title);
+    //     }
+    // }, [title, changeTitle]);
 
     useEffect(() => {
-        console.log("?");
+        // console.log("?");
         const turndownService = new TurndownService({
             // keep: 'code[data-language]',
             codeBlockStyle: "fenced",
@@ -301,31 +304,46 @@ const SmallEditor = () => {
         });
     }, [location, path]);
 
-    console.log("here", editingDocument);
+    // console.log("here", editingDocument);
 
+    const handleChange = (e) => {
+        currentHtmlsaveToreducer();
+        currentTitleSaveToreducer(e.target.value);
+        if (e.target.value) {
+            debounce_title(e.target.value);
+        }
+    };
+
+    const debounce_title = useCallback(
+        debounce((searchVal) => {
+            console.log(id, "debounce_title", searchVal);
+            dispatch({
+                type: "EDIT_TITLE",
+                payload: {
+                    gqlMethod: "mutation",
+                    api: "updatedDocument",
+                    format: `(document:{ _id: "${id}", title: "${searchVal}" })`,
+                    response:
+                        "_id title content updated_at isDeleted isFavorite isArchived",
+                },
+            });
+        }, 500),
+        [id]
+    );
     return (
         <AllStyledComponent>
             {/* <div>{refUploading.current ? "sync" : "not sync"}</div> */}
             <ThemeProvider>
                 <div className="editArea">
                     <div className="editPart">
-                        <Remirror manager={manager} initialContent={state}>
+                        <Remirror manager={manager} initialContent={state} >
                             <Row className="px-3 mb-2 mt-3">
                                 <input
                                     type="text"
                                     // defaultValue={title}
-                                    value={title}
-                                    onChange={(e) => {
-                                        if (e.target.value) {
-                                            refUploading.current = false;
-                                            currentHtmlsaveToreducer();
-                                            currentTitleSaveToreducer(
-                                                e.target.value
-                                            );
-                                        } else {
-                                            alert("please type title");
-                                        }
-                                    }}
+                                    value={oldtitle}
+                                    placeholder="Please enter title"
+                                    onChange={handleChange}
                                     css={css`
                                         padding: 0.25rem;
                                         border: none;
