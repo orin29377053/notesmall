@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
 import { css } from "@emotion/react";
-import AddnewDocument from "./AddnewDocument";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
@@ -9,9 +8,24 @@ import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import CategoryTab from "./sidebar/CategoryTab";
 import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import PostAddIcon from "@mui/icons-material/PostAdd";
+import { useDispatch } from "react-redux";
 
 const Sidebar = () => {
     let history = useNavigate();
+    const dispatch = useDispatch();
+    const add = () => {
+        dispatch({
+            type: "CREATE_DOCUMENTS",
+            payload: {
+                gqlMethod: "mutation",
+                api: "createDocument",
+                format: `(document: {title: "new document",content: "new document"})`,
+                response:
+                "_id title content updated_at created_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived images{ url}",
+            },
+            helper: { history },
+        });
+    };
     return (
         <div className="sidebar">
             <div
@@ -55,23 +69,6 @@ const Sidebar = () => {
                         `}
                     />
                     Search
-                    {/* <Button
-                        variant="text"
-                        color="warning"
-                        onClick={() => history("/search")}
-                        size="small"
-                        css={css`
-                            margin: 0 3px;
-                            color: #1976d2 !important;
-
-                            &:hover {
-                                background-color: #f1f3f4;
-                            }
-                        `}
-                        startIcon={<SearchIcon />}
-                    >
-                        Search
-                    </Button> */}
                 </div>
                 <div
                     onClick={() => history("/tag")}
@@ -104,23 +101,6 @@ const Sidebar = () => {
                         `}
                     />
                     Tags
-                    {/* <Button
-                    variant="text"
-                    color="warning"
-                    onClick={() => history("/tag")}
-                    size="small"
-                    css={css`
-                        margin: 0 3px;
-                        color: black !important;
-                        &:hover {
-                            color: black !important;
-                            background-color: #c5c5c5;
-                        }
-                    `}
-                    startIcon={<TurnedInNotIcon />}
-                >
-                    Tag
-                </Button> */}
                 </div>
                 <div
                     onClick={() => history("/project")}
@@ -154,25 +134,9 @@ const Sidebar = () => {
                         `}
                     />
                     Projects
-                    {/* <Button
-                        variant="text"
-                        color="warning"
-                        onClick={() => history("/project")}
-                        size="small"
-                        css={css`
-                            margin: 0 3px;
-                            color: black !important;
-                            &:hover {
-                                color: black !important;
-                                background-color: #c5c5c5;
-                            }
-                        `}
-                        startIcon={<AccountTreeOutlinedIcon />}
-                    >
-                        Project
-                    </Button> */}
                 </div>
                 <div
+                    onClick={() => add()}
                     css={css`
                         cursor: pointer;
                         display: flex;
@@ -200,10 +164,9 @@ const Sidebar = () => {
                             font-size: 18px;
                         `}
                     />
-                    <AddnewDocument />
+                    New
                 </div>
             </div>
-            {/* <Getlist /> */}
             <CategoryTab />
         </div>
     );

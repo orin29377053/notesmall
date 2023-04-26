@@ -146,6 +146,8 @@ module.exports = buildSchema(`
     createArticle(article:ArticleInput): Article
     createDocument(document:DocumentInput): Document
     updatedDocument(document:DocumentInput): Document
+    updatedDocumentContent(id:ID! content:String!): Boolean
+
     deleteDocument(document:DocumentInput): Document
     createTag(tag:TagInput): Tag
     updatedTag(tag:TagInput): Tag

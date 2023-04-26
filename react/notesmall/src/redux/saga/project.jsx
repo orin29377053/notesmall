@@ -38,6 +38,8 @@ function* updateProject(action) {
         path: GRAPHQL_URL,
         reducer: "UPDATE_PROJECT_RESULT",
         queryString: action.payload,
+        error: "Update Project Error",
+        success: "Update Project Success",
     });
 }
 

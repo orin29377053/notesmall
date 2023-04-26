@@ -14,6 +14,8 @@ export function* fetchApi({
     helper = null,
     // parameters = null,
     // token=null,
+    error = null,
+    success = null,
     queryString = null,
 }) {
     let result;
@@ -42,13 +44,23 @@ export function* fetchApi({
             },
             body: JSON.stringify({ query }),
         }).then((res) => res.json());
-        // console.log(response)
+        console.log(response);
 
         // result = response;
         if (response.errors) {
             alert(response.errors[0].message);
             return;
         } else {
+            if (success) {
+                yield put({
+                    type: "FETCH_RESULT_INFORMATION",
+                    data: {
+                        type: "success",
+                        title: "Success",
+                        message: success ,
+                    },
+                });
+            }
             if (reducer)
                 yield put({
                     type: reducer,
@@ -57,9 +69,19 @@ export function* fetchApi({
                     helper: helper,
                 });
         }
-        return response
-    } catch (error) {
-        console.log(error);
+        return response;
+    } catch (e) {
+        console.log(e);
+        if (error) {
+            yield put({
+                type: "FETCH_RESULT_INFORMATION",
+                data: {
+                    type: "error",
+                    title: "Error",
+                    message: error,
+                },
+            });
+        }
         // alert(error.response?.data?.errors[0]?.message);
         // alert(error)
     }

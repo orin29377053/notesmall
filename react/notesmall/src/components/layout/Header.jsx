@@ -5,10 +5,11 @@ import Avatar from "@mui/material/Avatar";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Login from "../user/Login";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import UserInfo from "../user/UserInfo";
 import logo from "../../image/logo.png";
 import { useNavigate } from "react-router-dom";
+import { get } from "lodash";
 
 const style = {
     position: "absolute",
@@ -40,6 +41,10 @@ const Header = () => {
     const email = user?.email;
     const role = user?.role;
     const [open, setOpen] = useState(false);
+    const dispatch = useDispatch();
+
+
+
     const handleOpen = () => {
         setOpen(true);
     };
@@ -48,7 +53,7 @@ const Header = () => {
         setOpen(false);
     };
 
-    useEffect(() => {}, [user]);
+  
 
     return (
         <div
@@ -81,7 +86,6 @@ const Header = () => {
                 onClick={() => {
                     history("/home");
                 }}
-
             />
             <div
                 css={css`

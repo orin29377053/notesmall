@@ -65,10 +65,10 @@ const editorReducer = (state = initState, action) => {
         case "UPDATE_DOCUMENT_TITLE":
             return {
                 ...state,
-                editingDocument: {
-                    ...state.editingDocument,
-                    title: action.data.data.updatedDocument.title,
-                },
+                // editingDocument: {
+                //     ...state.editingDocument,
+                //     title: action.data.data.updatedDocument.title,
+                // },
             };
         case "UPDATE_DOCUMENT_PROJECT":
             return {

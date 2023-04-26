@@ -28,6 +28,7 @@ const Login = ({ setOpen }) => {
     const [email, setEmail] = useState("test@gmail.com");
     const [password, setPassword] = useState("test");
     const signIn = (email, password) => {
+        console.log("login")
         dispatch({
             type: "FETCH_SIGN_IN",
             payload: {
@@ -35,18 +36,22 @@ const Login = ({ setOpen }) => {
                 api: "signin",
                 format: `(email:"${email}",password:"${password}")`,
                 response: `_id 
-                email 
-                token
-                role 
-                created_at
-                documents{
-                    _id title updated_at isDeleted isFavorite isArchived created_at
-                }
-                projects{
-                    _id name  documents {
-                        _id title content updated_at isDeleted
+                    email 
+                    token 
+                    role
+                    created_at
+                    documents{
+                        _id title updated_at isDeleted isFavorite isArchived created_at content
                     }
-                }`,
+                    projects{
+                        _id name  documents {
+                            _id title content updated_at isDeleted
+                        }
+                    }
+                    tags{
+                        _id name colorCode
+                    }
+                    `
             },
         });
         setOpen(false);

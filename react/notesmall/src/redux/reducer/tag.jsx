@@ -32,6 +32,12 @@ const tagReducer = (state = initState, action) => {
                     return tag._id !== action.data.data.deleteTag._id;
                 }),
             };
+            case "USER_TAGS_LIST":
+                return {
+                    ...state,
+                    taglist: action.data,
+                };
+    
 
         // case "UPDATE_CONTENT":
         //     console.log("action!!!!", action.payload);

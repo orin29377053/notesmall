@@ -39,7 +39,7 @@ const getPresignedUrl = async (fileName) => {
     };
     const command = new PutObjectCommand(input);
     const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    const objectUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${input.Key}`;
+    const objectUrl = `https://${process.env.AWS_IMAGE_CDN}/${input.Key}`;
     return { url, objectUrl };
 };
 

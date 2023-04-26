@@ -6,6 +6,7 @@ const initState = {
     searchResultDetail: [],
     selectedID: "",
     path: "",
+    information:{},
 };
 
 const commonReducer = (state = initState, action) => {
@@ -96,6 +97,17 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 path: action.payload.path,
             };
+        case "USER_DOCUMENTS_LIST":
+            return {
+                ...state,
+                sidebar: action.data,
+            }
+        case "FETCH_RESULT_INFORMATION":
+            return {
+                ...state,
+                information: action.data,
+            }
+        
 
         default:
             return state;

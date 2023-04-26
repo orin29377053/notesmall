@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import Calendar from "react-github-contribution-calendar";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch} from "react-redux";
 import React, { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import Avatar from "@mui/material/Avatar";
@@ -76,6 +76,33 @@ const Home = () => {
     const [favoriteItem, setFavoriteItem] = useState([]);
 
     // console.log(user);
+    const dispatch = useDispatch();
+    const getUser = (dispatch) => {
+        dispatch({
+            type: "FETCH_USER_INFO",
+            payload: {
+                gqlMethod: "query",
+                api: "me",
+                response: `_id 
+                    email 
+                    token 
+                    role
+                    created_at
+                    documents{
+                        _id title updated_at isDeleted isFavorite isArchived created_at content
+                    }
+                    projects{
+                        _id name  documents {
+                            _id title content updated_at isDeleted
+                        }
+                    }
+                    tags{
+                        _id name colorCode
+                    }
+                    `,
+            },
+        });
+    };
 
     const minimalTheme = {
         light: ["hsl(0, 0%, 92%)", "cornflowerblue"],
@@ -121,6 +148,14 @@ const Home = () => {
         setFavoriteItem(favoriteItems);
         console.log(recentItem, "recentItems");
     }, [sidebar]);
+
+    useEffect(() => {
+        console.log('ww')
+        console.log(user)
+        getUser(dispatch);
+    
+    }, [])
+
 
     return (
         <div>

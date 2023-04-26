@@ -134,3 +134,19 @@
     color: rgb(144, 137, 137);
     width: 75px;
 }
+.alert-information {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+    animation: fade-out 3s ease-in-out;
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

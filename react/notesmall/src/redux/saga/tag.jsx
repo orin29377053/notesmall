@@ -27,6 +27,8 @@ function* updateTag(action) {
         path: GRAPHQL_URL,
         reducer: "UPDATE_TAG",
         queryString: action.payload,
+        error: "Update Tag Error",
+        success: "Update Tag Success",
     });
 }
 function* deleteTag(action) {

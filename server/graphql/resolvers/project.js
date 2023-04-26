@@ -83,6 +83,7 @@ module.exports = {
                     args.project;
                 const updated_at = Date.now();
 
+
                 const oldProject = await Project.findById(_id);
 
                 checkUserID(oldProject,userID);
@@ -102,6 +103,7 @@ module.exports = {
                     { new: true }
                 );
                 const newProject = await project.save();
+                console.log("newProject", newProject);
                 projectLoader.clear(newProject._id);
 
                 if (documents) {
@@ -125,7 +127,9 @@ module.exports = {
                     });
                 }
                 // add project to user
-                const userInfo = await User.findById(user);
+                const userInfo = await User.findById(userID);
+                // console.log(user)
+                console.log("userInfo", userInfo)
                 userInfo.projects = userInfo.projects.filter(
                     (projectID) => projectID != _id
                 );
@@ -137,6 +141,7 @@ module.exports = {
 
                 return transformProject(newProject);
             } catch (error) {
+                console.log(error)
                 throw error;
             }
         },

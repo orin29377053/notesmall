@@ -8,38 +8,38 @@ const CommonProvider = ({ children }) => {
     const location = useLocation();
     const dispatch = useDispatch();
     const history = useNavigate();
-    const getTagList = (dispatch) => {
-        dispatch({
-            type: "FETCH_TAG_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "tags",
-                response: "_id name colorCode  document{_id title content}",
-            },
-        });
-    };
-    const getProjectList = (dispatch) => {
-        dispatch({
-            type: "FETCH_Project_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "projects",
-                response:
-                    "_id name  documents {_id title content updated_at isDeleted}",
-            },
-        });
-    };
-    const getlist = (dispatch) => {
-        dispatch({
-            type: "FETCH_SIDEBAR_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "documents",
-                response:
-                    "_id title updated_at isDeleted isFavorite isArchived content",
-            },
-        });
-    };
+    // const getTagList = (dispatch) => {
+    //     dispatch({
+    //         type: "FETCH_TAG_LIST",
+    //         payload: {
+    //             gqlMethod: "query",
+    //             api: "tags",
+    //             response: "_id name colorCode  document{_id title content}",
+    //         },
+    //     });
+    // };
+    // const getProjectList = (dispatch) => {
+    //     dispatch({
+    //         type: "FETCH_Project_LIST",
+    //         payload: {
+    //             gqlMethod: "query",
+    //             api: "projects",
+    //             response:
+    //                 "_id name  documents {_id title content updated_at isDeleted}",
+    //         },
+    //     });
+    // };
+    // const getlist = (dispatch) => {
+    //     dispatch({
+    //         type: "FETCH_SIDEBAR_LIST",
+    //         payload: {
+    //             gqlMethod: "query",
+    //             api: "documents",
+    //             response:
+    //                 "_id title updated_at isDeleted isFavorite isArchived content",
+    //         },
+    //     });
+    // };
     const getUser = (dispatch) => {
         dispatch({
             type: "FETCH_USER_INFO",
@@ -52,13 +52,17 @@ const CommonProvider = ({ children }) => {
                     role
                     created_at
                     documents{
-                        _id title updated_at isDeleted isFavorite isArchived created_at
+                        _id title updated_at isDeleted isFavorite isArchived created_at content
                     }
                     projects{
                         _id name  documents {
                             _id title content updated_at isDeleted
                         }
-                    }`,
+                    }
+                    tags{
+                        _id name colorCode
+                    }
+                    `,
             },
         });
     };
@@ -67,19 +71,17 @@ const CommonProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        getTagList(dispatch);
-        getProjectList(dispatch);
-        getlist(dispatch);
+
         getUser(dispatch);
     }, []);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        getTagList(dispatch);
-        getProjectList(dispatch);
-        getlist(dispatch);
-        // getUser()
-    }, [user]);
+    //     getTagList(dispatch);
+    //     getProjectList(dispatch);
+    //     getlist(dispatch);
+    //     // getUser()
+    // }, [user]);
 
     // if localstorge toke is chaged, update the user info
 
@@ -89,7 +91,8 @@ const CommonProvider = ({ children }) => {
             dispatch({ type: "LOGOUT" });
             //reload
             history("/home");
-            // window.location.reload();
+            window.location.reload();
+            console.log("i am logout")
         }
         dispatch({
             type: "UPDATE_PATH",

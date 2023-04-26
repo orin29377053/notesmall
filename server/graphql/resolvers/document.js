@@ -146,65 +146,29 @@ module.exports = {
                 const {
                     _id,
                     title,
-                    content,
                     tags,
                     project,
                     isArchived,
                     isFavorite,
                     user,
                 } = args.document;
+
+            console.log(project);
                 const updated_at = Date.now();
-
-                console.log("project", project);
-
-                // let pattern = /\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
-                let pattern =
-                    /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
 
                 const documentded = await Document.findById(_id);
 
                 checkUserID(documentded, userID);
 
-                let imageslist = documentded.images;
-                if (content) {
-                    let urls = [];
-                    for (let match of content.matchAll(pattern)) {
-                        urls.push(match[1]);
-                    }
-
-                    const [add, dele] = getAddDeleteUrls(imageslist, urls);
-
-                    dele.map((url) => {
-                        deleteImage(url);
-                    });
-
-                    for (let url of add) {
-                        const autoTags = await imageDetection(url);
-                        imageslist.push({
-                            url: url,
-                            name: "image",
-                            autoTags: autoTags,
-                        });
-                    }
-
-                    for (let url of dele) {
-                        imageslist = imageslist.filter(
-                            (image) => image.url !== url
-                        );
-                    }
-                }
-
                 const document = await Document.findByIdAndUpdate(
                     _id,
                     {
                         title,
-                        content,
                         updated_at,
                         tags,
                         project: project !== "none" ? project : null,
                         isArchived,
                         isFavorite,
-                        images: imageslist,
                         user,
                     },
                     { new: true }
@@ -250,12 +214,68 @@ module.exports = {
                 }
 
                 documentLoader.clear(_id.toString());
+                console.log("newDocument", newDocument);
 
                 return tarnsformDocument(newDocument);
             } catch (error) {
                 throw error;
             }
         },
+        updatedDocumentContent: async (_, args, { isAuth, userID }) => {
+            try {
+                console.log(args)
+                const { id, content } = args;
+                const updated_at = Date.now();
+                const documentded = await Document.findById(id);
+
+                checkUserID(documentded, userID);
+
+                
+                const pattern =
+                    /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
+
+                let imageslist = documentded.images;
+
+                let urls = [];
+                for (let match of content.matchAll(pattern)) {
+                    urls.push(match[1]);
+                }
+
+                const [add, dele] = getAddDeleteUrls(imageslist, urls);
+
+                dele.map((url) => {
+                    deleteImage(url);
+                });
+
+                for (let url of add) {
+                    const autoTags = await imageDetection(url);
+                    imageslist.push({
+                        url: url,
+                        name: "image",
+                        autoTags: autoTags,
+                    });
+                }
+
+                for (let url of dele) {
+                    imageslist = imageslist.filter(
+                        (image) => image.url !== url
+                    );
+                }
+                const document = await Document.findByIdAndUpdate(
+                    id,
+                    { content, updated_at },
+                    { new: true }
+                );
+                return true
+
+            } catch (error) {
+                console.log(error);
+                return false
+
+                // throw error;
+            }
+        },
+
         deleteDocument: async (_, args, { isAuth, userID }) => {
             try {
                 const { _id, isDeleted } = args.document;

@@ -35,6 +35,13 @@ const projectReducer = (state = initState, action) => {
                         : item
                 ),
             };
+            case "USER_PROJECTS_LIST":
+
+            // console.log(action.data.data.projects);
+            return {
+                ...state,
+                projectlist: action.data,
+            };
         
         
         default:
