@@ -6,7 +6,8 @@ import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 
 const ItemCard = ({ item }) => {
-    return item?.document.map((doc) => (
+    console.log("wsws", item);
+    return item?.map((doc) => (
         <div
             css={css`
                 padding: 10px;

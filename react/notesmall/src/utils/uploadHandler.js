@@ -1,5 +1,4 @@
-
-const { imageAPI } = require('./const')
+const { imageAPI } = require("./const");
 
 async function getPresignedUrl(fileName) {
     const rawUrl = await fetch(
@@ -37,25 +36,40 @@ export default function uploadHandler(files) {
             () =>
                 new Promise(async (resolve) => {
                     const reader = new FileReader();
-                    console.log("file", file)
 
-                    let newFilename = file.name.replace(/[\s\)]/g, '');
-                    console.log("wdwd",newFilename)
+                    let newFilename = file.name.replace(/[\s\)]/g, "");
 
                     const url = await getPresignedUrl(newFilename);
                     await handleUpload(url.presignedUrl, file);
 
-                    reader.addEventListener(
-                        "load",
-                        (readerEvent) => {
-                            resolve({
-                                src: url.objectUrl,
-                                fileName: newFilename,
-                            });
-                        },
-                        { once: true }
-                    );
-                    reader.readAsDataURL(file);
+                    // reader.addEventListener(
+                    //     "load",
+                    //     (readerEvent) => {
+                    //         resolve({
+                    //             src: url.objectUrl,
+                    //             fileName: newFilename,
+                    //         });
+                    //     },
+                    //     { once: true }
+                    // );
+                    // console.log("file", file)
+
+                    // reader.readAsDataURL(file);
+                    setTimeout(async () => {
+                        reader.addEventListener(
+                            "load",
+                            (readerEvent) => {
+                                resolve({
+                                    src: url.objectUrl,
+                                    fileName: newFilename,
+                                });
+                            },
+                            { once: true }
+                        );
+                        console.log("file", file);
+
+                        reader.readAsDataURL(file);
+                    }, 500);
                 })
         );
     }

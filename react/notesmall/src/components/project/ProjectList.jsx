@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import Switch from "@mui/material/Switch";
 const style = {
     position: "absolute",
     top: "50%",
@@ -24,7 +25,9 @@ const style = {
 };
 
 const ItemCard = ({ item }) => {
-    return item?.documents?.map((doc) => (
+    console.log("item", item);
+
+    return item?.map((doc) => (
         <div
             css={css`
                 padding: 10px;
@@ -48,6 +51,8 @@ const ProjectList = ({ list }) => {
     const [id, setId] = useState("");
     const [selectedButton, setSelectedButton] = useState(null);
     const [open, setOpen] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
+
     const getProjectList = () => {
         dispatch({
             type: "FETCH_Project_LIST",
@@ -82,7 +87,6 @@ const ProjectList = ({ list }) => {
         });
     };
     const updateProject = (id) => {
-        
         dispatch({
             type: "FETCH_UPDATE_PROJECT",
             payload: {
@@ -96,6 +100,7 @@ const ProjectList = ({ list }) => {
 
     return (
         <div>
+            
             <div>
                 {projectlist?.map((item) => (
                     <Chip
@@ -116,6 +121,13 @@ const ProjectList = ({ list }) => {
                         }}
                     />
                 ))}
+            </div>
+            <div>
+                <Switch
+                    onChange={(e) => {
+                        setShowDelete(e.target.checked);
+                    }}
+                />
             </div>
             <Modal
                 open={open}
@@ -179,16 +191,38 @@ const ProjectList = ({ list }) => {
                 </Box>
             </Modal>
             <div
-            css={css`
-            display: flex;
-            flex-wrap: wrap;
-        `}>
-
-            <ItemCard
-                
-                item={selectedButton}
-            />
+                css={css`
+                    display: flex;
+                    flex-wrap: wrap;
+                `}
+            >
+                <ItemCard
+                    item={
+                        selectedButton &&
+                        selectedButton.documents.filter((doc) => !doc.isDeleted)
+                    }
+                />
             </div>
+            {showDelete && (
+                <div>
+                    <div>Is delete</div>
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-wrap: wrap;
+                        `}
+                    >
+                        <ItemCard
+                            item={
+                                selectedButton &&
+                                selectedButton.documents.filter(
+                                    (doc) => doc.isDeleted
+                                )
+                            }
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

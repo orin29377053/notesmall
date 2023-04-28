@@ -110,19 +110,16 @@ const Home = () => {
     };
 
     useEffect(() => {
+        console.log(user, "user");
         if (user && user.documents) {
-            const values = user?.documents.reduce((acc, curr) => {
-                const date = curr.created_at.slice(0, 10); // extract the date from the timestamp
-                acc[date] = (acc[date] || 0) + 1; // increment the count for that date
-                return acc;
-            }, {});
+
             const activityCalendar = buildActivityCalendar(user.documents);
-            console.log(activityCalendar, "activityCalendar");
             setActivityCalendar(activityCalendar);
         }
     }, [user]);
 
     useEffect(() => {
+        console.log(sidebar, "sidebar");
         if (sidebar.length === 0) {
             return;
         }
@@ -146,7 +143,7 @@ const Home = () => {
         const recentItems = allItems.slice().sort(compareFunction);
         setRecentItem(recentItems);
         setFavoriteItem(favoriteItems);
-        console.log(recentItem, "recentItems");
+        console.log(recentItems, "recentItems");
     }, [sidebar]);
 
     useEffect(() => {

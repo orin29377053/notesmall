@@ -17,11 +17,12 @@ const s3 = new S3Client({
 
 const deleteImage = async (ulr) => {
     const fileName = ulr.split("/").pop();
+    console.log(fileName)
 
     try {
         const data = await s3.send(
             new DeleteObjectCommand({
-                Bucket: process.env.AWS_BUCKET_NAME,
+                Bucket: process.env.AWS_BUCKET_RESIZE_NAME,
                 Key: fileName,
             })
         );
@@ -39,7 +40,9 @@ const getPresignedUrl = async (fileName) => {
     };
     const command = new PutObjectCommand(input);
     const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    const objectUrl = `https://${process.env.AWS_IMAGE_CDN}/${input.Key}`;
+    // const objectUrl = `https://${process.env.AWS_IMAGE_CDN}/${input.Key}`;
+    const objectUrl = `https://${process.env.AWS_IMAGE_RESIZE_CDN}/resized-${input.Key}`;
+
     return { url, objectUrl };
 };
 

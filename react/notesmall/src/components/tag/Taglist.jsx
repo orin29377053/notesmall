@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import { MuiColorInput } from "mui-color-input";
 import Chip from "@mui/material/Chip";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import Switch from "@mui/material/Switch";
 
 import getTextColorFromBackground from "../../utils/getTextColorFromBackground";
 import ItemCard from "./ItemCard";
@@ -31,6 +32,7 @@ const Taglist = ({ taglist }) => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedButton, setSelectedButton] = useState(null);
+    const [showDelete, setShowDelete] = useState(false);
 
     const handleOpen = (id, name, colorCode) => {
         setId(id);
@@ -76,8 +78,17 @@ const Taglist = ({ taglist }) => {
         setSelectedButton(button);
     };
 
+
+
     return (
         <div>
+            <div>
+                <Switch
+                    onChange={(e) => {
+                        setShowDelete(e.target.checked);
+                    }}
+                />
+            </div>
             {taglist?.map((item) => (
                 <Chip
                     key={item._id}
@@ -171,7 +182,6 @@ const Taglist = ({ taglist }) => {
                                 handleClose();
                             }}
                             color="error"
-
                             css={css`
                                 margin-top: 10px;
                                 float: left;
@@ -182,7 +192,7 @@ const Taglist = ({ taglist }) => {
                     </div>
                 </Box>
             </Modal>
-            
+
             <div
                 css={css`
                     display: flex;
@@ -190,12 +200,34 @@ const Taglist = ({ taglist }) => {
                 `}
             >
                 <ItemCard
-                    
-                    item={selectedButton}
+                    item={
+                        selectedButton &&
+                        selectedButton.document.filter((doc) =>!doc.isDeleted)
+                    }
                 />
             </div>
+            {showDelete && (
+                <div>
+                    <div>Is delete</div>
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-wrap: wrap;
+                        `}
+                    >
+                        <ItemCard
+                            item={
+                                selectedButton &&
+                                selectedButton.document.filter(
+                                    (doc) => doc.isDeleted
+                                )
+                            }
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-export default Taglist
+export default Taglist;

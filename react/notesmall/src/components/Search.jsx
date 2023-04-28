@@ -1,12 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 import SearchResult from "./search/SearchResult";
 import searchImage from "../image/Personal files-rafiki.svg";
+import { graphqlAPI } from "../utils/const";
+import { useNavigate, useLocation } from "react-router-dom";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const fetchToSearch = debounce((dispatch, keyword) => {
     if (keyword) {
@@ -39,13 +42,46 @@ const fetchToSearch = debounce((dispatch, keyword) => {
 
 const Search = () => {
     const dispatch = useDispatch();
-    const keyword = useSelector((state) => state.common.searchKeyword);
+    let history = useNavigate();
+    const [autoCompleteKeyword, setAutoCompleteKeyword] = useState([]);
+    const [searchKeyword, setSearchKeyword] = useState("");
 
+    const keyword = useSelector((state) => state.common.searchKeyword);
+    const autoComplete = async (keyword) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            dispatch({ type: "LOGOUT" });
+            history("/home");
+            return;
+        }
+        if (keyword) {
+            const query = `
+                        query{
+                            autoComplete(keyword: "${keyword}") }
+                            `;
+            const resul = await fetch(graphqlAPI, {
+                method: "POST",
+                body: JSON.stringify({ query }),
+                headers: {
+                    "Content-Type": "application/json",
+                    token: token,
+                },
+            });
+            const result = await resul.json();
+            // console.log(result);
+            setAutoCompleteKeyword(result.data.autoComplete);
+        } else {
+        }
+    };
     useEffect(() => {
         if (keyword) {
             fetchToSearch(dispatch, keyword);
         }
     }, [keyword]);
+
+    // useEffect(() => {
+    //     console.log(searchKeyword);
+    // }, [searchKeyword]);
 
     const { searchResult } = useSelector((state) => state.common);
     return (
@@ -68,19 +104,49 @@ const Search = () => {
                 >
                     I want to know about
                 </div>
-                <TextField
+                {/* <TextField
                     id="outlined-basic"
                     label="somethings..."
                     variant="outlined"
                     size="small"
+                    // onChange={(e) => {
+                    //     dispatch({
+                    //         type: "SEARCH_KEYWORD",
+                    //         payload: { keyword: e.target.value },
+                    //     });
+                    // }}
                     onChange={(e) => {
-                        dispatch({
-                            type: "SEARCH_KEYWORD",
-                            payload: { keyword: e.target.value },
-                        });
+                        autoComplete(e.target.value);
                     }}
                     sx={{ ml: 1 }}
-                    
+                /> */}
+                <Autocomplete
+                    id="free-solo-demo"
+                    freeSolo
+                    disabledItemsFocusable={false}
+                    options={autoCompleteKeyword?.map((option) => option)}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="somethings...     (Press Enter to search)"
+                            onChange={(e) => {
+                                autoComplete(e.target.value);
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    dispatch({
+                                        type: "SEARCH_KEYWORD",
+                                        payload: { keyword: e.target.value },
+                                    });
+                                }
+                            }}
+                        />
+                    )}
+                    css={css`
+                        width: 50%;
+                        margin-left: 10px;
+                    `}
+                    size="small"
                 />
             </div>
             {searchResult?.length > 0 ? (
@@ -92,8 +158,7 @@ const Search = () => {
                     <SearchResult searchResult={searchResult} />
                 </div>
             ) : (
-                
-                (<img src={searchImage} width="50%" css={css``} />)
+                <img src={searchImage} width="50%" css={css``} />
             )}
         </div>
     );

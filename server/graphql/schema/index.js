@@ -134,6 +134,7 @@ module.exports = buildSchema(`
     documents(isDeleted:Boolean):[Document!] 
     document(id: ID!): Document
     searchDocuments(keyword: String!): [Document!]
+    autoComplete(keyword: String!): [String!]
     tag(id:ID!): Tag
     tags:[Tag!]
     projects:[Project!]

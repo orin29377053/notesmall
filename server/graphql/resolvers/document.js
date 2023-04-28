@@ -2,8 +2,9 @@ const Document = require("../../models/document");
 const Tag = require("../../models/tag");
 const Project = require("../../models/project");
 const User = require("../../models/user");
-const { documentFuzzySearch } = require("../search");
+const { documentFuzzySearch, documentAutoComplete } = require("../search");
 const dataToString = require("../../utils/dataToString");
+const { translateKeyword } = require("../../utils/translate");
 const {
     getTag,
     getProject,
@@ -93,8 +94,13 @@ module.exports = {
         },
         searchDocuments: async (parent, { keyword }, { isAuth, userID }) => {
             try {
-                const query = documentFuzzySearch(keyword, userID);
+                const translateKeywordResult = await translateKeyword(keyword);
+                console.log(translateKeywordResult);
+                const query = documentFuzzySearch(translateKeywordResult, userID);
+
                 const documents = await Document.aggregate(query);
+                
+
                 return documents.map(async (document) => {
                     document.highlights.map((highlight) => {});
 
@@ -115,6 +121,31 @@ module.exports = {
                             : null,
                     };
                 });
+            } catch (error) {
+                throw error;
+            }
+        },
+        autoComplete: async (parent, { keyword }, { isAuth, userID }) => {
+            try {
+                const query = documentAutoComplete(keyword, userID);
+
+                const documents = await Document.aggregate(query);
+                const keywords = documents.map((document) =>
+                    document.highlights
+                        .map((highlight) =>
+                            highlight.texts
+                                .filter((text) => text.type === "hit")
+                                .map((text) => text.value)
+                        )
+                        .flat()
+                );
+                const flattenedArray = keywords.flat(); // flatten the nested array
+                const uniqueArray = [...new Set(flattenedArray)]; // create a new Set with unique values, then convert it back to an array using the spread syntax
+                const trimmedArray = uniqueArray.map((str) => {
+                    return str.replace(/[。\n_\\*#='`]/g, "");
+                });
+                console.log(trimmedArray);
+                return trimmedArray;
             } catch (error) {
                 throw error;
             }
@@ -153,7 +184,7 @@ module.exports = {
                     user,
                 } = args.document;
 
-            console.log(project);
+                console.log(project);
                 const updated_at = Date.now();
 
                 const documentded = await Document.findById(_id);
@@ -188,6 +219,7 @@ module.exports = {
                 }
 
                 if (tags) {
+                    console.log("tags!!!!!", tags);
                     await Tag.updateMany(
                         { _id: { $in: tags } },
                         { $addToSet: { document: _id } }
@@ -223,25 +255,26 @@ module.exports = {
         },
         updatedDocumentContent: async (_, args, { isAuth, userID }) => {
             try {
-                console.log(args)
+                console.log(args);
                 const { id, content } = args;
+                console.log("id", id);
                 const updated_at = Date.now();
                 const documentded = await Document.findById(id);
 
                 checkUserID(documentded, userID);
 
-                
                 const pattern =
                     /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
 
                 let imageslist = documentded.images;
-
+                console.log("imageslist", imageslist);
                 let urls = [];
                 for (let match of content.matchAll(pattern)) {
                     urls.push(match[1]);
                 }
 
                 const [add, dele] = getAddDeleteUrls(imageslist, urls);
+                console.log("dele", dele);
 
                 dele.map((url) => {
                     deleteImage(url);
@@ -263,14 +296,15 @@ module.exports = {
                 }
                 const document = await Document.findByIdAndUpdate(
                     id,
-                    { content, updated_at },
+                    { content, updated_at, images: imageslist },
                     { new: true }
                 );
-                return true
+                documentLoader.clear(id.toString());
 
+                return true;
             } catch (error) {
                 console.log(error);
-                return false
+                return false;
 
                 // throw error;
             }

@@ -28,6 +28,8 @@ const {
 } = require("apollo-server-core");
 const responseCachePlugin = require("@apollo/server-plugin-response-cache");
 const { cache } = require("./utils/cache");
+const { translateKeyword } = require("./utils/translate");
+
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     resolvers: rootResolver,
@@ -71,7 +73,8 @@ app.use(cors());
 
 app.use("/api/1.0", [require("./route/image_route")]);
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+    
     res.json({ data: "Hello World!" });
 });
 
@@ -122,20 +125,19 @@ const graph = async () => {
         cors(),
         bodyParser.json(),
         expressMiddleware(server, {
-            context: async({ req }) => {
+            context: async ({ req }) => {
                 const token = req.headers.token;
                 // console.log(token);
                 if (!token) {
-                    return { isAuth: false,userID:process.env.GUESTID };
+                    return { isAuth: false, userID: process.env.GUESTID };
                 }
                 try {
-                    
                     const user = await tokenVerify(token, process.env.SECRET);
-                    return { isAuth: true ,userID:user.id};
-                } catch(e) {
+                    return { isAuth: true, userID: user.id };
+                } catch (e) {
                     console.log(e);
                     //TODO:error handling
-                    return { isAuth: false,userID:process.env.GUESTID };
+                    return { isAuth: false, userID: process.env.GUESTID };
 
                     // throw new Error("Authentication failed!");
                 }

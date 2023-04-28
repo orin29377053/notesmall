@@ -54,7 +54,7 @@ const TagEditor = () => {
             payload: {
                 gqlMethod: "query",
                 api: "tags",
-                response: "_id name colorCode  document{_id title content}",
+                response: "_id name colorCode  document{_id title content isDeleted}",
             },
         });
     };
