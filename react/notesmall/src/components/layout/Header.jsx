@@ -35,6 +35,8 @@ const userInfoStyle = {
     // border: "2px solid #000",
     boxShadow: 10,
 };
+
+
 const Header = () => {
     const history = useNavigate();
     const { user } = useSelector((state) => state.user);
@@ -43,8 +45,6 @@ const Header = () => {
     const [open, setOpen] = useState(false);
     const dispatch = useDispatch();
 
-
-
     const handleOpen = () => {
         setOpen(true);
     };
@@ -52,8 +52,6 @@ const Header = () => {
     const handleClose = () => {
         setOpen(false);
     };
-
-  
 
     return (
         <div
@@ -96,36 +94,43 @@ const Header = () => {
                 <div
                     css={css`
                         display: flex;
-                        border: 1px solid white;
-                        padding: 8px 10px;
+                        padding: 6px 10px;
                         border-radius: 20px;
                         align-items: center;
                         cursor: pointer;
+                        color: #1a77d3;
+
                         :hover {
-                            background-color: #ecf1fe;
-                            color: #1976d2;
+                            background-color: #1a77d3;
+                            color: #feffff !important;
+                            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+                                0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+                                0px 1px 10px 0px rgba(0, 0, 0, 0.12);
                         }
                     `}
                     onClick={handleOpen}
                 >
                     <div
                         css={css`
-                            margin-left: 10px;
+                            margin-left: 5px;
                             font-size: 16px;
                             font-weight: 700;
                             margin-right: 10px;
                         `}
                     >
-                        {role === "guest"
-                            ? "Welcome to Notesmall"
-                            : user?.email}
+                        {role === "guest" ? "SIGN IN" : user?.email}
                     </div>
-
-                    <Avatar
-                        alt="Orin"
-                        src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
-                        sx={{ width: 30, height: 30 }}
-                    />
+                    {role === "guest" ? (
+                        <i className="fa-solid fa-right-to-bracket" style={{ color: "#1a77d3"}}>
+                            
+                        </i>
+                    ) : (
+                        <Avatar
+                            alt="Orin"
+                            src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
+                            sx={{ width: 30, height: 30 }}
+                        />
+                    )}
                 </div>
 
                 <Modal

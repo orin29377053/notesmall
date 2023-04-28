@@ -199,7 +199,7 @@ const ProjectList = ({ list }) => {
                 <ItemCard
                     item={
                         selectedButton &&
-                        selectedButton.documents.filter((doc) => !doc.isDeleted)
+                        selectedButton.documents?.filter((doc) => !doc.isDeleted)
                     }
                 />
             </div>
@@ -215,7 +215,7 @@ const ProjectList = ({ list }) => {
                         <ItemCard
                             item={
                                 selectedButton &&
-                                selectedButton.documents.filter(
+                                selectedButton.documents?.filter(
                                     (doc) => doc.isDeleted
                                 )
                             }

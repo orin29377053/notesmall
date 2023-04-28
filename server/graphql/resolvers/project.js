@@ -150,10 +150,11 @@ module.exports = {
                 const { id } = args;
                 // console.log(_id, isDeleted);
                 const oldProject = await Project.findById(id);
-                checkUserID(oldProject,userID);
+                // checkUserID(oldProject,userID);
 
 
                 const project = await Project.findByIdAndDelete(id);
+                console.log("project", project);
                 if (!project) {
                     throw new Error(`Project with ID ${id} not found`);
                 }

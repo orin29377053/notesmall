@@ -12,6 +12,7 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
     const { projectlist } = useSelector((state) => state.project);
     const { path } = useSelector((state) => state.common);
     const [project, setProject] = useState("");
+    const[projectListResult,setProjectListResult]=useState([])
 
     const handleChange = (event) => {
         currentHtmlsaveToreducer();
@@ -25,7 +26,8 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                     "_id title content tags{_id,name,colorCode} project{_id,name} ",
             },
         });
-        setProject(event.target.value);
+        console.log("event.target.value", event.target.value);
+        // setProject(event.target.value);
     };
     useEffect(() => {
         if (editingDocument.project) {
@@ -44,6 +46,13 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
             setProject("none");
         }
     }, []);
+
+    useEffect(() => {
+        if (projectlist.length > 0) {
+            setProjectListResult(projectlist)
+        }
+    }, [projectlist]);
+
 
     return (
         <div
@@ -96,18 +105,18 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                     >
                         None
                     </MenuItem>
-                    {projectlist.length > 0 &&
-                        Object.keys(projectlist).map((key) => {
+                    {projectListResult.length > 0 &&
+                        Object.keys(projectListResult).map((key) => {
                             return (
                                 <MenuItem
-                                    value={projectlist[key]._id}
+                                    value={projectListResult[key]._id}
                                     key={key}
                                     css={css`
                                         font-size: 14px;
                                     `}
                                     dense={true}
                                 >
-                                    {projectlist[key].name}
+                                    {projectListResult[key].name}
                                 </MenuItem>
                             );
                         })}

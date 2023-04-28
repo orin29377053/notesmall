@@ -39,24 +39,7 @@ const Sidebar = () => {
                 `}
             >
                 <div
-                    css={css`
-                        cursor: pointer;
-                        display: flex;
-                        padding: 2px;
-                        padding-left: 3px;
-                        padding-right: 100px;
-                        border-radius: 5px;
-                        margin-bottom: 5px;
-                        &:hover {
-                            background-color: #ECF1FE;
-                            color: #1976d2;
-                            font-weight: 700;
-                        }
-                        font-size: 15px;
-                        align-items: center;
-                        width: 100%;
-
-                    `}
+                    className="sidebarTitle"
                     onClick={() => history("/search")}
                 >
                     <SearchIcon
@@ -72,25 +55,8 @@ const Sidebar = () => {
                 </div>
                 <div
                     onClick={() => history("/tag")}
-                    css={css`
-                        cursor: pointer;
-                        display: flex;
-                        padding: 2px;
-                        padding-left: 3px;
-                        padding-right: 100px;
-                        border-radius: 5px;
-                        margin-bottom: 5px;
-                        &:hover {
-                            background-color: #ECF1FE;
-                            color: #1976d2;
-                            font-weight: 700;
-                        }
-                        font-size: 15px;
-                        align-items: center;
-                        width: 100%;
-
-
-                    `}
+                    className="sidebarTitle"
+                    
                 >
                     <TurnedInNotIcon
                         css={css`
@@ -104,25 +70,8 @@ const Sidebar = () => {
                 </div>
                 <div
                     onClick={() => history("/project")}
-                    css={css`
-                        cursor: pointer;
-                        display: flex;
-                        padding: 2px;
-                        padding-left: 3px;
-                        padding-right: 100px;
-                        border-radius: 5px;
-                        margin-bottom: 5px;
-                        &:hover {
-                            background-color: #ECF1FE;
-                            color: #1976d2;
-                            font-weight: 700;
-                        }
-                        font-size: 15px;
-                        align-items: center;
-                        width: 100%;
-
-
-                    `}
+                    className="sidebarTitle"
+                    
                 >
                     <AccountTreeOutlinedIcon
                         css={css`
@@ -137,25 +86,8 @@ const Sidebar = () => {
                 </div>
                 <div
                     onClick={() => add()}
-                    css={css`
-                        cursor: pointer;
-                        display: flex;
-                        padding: 2px;
-                        padding-left: 3px;
-                        padding-right: 100px;
-                        border-radius: 5px;
-                        margin-bottom: 5px;
-                        &:hover {
-                            background-color: #ECF1FE;
-                            color: #1976d2;
-                            font-weight: 700;
-                        }
-                        font-size: 15px;
-                        align-items: center;
-                        width: 100%;
-
-
-                    `}
+                    className="sidebarTitle"
+                    
                 >
                     <PostAddIcon
                         css={css`

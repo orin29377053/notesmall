@@ -49,6 +49,7 @@ const editorReducer = (state = initState, action) => {
                 
             };
         case "UPDATE_TAGS_RESULT":
+            console.log(action.data.data.updatedDocument.tags)
             return {
                 ...state,
                 editingDocument: {
@@ -71,6 +72,7 @@ const editorReducer = (state = initState, action) => {
                 // },
             };
         case "UPDATE_DOCUMENT_PROJECT":
+            console.log(action,"wdewd")
             return {
                 ...state,
                 editingDocument: {

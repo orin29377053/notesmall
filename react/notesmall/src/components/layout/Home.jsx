@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import Calendar from "react-github-contribution-calendar";
-import { useSelector ,useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import React, { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import Avatar from "@mui/material/Avatar";
@@ -110,16 +110,13 @@ const Home = () => {
     };
 
     useEffect(() => {
-        console.log(user, "user");
         if (user && user.documents) {
-
             const activityCalendar = buildActivityCalendar(user.documents);
             setActivityCalendar(activityCalendar);
         }
     }, [user]);
 
     useEffect(() => {
-        console.log(sidebar, "sidebar");
         if (sidebar.length === 0) {
             return;
         }
@@ -143,16 +140,11 @@ const Home = () => {
         const recentItems = allItems.slice().sort(compareFunction);
         setRecentItem(recentItems);
         setFavoriteItem(favoriteItems);
-        console.log(recentItems, "recentItems");
     }, [sidebar]);
 
     useEffect(() => {
-        console.log('ww')
-        console.log(user)
         getUser(dispatch);
-    
-    }, [])
-
+    }, []);
 
     return (
         <div>
@@ -162,69 +154,66 @@ const Home = () => {
                     align-items: center;
                 `}
             >
-                <Col md={5}>
-                    <Row>
-                        <Col md={4}>
-                            <Avatar
-                                alt="Orin"
-                                src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
-                                sx={{ width: 100, height: 100, margin: "auto" }}
-                            />
-                        </Col>
-                        <Col md={7}>
-                            <div className="docInfoBlock">
-                                <div className="docInfoTitle">Email</div>
-                                <div>{user?.email}</div>
-                            </div>
-                            <div className="docInfoBlock">
-                                <div className="docInfoTitle">Name</div>
-                                <div>Orin</div>
-                            </div>
-                            <div className="docInfoBlock">
-                                <div className="docInfoTitle">Role</div>
-                                <div>{user?.role}</div>
-                            </div>
-                            <div className="docInfoBlock">
-                                <div className="docInfoTitle">Begin</div>
-                                <div>
-                                    {getFormattedTime(user?.created_at)?.slice(
-                                        0,
-                                        10
-                                    ) || ""}
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                <Col md={3} className="text-center">
+                    <Avatar
+                        alt="Orin"
+                        src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
+                        sx={{ width: 100, height: 100, margin: "auto" }}
+                    />
+                    <div
+                        className="mt-2"
+                        css={css`
+                            color: #877f7f;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            overflow: hidden;
+                        `}
+                    >
+                        {user?.email}
+                        {/* uiwehfiuesdsffdsfhfueheiuwf@fdsif.com */}
+                    </div>
                 </Col>
-                <Col md={3} className="text-center pe-4">
+
+                <Col md={5}>
+                    <ActivityCalendar
+                        data={activityCalendar}
+                        colorScheme={"light"}
+                        theme={minimalTheme}
+                    />
+                </Col>
+                <Col md={4} className="text-center px-2">
                     <Row>
                         <Col
-                            className="pe-4"
+                            className="pe-2 pb-2"
                             css={css`
                                 border-right: 1px solid #e0e0e0;
                             `}
                         >
-                            <div className="fs-1">
+                            <div className="fs-2">
                                 {user?.documents?.length}
                             </div>
                             <div>
                                 <small>Documents</small>
                             </div>
                         </Col>
-                        <Col>
-                            <div className="fs-1">{user?.projects?.length}</div>
+                        <Col
+                            className="pe-2"
+                            css={css`
+                                border-right: 1px solid #e0e0e0;
+                            `}
+                        >
+                            <div className="fs-2">{user?.projects?.length}</div>
                             <div>
                                 <small>Projects</small>
                             </div>
                         </Col>
+                        <Col>
+                            <div className="fs-2">{user?.tags?.length}</div>
+                            <div>
+                                <small>Tags</small>
+                            </div>
+                        </Col>
                     </Row>
-                </Col>
-                <Col md={4}>
-                    <ActivityCalendar
-                        data={activityCalendar}
-                        colorScheme={"light"}
-                        theme={minimalTheme}
-                    />
                 </Col>
             </Row>
             <hr />
@@ -234,8 +223,15 @@ const Home = () => {
                     overflow-x: auto;
                 `}
             >
-                <h6>Recent</h6>
-                <Col className="d-inline-flex">
+                <h4
+                    css={css`
+                        color: #6c757d;
+                    `}
+                >
+                    <i className="fa-solid fa-clock-rotate-left fa-sm"></i>
+                    &ensp;Recent
+                </h4>
+                <Col className="d-inline-flex mt-2">
                     {recentItem?.map((doc) => (
                         <div
                             key={doc?._id}
@@ -262,8 +258,14 @@ const Home = () => {
                     overflow-x: auto;
                 `}
             >
-                <h6>Favorite</h6>
-                <Col className="d-inline-flex">
+                <h4
+                    css={css`
+                        color: #6c757d;
+                    `}
+                >
+                    <i className="fa-solid fa-star fa-sm"></i>&ensp;Favorite
+                </h4>
+                <Col className="d-inline-flex mt-2">
                     {favoriteItem?.length === 0 ? (
                         <div className="fst-italic mx-3 mb-4">-None-</div>
                     ) : (

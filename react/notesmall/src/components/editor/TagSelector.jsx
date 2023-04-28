@@ -72,7 +72,7 @@ const SelectTagList = ({
         </>
     ));
 };
-const TagSelector = ({ setOpen ,currentHtmlsaveToreducer}) => {
+const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
     const dispatch = useDispatch();
 
     const { taglist } = useSelector((state) => state.tag);
@@ -80,8 +80,16 @@ const TagSelector = ({ setOpen ,currentHtmlsaveToreducer}) => {
     const [unselect, setUnselect] = useState([]);
     const { editingDocument } = useSelector((state) => state.editor);
     const documentTags = editingDocument?.tags;
-    console.log("editingDocument", editingDocument);
     useEffect(() => {
+        if (taglist.length === 0) {
+
+            console.log("taglist", taglist);
+
+            getTagList();
+            return;
+        }
+        console.log("taglist", taglist);
+
         const filteredTags = taglist.filter(
             (tag) => !documentTags.some((docTag) => docTag._id === tag._id)
         );
@@ -91,9 +99,22 @@ const TagSelector = ({ setOpen ,currentHtmlsaveToreducer}) => {
         setUnselect(filteredTags);
     }, [taglist, documentTags]);
 
+    const getTagList = () => {
+        dispatch({
+            type: "FETCH_TAG_LIST",
+            payload: {
+                gqlMethod: "query",
+                api: "tags",
+                response:
+                    "_id name colorCode  document{_id title content isDeleted}",
+            },
+        });
+    };
+
+
 
     const handleSave = () => {
-        currentHtmlsaveToreducer()
+        currentHtmlsaveToreducer();
         const tags = Object.values(select).map((item) => `"${item._id}"`);
 
         dispatch({

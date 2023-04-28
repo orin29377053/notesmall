@@ -41,7 +41,7 @@ function* fetchUserInfo(action) {
         reducer: "FETCH_USER_INFO_RESULT",
         queryString: action.payload,
     });
-    // console.log(response);
+    console.log(response);
     yield put({
         type: "USER_DOCUMENTS_LIST",
         data: response.data.me.documents,

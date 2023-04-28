@@ -79,10 +79,14 @@ const getDocument = async (documentID) => {
 
 const getProject = async (projectID) => {
     try {
+        console.log("projectID22222", projectID);
+
         const project = await projectLoader.load(projectID.toString());
         if (!project) {
             throw new Error(`Project with ID ${projectID} not found`);
         }
+        console.log("projectID333333", project);
+
         const documents = await Promise.all(
             project.documents?.map((documentID) => getDocument(documentID))
         );

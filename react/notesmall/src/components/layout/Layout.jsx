@@ -9,16 +9,18 @@ import { css } from "@emotion/react";
 
 const Layout = ({ children }) => {
     return (
-        <Container fluid className="p-0" >
+        <div>
             <Header />
-            <Row className="m-0">
-                <Sidebar />
-                <div className="main-content">
-                    {children}
-                    {/* <Footer /> */}
-                </div>
-            </Row>
-        </Container>
+            <Container className="p-0">
+                <Row className="m-0">
+                    <Sidebar />
+                    <div className="main-content">
+                        {children}
+                        {/* <Footer /> */}
+                    </div>
+                </Row>
+            </Container>
+        </div>
     );
 };
 

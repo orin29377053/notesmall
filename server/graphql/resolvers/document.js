@@ -10,6 +10,9 @@ const {
     getProject,
     getUser,
     documentLoader,
+
+    tagLoader,
+    projectLoader,
     checkUserID,
 } = require("./merge");
 const { GraphQLError } = require("graphql");
@@ -36,6 +39,7 @@ function getAddDeleteUrls(oldArray, checkArray) {
 }
 
 const tarnsformDocument = async (document) => {
+    console.log("document!!!!!", getProject.bind(this, document.project));
     return {
         ...document._doc,
         _id: document.id,
@@ -206,6 +210,7 @@ module.exports = {
                 ).populate("tags");
 
                 const newDocument = await document.save();
+                console.log(newDocument.project);
 
                 if (user) {
                     await User.updateMany(
@@ -234,6 +239,8 @@ module.exports = {
                         { _id: { $in: documentded.project } },
                         { $pull: { documents: _id } }
                     );
+                    projectLoader.clear(documentded.project.toString());
+
                 } else if (project) {
                     await Project.updateMany(
                         { _id: { $in: project } },
@@ -243,10 +250,11 @@ module.exports = {
                         { _id: { $nin: project } },
                         { $pull: { documents: _id } }
                     );
+                    projectLoader.clear(project.toString());
+
                 }
 
                 documentLoader.clear(_id.toString());
-                console.log("newDocument", newDocument);
 
                 return tarnsformDocument(newDocument);
             } catch (error) {

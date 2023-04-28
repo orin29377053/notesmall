@@ -129,10 +129,23 @@
     align-items: center;
     overflow-y: auto;
 }
+.infoBlock {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3px;
+    align-items: center;
+    overflow-y: auto;
+}
 .docInfoTitle {
     margin-right: 10px;
     color: rgb(144, 137, 137);
     width: 75px;
+}
+.infoTitle {
+    margin-right: 10px;
+    color: rgb(144, 137, 137);
+    width: 68px;
+    font-weight: bold;
 }
 .alert-information {
     position: fixed;
@@ -140,6 +153,23 @@
     right: 0;
     margin: 20px;
     animation: fade-out 3s ease-in-out;
+}
+.sidebarTitle {
+    cursor: pointer;
+    display: flex;
+    padding: 2px;
+    padding-left: 3px;
+    padding-right: 100px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    align-items: center;
+    width: 100%;
+}
+.sidebarTitle:hover {
+    background-color: #ecf1fe;
+    color: #1976d2;
+    font-weight: 700;
 }
 
 @keyframes fade-out {
@@ -149,4 +179,8 @@
     100% {
         opacity: 0;
     }
+}
+
+.react-activity-calendar {
+    margin: auto;
 }
