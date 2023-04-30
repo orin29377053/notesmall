@@ -14,12 +14,13 @@ const AlertInformation = () => {
         if (!visible) return;
         const timer = setTimeout(() => {
             setVisible(false);
-        }, 3000);
+        }, 4000);
 
         return () => clearTimeout(timer);
     }, [visible]);
 
     useEffect(() => {
+        console.log(information);
         setSeverity(information.type);
         setMessage(information.message);
         setTitle(information.title);

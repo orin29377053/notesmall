@@ -5,6 +5,7 @@ import { css } from "@emotion/react";
 import { useSelector, useDispatch } from "react-redux";
 import Chip from "@mui/material/Chip";
 import { Button } from "@mui/material";
+import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 
 const selectTag = (tag, select, setSelect, unselect, setUnselect, dispatch) => {
     setSelect([...select, tag]);
@@ -34,6 +35,13 @@ const UnSelectTagList = ({
                     color: ${getTextColorFromBackground(
                         item.colorCode.slice(1)
                     )};
+                    font-size: 12px;
+                    font-weight: bold;
+                    :hover {
+                        background-color: ${item.colorCode} !important;
+                        box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+                            0px 1px 10px 0px rgba(0, 0, 0, 0.12) !important;
+                    }
                 `}
                 variant="outlined"
                 onClick={() => {
@@ -63,6 +71,8 @@ const SelectTagList = ({
                     color: ${getTextColorFromBackground(
                         item.colorCode.slice(1)
                     )};
+                    font-size: 12px;
+                    font-weight: bold;
                 `}
                 variant="outlined"
                 onDelete={() =>
@@ -82,19 +92,14 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
     const documentTags = editingDocument?.tags;
     useEffect(() => {
         if (taglist.length === 0) {
-
-            console.log("taglist", taglist);
-
             getTagList();
             return;
         }
-        console.log("taglist", taglist);
 
         const filteredTags = taglist.filter(
             (tag) => !documentTags.some((docTag) => docTag._id === tag._id)
         );
-        console.log("taglist", taglist);
-        console.log(filteredTags, documentTags);
+
         setSelect(documentTags);
         setUnselect(filteredTags);
     }, [taglist, documentTags]);
@@ -110,8 +115,6 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
             },
         });
     };
-
-
 
     const handleSave = () => {
         currentHtmlsaveToreducer();
@@ -147,9 +150,45 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
     // console.log(select, unselect);
 
     return (
-        <div>
-            <div>
-                unselect
+        <div
+            css={css`
+                display: flex;
+                flex-direction: column;
+            `}
+        >
+            <h3
+                css={css`
+                    align-self: center;
+                    align-items: center;
+                    display: flex;
+                `}
+            >
+                <TurnedInNotIcon
+                    fontSize="middle"
+                    css={css`
+                        margin-right: 5px;
+                        color: #1976d2;
+                    `}
+                />
+                Tags Selector
+            </h3>
+
+            <div
+                css={css`
+                    border-radius: 5px;
+                    padding: 10px;
+                    margin-top: 20px;
+                `}
+            >
+                <div
+                    css={css`
+                        font-size: 12px;
+                        color: #8f9a97;
+                        padding-left: 5px;
+                    `}
+                >
+                    Click to select
+                </div>
                 <UnSelectTagList
                     unselect={unselect}
                     select={select}
@@ -158,9 +197,32 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
                     getTextColorFromBackground={getTextColorFromBackground}
                 />
             </div>
-            <br></br>
-            <div>
-                select
+            <div
+                css={css`
+                    display: flex;
+                    margin-top: 10px;
+                    padding-left: 16px;
+                    color: #8f9a97;
+                `}
+            >
+                <i className="fa-solid fa-arrow-right-arrow-left fa-rotate-90"></i>
+            </div>
+            <div
+                css={css`
+                    border-radius: 5px;
+                    padding: 10px;
+                    margin-top: 20px;
+                `}
+            >
+                <div
+                    css={css`
+                        font-size: 12px;
+                        color: #8f9a97;
+                        padding-left: 5px;
+                    `}
+                >
+                    Click X to cancel
+                </div>
                 <SelectTagList
                     unselect={unselect}
                     select={select}
@@ -169,16 +231,25 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
                     getTextColorFromBackground={getTextColorFromBackground}
                 />
             </div>
-            <Button
-                variant="contained"
-                onClick={() => handleSave()}
+            
+                <Button
+                    variant="contained"
+                    onClick={() => handleSave()}
                 css={css`
-                    margin-top: 10px;
-                    float: right;
-                `}
-            >
-                Save
-            </Button>
+                    
+                        background-color: #1976d2;
+                        border-radius: 30px;
+                        margin-top: 20px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        padding: 5px 20px;
+                        &:hover {
+                            background-color: #1976d2 !important;
+                        }
+                    `}
+                >
+                    Save
+                </Button>
         </div>
     );
 };

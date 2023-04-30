@@ -12,7 +12,7 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
     const { projectlist } = useSelector((state) => state.project);
     const { path } = useSelector((state) => state.common);
     const [project, setProject] = useState("");
-    const[projectListResult,setProjectListResult]=useState([])
+    const [projectListResult, setProjectListResult] = useState([]);
 
     const handleChange = (event) => {
         currentHtmlsaveToreducer();
@@ -31,7 +31,6 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
     };
     useEffect(() => {
         if (editingDocument.project) {
-
             setProject(editingDocument?.project?._id || "");
         } else {
             setProject("none");
@@ -49,10 +48,9 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
 
     useEffect(() => {
         if (projectlist.length > 0) {
-            setProjectListResult(projectlist)
+            setProjectListResult(projectlist);
         }
     }, [projectlist]);
-
 
     return (
         <div
@@ -69,7 +67,7 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                 }
             `}
         >
-            <div>
+            {/* <div>
                 <AccountTreeOutlinedIcon
                     css={css`
                         color: #1976d2;
@@ -78,8 +76,11 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                     `}
                 />
                 Project
-            </div>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+            </div> */}
+            <FormControl
+                variant="standard"
+                sx={{ minWidth: 130}}
+            >
                 <Select
                     labelId="demo-simple-select-standard-label"
                     id="demo-simple-select-standard"
@@ -87,21 +88,21 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                     onChange={handleChange}
                     label="project"
                     css={css`
-                        font-size: 14px;
+                        font-size: 13px;
+                        border: none;
+                        text-decoration: none;
                     `}
-                    
                 >
                     <MenuItem
                         dense={true}
                         value="none"
                         css={css`
-                            font-size: 14px;
+                        font-size: 13px;
+
                             color: gray;
                             font-style: italic;
-                            
                         `}
                         divider={true}
-
                     >
                         None
                     </MenuItem>
@@ -112,7 +113,7 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                                     value={projectListResult[key]._id}
                                     key={key}
                                     css={css`
-                                        font-size: 14px;
+                                        font-size: 13px;
                                     `}
                                     dense={true}
                                 >

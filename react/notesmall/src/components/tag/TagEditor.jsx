@@ -4,13 +4,14 @@ import { css } from "@emotion/react";
 
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Modal from "@mui/material/Modal";
+import { Modal, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { MuiColorInput } from "mui-color-input";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
-import Taglist from "./tag/Taglist";
+import Taglist from "./Taglist";
 
 const style = {
     position: "absolute",
@@ -19,6 +20,8 @@ const style = {
     transform: "translate(-50%, -50%)",
     width: 400,
     bgcolor: "background.paper",
+    borderRadius: "30px",
+
     // border: "2px solid #000",
     boxShadow: 24,
     p: 4,
@@ -60,12 +63,19 @@ const TagEditor = () => {
     };
 
     useEffect(() => {
+        console.log("useEffect");
         getTagList();
     }, []);
 
     return (
         <div>
-            <Button onClick={handleOpen}>Create tag</Button>
+            <IconButton
+                aria-label="delete"
+                color="primary"
+                onClick={handleOpen}
+            >
+                <AddCircleIcon fontSize="large" />
+            </IconButton>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -123,6 +133,8 @@ const TagEditor = () => {
                             css={css`
                                 margin-top: 10px;
                                 float: right;
+                                font-weight: bold;
+                                border-radius: 30px;
                             `}
                         >
                             Add tag
@@ -132,14 +144,14 @@ const TagEditor = () => {
             </Modal>
             
 
-            <div>
+            {/* <div>
                 <Taglist
                     css={css`
                         display: flex;
                     `}
                     taglist={taglist}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };

@@ -39,7 +39,6 @@ function getAddDeleteUrls(oldArray, checkArray) {
 }
 
 const tarnsformDocument = async (document) => {
-    console.log("document!!!!!", getProject.bind(this, document.project));
     return {
         ...document._doc,
         _id: document.id,
@@ -100,10 +99,12 @@ module.exports = {
             try {
                 const translateKeywordResult = await translateKeyword(keyword);
                 console.log(translateKeywordResult);
-                const query = documentFuzzySearch(translateKeywordResult, userID);
+                const query = documentFuzzySearch(
+                    translateKeywordResult,
+                    userID
+                );
 
                 const documents = await Document.aggregate(query);
-                
 
                 return documents.map(async (document) => {
                     document.highlights.map((highlight) => {});
@@ -188,7 +189,6 @@ module.exports = {
                     user,
                 } = args.document;
 
-                console.log(project);
                 const updated_at = Date.now();
 
                 const documentded = await Document.findById(_id);
@@ -210,7 +210,6 @@ module.exports = {
                 ).populate("tags");
 
                 const newDocument = await document.save();
-                console.log(newDocument.project);
 
                 if (user) {
                     await User.updateMany(
@@ -224,7 +223,6 @@ module.exports = {
                 }
 
                 if (tags) {
-                    console.log("tags!!!!!", tags);
                     await Tag.updateMany(
                         { _id: { $in: tags } },
                         { $addToSet: { document: _id } }
@@ -240,18 +238,25 @@ module.exports = {
                         { $pull: { documents: _id } }
                     );
                     projectLoader.clear(documentded.project.toString());
-
                 } else if (project) {
                     await Project.updateMany(
                         { _id: { $in: project } },
                         { $addToSet: { documents: _id } }
                     );
+                    const oldProject = await Project.find({
+                        _id: { $nin: project },
+                    })
+                        .where("documents")
+                        .in(_id);
+
                     await Project.updateMany(
                         { _id: { $nin: project } },
                         { $pull: { documents: _id } }
                     );
+                    oldProject.map((p) => {
+                        projectLoader.clear(p._id.toString());
+                    });
                     projectLoader.clear(project.toString());
-
                 }
 
                 documentLoader.clear(_id.toString());
@@ -263,9 +268,7 @@ module.exports = {
         },
         updatedDocumentContent: async (_, args, { isAuth, userID }) => {
             try {
-                console.log(args);
                 const { id, content } = args;
-                console.log("id", id);
                 const updated_at = Date.now();
                 const documentded = await Document.findById(id);
 
@@ -275,14 +278,12 @@ module.exports = {
                     /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
 
                 let imageslist = documentded.images;
-                console.log("imageslist", imageslist);
                 let urls = [];
                 for (let match of content.matchAll(pattern)) {
                     urls.push(match[1]);
                 }
 
                 const [add, dele] = getAddDeleteUrls(imageslist, urls);
-                console.log("dele", dele);
 
                 dele.map((url) => {
                     deleteImage(url);

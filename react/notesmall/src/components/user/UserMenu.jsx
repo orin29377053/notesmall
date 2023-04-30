@@ -39,7 +39,7 @@ const UserMenu = () => {
         <div>
             <Avatar
                 alt="Orin"
-                src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
+                src="https://image.notesmall.site/resized-mypic.jpeg"
                 sx={{ width: 30, height: 30 }}
                 onClick={handleClick}
             />

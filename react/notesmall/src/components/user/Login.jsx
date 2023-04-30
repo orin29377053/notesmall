@@ -28,7 +28,6 @@ const Login = ({ setOpen }) => {
     const [email, setEmail] = useState("test@gmail.com");
     const [password, setPassword] = useState("test");
     const signIn = (email, password) => {
-        console.log("login")
         dispatch({
             type: "FETCH_SIGN_IN",
             payload: {
@@ -49,11 +48,12 @@ const Login = ({ setOpen }) => {
                         }
                     }
                     tags{
-                        _id name colorCode
+                        _id name colorCode document{ _id title content  isDeleted  }
                     }
                     `
             },
         });
+
         setOpen(false);
         history("/home");
     };

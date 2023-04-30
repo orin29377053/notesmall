@@ -147,9 +147,9 @@ const Home = () => {
     }, []);
 
     return (
-        <div>
+        <div className="p-2">
             <Row
-                className="d-flex my-2 p-2"
+                className="d-flex m-0 my-2 p-2"
                 css={css`
                     align-items: center;
                 `}
@@ -157,8 +157,8 @@ const Home = () => {
                 <Col md={3} className="text-center">
                     <Avatar
                         alt="Orin"
-                        src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
-                        sx={{ width: 100, height: 100, margin: "auto" }}
+                        src="https://image.notesmall.site/resized-mypic.jpeg"
+                        sx={{ width: 150, height: 150, margin: "auto" }}
                     />
                     <div
                         className="mt-2"
@@ -179,6 +179,8 @@ const Home = () => {
                         data={activityCalendar}
                         colorScheme={"light"}
                         theme={minimalTheme}
+                        blockSize={12}
+                        blockMargin={5}
                     />
                 </Col>
                 <Col md={4} className="text-center px-2">
@@ -220,16 +222,16 @@ const Home = () => {
             <Row
                 className="m-0"
                 css={css`
-                    overflow-x: auto;
+                    max-width: fit-content;
+                    overflow: auto;
                 `}
             >
                 <h4
-                    css={css`
-                        color: #6c757d;
-                    `}
+                    // css={css`
+                    //     color: #6c757d;
+                    // `}
                 >
-                    <i className="fa-solid fa-clock-rotate-left fa-sm"></i>
-                    &ensp;Recent
+                Recent
                 </h4>
                 <Col className="d-inline-flex mt-2">
                     {recentItem?.map((doc) => (
@@ -255,15 +257,16 @@ const Home = () => {
             <Row
                 className="m-0"
                 css={css`
-                    overflow-x: auto;
+                    max-width: fit-content;
+                    overflow: auto;
                 `}
             >
                 <h4
-                    css={css`
-                        color: #6c757d;
-                    `}
+                    // css={css`
+                    //     color: #6c757d;
+                    // `}
                 >
-                    <i className="fa-solid fa-star fa-sm"></i>&ensp;Favorite
+                   Favorite
                 </h4>
                 <Col className="d-inline-flex mt-2">
                     {favoriteItem?.length === 0 ? (

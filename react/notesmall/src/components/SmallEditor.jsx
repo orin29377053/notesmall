@@ -91,10 +91,6 @@ const Title = ({ currentHtmlsaveToreducer }) => {
         setTitle(editingDocument.title);
     }, [editingDocument]);
 
-
-    
-
-
     return (
         <input
             type="text"
@@ -203,7 +199,7 @@ const SmallEditor = () => {
                     mutation{
                         updatedDocumentContent(id: "${id}",content: """${markdown}""" ) }
                         `;
-        const resul=await fetch(graphqlAPI, {
+        const resul = await fetch(graphqlAPI, {
             method: "POST",
             body: JSON.stringify({ query }),
             headers: {
@@ -212,7 +208,7 @@ const SmallEditor = () => {
             },
         });
         const result = await resul.json();
-        if(!result.data.updatedDocumentContent){
+        if (!result.data.updatedDocumentContent) {
             alert("Update error");
         }
         refUploading.current = true;
@@ -258,8 +254,6 @@ const SmallEditor = () => {
         });
     }, [location, path]);
 
-
-
     return (
         // <AllStyledComponent>
         <ThemeProvider>
@@ -274,7 +268,12 @@ const SmallEditor = () => {
                             />
                         </Row>
 
-                        <Row className="px-1 mb-4">
+                        <Row
+                            className="px-1 mb-4"
+                            css={css`
+                                font-size: 0.9rem;
+                            `}
+                        >
                             <EditorToolbar />
                         </Row>
                         <MdToContent htmlContents={rawContent} />
@@ -291,11 +290,11 @@ const SmallEditor = () => {
                         display: flex;
                         flex-direction: column;
                         margin-top: 1rem;
+                        margin-right: 2px;
                     `}
                 >
                     <div
                         css={css`
-                            margin: 5px;
                             display: flex;
                             flex-direction: column;
                             align-items: flex-start;
@@ -303,79 +302,17 @@ const SmallEditor = () => {
                     >
                         <div
                             css={css`
-                                display: flex;
-                                align-items: flex-start;
-                                margin-top: 10px;
-                                border-radius: 5px;
-                                padding: 5px;
-                                align-items: flex-start;
-
-                                flex-direction: row;
+                                width: 100%;
                             `}
                         >
-                            <div
-                                css={css`
-                                    display: flex;
-                                    align-items: center;
-                                    margin-right: 10px;
-                                `}
-                            >
-                                <TagContent
-                                    currentHtmlsaveToreducer={
-                                        currentHtmlsaveToreducer
-                                    }
-                                />
-                            </div>
-
-                            <div>
-                                {editingDocument?.tags?.map((item) => (
-                                    <Chip
-                                        key={item._id}
-                                        label={item.name}
-                                        size="small"
-                                        css={css`
-                                            background-color: ${item.colorCode};
-                                            margin: 2px;
-                                            padding: 1px;
-                                            font-weight: 700;
-                                            color: ${getTextColorFromBackground(
-                                                item.colorCode.slice(1)
-                                            )};
-                                        `}
-                                        variant="outlined"
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                        <div
-                            css={css`
-                                margin-left: 5px;
-                            `}
-                        >
-                            <ProjectSelector
+                            <EditorInformation
                                 currentHtmlsaveToreducer={
                                     currentHtmlsaveToreducer
                                 }
-                            />
-                        </div>
-                        <div
-                            css={css`
-                                margin-left: 5px;
-                            `}
-                        >
-                            <TOC
                                 tracingDoc={refVContent.current.html}
                                 pathID={id}
                                 reducerID={newID}
                             />
-                        </div>
-                        <div
-                            css={css`
-                                padding: 5px;
-                                width: 100%;
-                            `}
-                        >
-                            <EditorInformation />
                         </div>
                     </div>
                 </div>

@@ -148,6 +148,9 @@ const graph = async () => {
 graph();
 
 httpServer.listen(process.env.PORT, async () => {
+    const usedMemoryBefore = process.memoryUsage().heapUsed;
+    console.log(`Memory start at : ${usedMemoryBefore} bytes`);
+
     console.log(`🚀 Server ready at http://localhost:${process.env.PORT}/`);
 });
 // app.listen(process.env.PORT, () => {

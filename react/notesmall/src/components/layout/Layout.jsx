@@ -11,15 +11,12 @@ const Layout = ({ children }) => {
     return (
         <div>
             <Header />
-            <Container className="p-0">
-                <Row className="m-0">
-                    <Sidebar />
-                    <div className="main-content">
-                        {children}
-                        {/* <Footer /> */}
-                    </div>
-                </Row>
-            </Container>
+            <div className="py-0 px-2 d-flex container-xxl">
+                <Sidebar />
+                <div className="main-content">
+                    <div>{children}</div>
+                </div>
+            </div>
         </div>
     );
 };

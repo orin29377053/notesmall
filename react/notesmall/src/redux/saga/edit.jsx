@@ -30,6 +30,8 @@ function* fetchUpdateTags(action) {
         path: GRAPHQL_URL,
         reducer: "UPDATE_TAGS_RESULT",
         queryString: action.payload,
+        error: "Update Tag Error",
+        success: "Update Tag Success",
     });
 }
 
@@ -56,6 +58,8 @@ function* fetchUpdateProject(action) {
         path: GRAPHQL_URL,
         reducer: "UPDATE_DOCUMENT_PROJECT",
         queryString: action.payload,
+        error: "Update Project Error",
+        success: "Update Project Success",
     });
     const action2 = {
         type: "FETCH_Project_LIST",

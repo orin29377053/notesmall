@@ -24,18 +24,7 @@ export function* fetchApi({
     const { gqlMethod, api, format, response } = queryString;
     let query = `${gqlMethod}{${api}${format ?? ""} { ${response} }}`;
 
-    // params = {
-    //     ...params,
-    //     headers: { "Content-Type": "application/json" },
-    // };
-
     try {
-        // const { data: response } = yield APIKit[method](
-        //     path,
-        //     JSON.stringify({ query }),
-        //     params
-        // );
-
         const response = yield fetch(graphqlAPI, {
             method: "POST",
             headers: {
@@ -44,11 +33,16 @@ export function* fetchApi({
             },
             body: JSON.stringify({ query }),
         }).then((res) => res.json());
-        console.log(response);
 
-        // result = response;
         if (response.errors) {
-            alert(response.errors[0].message);
+            yield put({
+                type: "FETCH_RESULT_INFORMATION",
+                data: {
+                    type: "error",
+                    title: "Error",
+                    message: error,
+                },
+            });
             return;
         } else {
             if (success) {
@@ -57,7 +51,7 @@ export function* fetchApi({
                     data: {
                         type: "success",
                         title: "Success",
-                        message: success ,
+                        message: success,
                     },
                 });
             }
@@ -82,8 +76,6 @@ export function* fetchApi({
                 },
             });
         }
-        // alert(error.response?.data?.errors[0]?.message);
-        // alert(error)
     }
 
     //有設定 reducer才會呼叫

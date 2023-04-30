@@ -1,6 +1,8 @@
 import Search from "./components/Search";
-import TagEditor from "./components/TagEditor";
-import ProjectEditor from "./components/project/ProjectEditor";
+// import TagEditor from "./components/TagEditor";
+import Taglist from "./components/tag/Taglist";
+// import ProjectEditor from "./components/project/ProjectEditor";
+import ProjectList from "./components/project/ProjectList";
 import SmallEditor from "./components/SmallEditor";
 import Home from "./components/layout/Home";
 
@@ -8,7 +10,7 @@ const routes = [
 
     {
         path: "/tag",
-        component: <TagEditor />,
+        component: <Taglist />,
     },
     {
         path: "/search",
@@ -16,7 +18,7 @@ const routes = [
     },
     {
         path: "/project",
-        component: <ProjectEditor />,
+        component: <ProjectList />,
     },
     {
         path: "/:id",

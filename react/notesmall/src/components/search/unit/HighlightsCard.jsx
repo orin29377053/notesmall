@@ -12,7 +12,10 @@ const HighlightsCard = ({ item, path }) => {
         return data.map((ele, j) => {
             if (ele.type === "hit") {
                 return (
-                    <span style={{ backgroundColor: "lightgreen" }} key={j}>
+                    <span
+                        style={{ color: "#1976d2", fontWeight: "bold" }}
+                        key={j}
+                    >
                         {sanitizeContent(ele.value)}
                     </span>
                 );
@@ -31,7 +34,7 @@ const HighlightsCard = ({ item, path }) => {
         <div
             css={css`
                 padding: 5px;
-                margin-bottom: 5px;
+                margin-bottom: 10px;
             `}
         >
             <CardContent
@@ -46,27 +49,28 @@ const HighlightsCard = ({ item, path }) => {
                     css={css`
                         display: flex;
                         align-items: center;
+                        justify-content: space-between;
+                        padding-bottom: 3px;
+                        border-bottom: 1px solid #e0e0e0;
                     `}
                 >
                     <div
                         css={css`
-                            border-radius: 12px;
-                            boarder: 2px solid #1976d2;
-                            background-color: #ecf1fe;
-                            padding: 2px 10px 2px 10px;
-                            font-size: 14px;
-                            font-weight: 700;
-                            box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.2);
-                            color: #1976d2;
+                            font-size: 15px;
+                            // color: #8e8e8e;
+
                         `}
                     >
                         {transformString[path.toString()]}
                     </div>
-                    <div css={css`
-                    margin-left: 5px;
-                    font-size: 12px;
-                    
-                    `}>
+                    <div
+                        css={css`
+                            margin-left: 5px;
+                            font-size: 10px;
+                            color: #70737b;
+
+                        `}
+                    >
                         {item.length} {item.length > 1 ? "results" : "result"}{" "}
                         matching
                     </div>
@@ -74,15 +78,21 @@ const HighlightsCard = ({ item, path }) => {
                 {item.map((element, i) => (
                     <div
                         css={css`
-                            margin-left: 5px;
                             margin-top: 10px;
                         `}
-                        className={
-                            item.length - 1 !== i ? "needBottomBorder" : ""
-                        }
+                        // className={
+                        //     item.length - 1 !== i ? "needBottomBorder" : ""
+                        // }
                         key={i}
                     >
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            css={css`
+                                font-size: 15px;
+                                color: #8e8e8e;
+                            `}
+                        >
                             {highlightsprocess(element.texts)}
                         </Typography>
                     </div>

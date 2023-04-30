@@ -19,9 +19,9 @@ const tarnsformUser = (user) => {
         password: null,
         created_at: dataToString(user.created_at),
         token: createToken(user._id, user.email, secret, (user.role!=="guest")?expireTime:"365d"),
-        documents: user.documents?.map((documentID) => getDocument(documentID)),
+        documents: user.documents?.map((documentID) => getDocument(documentID,1)),
         projects: user.projects?.map((projectID) => getProject(projectID)),
-        tags: user.tags?.map((tagID) => getTag(tagID)),
+        tags: user.tags?.map((tagID) => getTag(tagID,1)),
 
     };
 };

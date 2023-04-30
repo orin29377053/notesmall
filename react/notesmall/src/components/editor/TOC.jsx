@@ -22,24 +22,17 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
     }, [tracingDoc, pathID, reducerID]);
 
     return (
-        <nav>
-            <div
-                css={css`
-                    margin-bottom: 5px;
-                    font-size: 14px;
-                `}
-            >
-                <TocIcon
-                    css={css`
-                        color: #1976d2;
-                        margin-right: 5px;
-                    `}
-                />
-                Content
-            </div>
+        <nav
+            css={css`
+                
+                font-size: 1rem;
+                display: flex;
+                flex-direction: column;
+            `}
+        >
             <ul
                 css={css`
-                    padding-left: 10px;
+                    padding-left: 1px;
                 `}
             >
                 {headings.map((heading, index) => (
@@ -56,7 +49,7 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
                                 color: black;
                                 font-size: 0.8rem;
                                 width: 100%;
-                                padding: 5px 10px;
+                                
                                 border-radius: 5px;
                                 &:hover {
                                     background-color: #ecf1fe;

@@ -1,15 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DocumentCard from "../common/Card"
+import DocumentCard from "../common/Card";
 import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 import { css } from "@emotion/react";
-import Modal from "@mui/material/Modal";
+import { Modal, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import ProjectList from "./ProjectList";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 const ItemCard = ({ item }) => {
     return item?.documents?.map((doc) => (
@@ -28,6 +29,7 @@ const style = {
     transform: "translate(-50%, -50%)",
     width: 400,
     bgcolor: "background.paper",
+    "border-radius": "20px",
     // border: "2px solid #000",
     boxShadow: 24,
     p: 4,
@@ -35,22 +37,12 @@ const style = {
 
 const ProjectEditor = () => {
     const dispatch = useDispatch();
-    const { projectlist } = useSelector((state) => state.project);
     const [projectName, setProjectName] = useState("");
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const getProjectList = () => {
-        dispatch({
-            type: "FETCH_Project_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "projects",
-                response: "_id name  documents {_id title content isDeleted}",
-            },
-        });
-    };
+
     const addProject = () => {
         dispatch({
             type: "FETCH_CREATE_PROJECT",
@@ -63,14 +55,16 @@ const ProjectEditor = () => {
         });
     };
 
-    useEffect(() => {
-        // console.log("projectList",projectlist)
-        // getProjectList()
-    }, [projectlist]);
-
     return (
         <div>
-            <Button onClick={handleOpen}>Create project</Button>
+            <IconButton
+                aria-label="delete"
+                color="primary"
+                onClick={handleOpen}
+            >
+                <AddCircleIcon fontSize="large" />
+            </IconButton>
+            {/* <IconButton onClick={handleOpen}>Create project</IconButton> */}
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -109,6 +103,8 @@ const ProjectEditor = () => {
                             css={css`
                                 margin-top: 10px;
                                 float: right;
+                                font-weight: bold;
+                                border-radius: 30px;
                             `}
                         >
                             Add project
@@ -117,7 +113,7 @@ const ProjectEditor = () => {
                 </Box>
             </Modal>
 
-            <ProjectList list={projectlist} />
+            {/* <ProjectList list={projectlist} /> */}
         </div>
     );
 };

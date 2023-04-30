@@ -9,7 +9,6 @@ import { useSelector, useDispatch } from "react-redux";
 import UserInfo from "../user/UserInfo";
 import logo from "../../image/logo.png";
 import { useNavigate } from "react-router-dom";
-import { get } from "lodash";
 
 const style = {
     position: "absolute",
@@ -30,12 +29,10 @@ const userInfoStyle = {
     transform: "translate(-50%, -50%)",
     width: 350,
     bgcolor: "background.paper",
-    borderRadius: 3,
 
     // border: "2px solid #000",
     boxShadow: 10,
 };
-
 
 const Header = () => {
     const history = useNavigate();
@@ -99,7 +96,9 @@ const Header = () => {
                         align-items: center;
                         cursor: pointer;
                         color: #1a77d3;
-
+                        margin: 0 5px;
+                        font-size: 16px;
+                        font-weight: 700;
                         :hover {
                             background-color: #1a77d3;
                             color: #feffff !important;
@@ -110,26 +109,20 @@ const Header = () => {
                     `}
                     onClick={handleOpen}
                 >
-                    <div
-                        css={css`
-                            margin-left: 5px;
-                            font-size: 16px;
-                            font-weight: 700;
-                            margin-right: 10px;
-                        `}
-                    >
-                        {role === "guest" ? "SIGN IN" : user?.email}
-                    </div>
                     {role === "guest" ? (
-                        <i className="fa-solid fa-right-to-bracket" style={{ color: "#1a77d3"}}>
-                            
-                        </i>
+                        <>
+                            SIGN IN&ensp;
+                            <i className="fa-solid fa-right-to-bracket"></i>
+                        </>
                     ) : (
-                        <Avatar
-                            alt="Orin"
-                            src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
-                            sx={{ width: 30, height: 30 }}
-                        />
+                        <>
+                            {user?.email}&ensp;
+                            <Avatar
+                                alt="Orin"
+                                src="https://image.notesmall.site/resized-mypic.jpeg"
+                                sx={{ width: 30, height: 30 }}
+                            />
+                        </>
                     )}
                 </div>
 
@@ -140,7 +133,12 @@ const Header = () => {
                     aria-describedby="modal-modal-description"
                 >
                     {role !== "guest" ? (
-                        <Box sx={userInfoStyle}>
+                        <Box
+                            sx={userInfoStyle}
+                            css={css`
+                                border-radius :30px !important; 
+                            `}
+                        >
                             <UserInfo user={user} handleClose={handleClose} />
                         </Box>
                     ) : (

@@ -60,7 +60,7 @@ const CommonProvider = ({ children }) => {
                         }
                     }
                     tags{
-                        _id name colorCode
+                        _id name colorCode document{ _id title content  isDeleted }
                     }
                     `,
             },

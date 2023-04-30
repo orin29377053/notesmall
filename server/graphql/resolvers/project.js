@@ -104,7 +104,7 @@ module.exports = {
                 );
                 const newProject = await project.save();
                 console.log("newProject", newProject);
-                projectLoader.clear(newProject._id);
+                projectLoader.clear(newProject._id.toString());
 
                 if (documents) {
                     const oldDocuments = oldProject.documents;

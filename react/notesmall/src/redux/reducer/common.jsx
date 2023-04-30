@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { concat } from "lodash";
 const initState = {
     sidebar: [],
     searchKeyword: "",
@@ -6,7 +6,7 @@ const initState = {
     searchResultDetail: [],
     selectedID: "",
     path: "",
-    information:{},
+    information: {},
 };
 
 const commonReducer = (state = initState, action) => {
@@ -28,9 +28,8 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 // sidebar: action.data?.data?.documents,
             };
-        
-        case "PERMENT_DELETE_SIDEBAR_LIST_RESULT":
 
+        case "PERMENT_DELETE_SIDEBAR_LIST_RESULT":
             index = _.findIndex(state.sidebar, {
                 _id: action.data?.data?.permantDeleteDocument._id,
             });
@@ -39,13 +38,19 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 // sidebar: action.data?.data?.documents,
             };
-        
+
         case "SEARCH_LIST_RESULT":
             res = action.data?.data?.searchDocuments;
-            res.forEach((item, i) => {
-                variable = _.groupBy(item.highlights, "path");
-                res[i].highlights = variable;
-            });
+            console.log("res", res);
+            if (res.length === 0) {
+                res.push("No result found");
+            } else {
+                res.forEach((item, i) => {
+                    variable = _.groupBy(item.highlights, "path");
+                    res[i].highlights = variable;
+                });
+            }
+
             return {
                 ...state,
                 searchResult: res,
@@ -81,7 +86,6 @@ const commonReducer = (state = initState, action) => {
             };
 
         case "UPDATE_DOCUMENT_TITLE":
-
             // console.log(action.data.data.updatedDocument);
             // console.log(state.sidebar);
             return {
@@ -101,12 +105,18 @@ const commonReducer = (state = initState, action) => {
             return {
                 ...state,
                 sidebar: action.data,
-            }
+            };
         case "FETCH_RESULT_INFORMATION":
             return {
                 ...state,
                 information: action.data,
-            }
+            };
+        
+        case "CLEAR_SEARCH_RESULT":
+            return {
+                ...state,
+                searchResult: [],
+            };
         
 
         default:

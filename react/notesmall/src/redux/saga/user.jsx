@@ -4,6 +4,7 @@ import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
 
 function* fetchSignIn(action) {
+    console.log("OKOK");
     const response = yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -12,19 +13,22 @@ function* fetchSignIn(action) {
         error: "Sign in Error",
         success: "Sign in Success",
     });
-    yield put({
-        type: "USER_DOCUMENTS_LIST",
-        data: response.data.signin.documents,
-    });
-    
-    yield put({
-        type: "USER_PROJECTS_LIST",
-        data: response.data.signin.projects,
-    });
-    yield put({
-        type: "USER_TAGS_LIST",
-        data: response.data.signin.tags,
-    });
+    if (response) {
+        console.log(response, "swswswsw");
+        yield put({
+            type: "USER_DOCUMENTS_LIST",
+            data: response.data.signin.documents,
+        });
+
+        yield put({
+            type: "USER_PROJECTS_LIST",
+            data: response.data.signin.projects,
+        });
+        yield put({
+            type: "USER_TAGS_LIST",
+            data: response.data.signin.tags,
+        });
+    }
 }
 function* fetchSignUp(action) {
     yield fetchApi({
@@ -60,6 +64,5 @@ function* mySaga() {
     yield takeLatest("FETCH_SIGN_IN", fetchSignIn);
     yield takeLatest("FETCH_USER_INFO", fetchUserInfo);
     yield takeLatest("FETCH_SIGN_UP", fetchSignUp);
-
 }
 export default mySaga;

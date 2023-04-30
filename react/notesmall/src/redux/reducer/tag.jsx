@@ -5,6 +5,7 @@ const tagReducer = (state = initState, action) => {
     switch (action.type) {
         case "TAG_LIST_RESULT":
             console.log("1");
+            console.log("1",action.data.data.tags);
             return {
                 ...state,
                 taglist: action.data.data.tags,
@@ -39,7 +40,8 @@ const tagReducer = (state = initState, action) => {
                 }),
             };
         case "USER_TAGS_LIST":
-            console.log("5");
+            // console.log("5");
+            console.log("5",action.data);
 
             return {
                 ...state,

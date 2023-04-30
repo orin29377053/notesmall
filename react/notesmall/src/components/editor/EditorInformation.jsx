@@ -12,8 +12,18 @@ import { graphqlAPI } from "../../utils/const";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
+import ProjectSelector from "./ProjectSelector";
+import getTextColorFromBackground from "../../utils/getTextColorFromBackground";
+import Chip from "@mui/material/Chip";
+import TagContent from "./TagContent";
+import TOC from "./TOC";
 
-const EditorInformation = () => {
+const EditorInformation = ({
+    currentHtmlsaveToreducer,
+    tracingDoc,
+    pathID,
+    reducerID,
+}) => {
     const dispatch = useDispatch();
     const history = useNavigate();
     const { editingDocument } = useSelector((state) => state.editor);
@@ -25,7 +35,8 @@ const EditorInformation = () => {
     const [imageslength, setImageslength] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
-    const[id,setId] = useState("")
+    const [id, setId] = useState("");
+    const [tags, setTags] = useState([]);
     const favorite = async () => {
         const token = localStorage.getItem("token");
 
@@ -73,8 +84,6 @@ const EditorInformation = () => {
         history("/");
     };
 
-
-
     useEffect(() => {
         // console.log("qqq")
         // console.log("editingDocument", editingDocument)
@@ -82,11 +91,12 @@ const EditorInformation = () => {
             setUpdated_at(getFormattedTime(editingDocument?.updated_at));
             setCreated_at(getFormattedTime(editingDocument?.created_at));
             setTitle(editingDocument?.title);
-            setContentlength(editingDocument?.content.length||0);
-            setImageslength(editingDocument?.images.length||0);
+            setContentlength(editingDocument?.content.length || 0);
+            setImageslength(editingDocument?.images.length || 0);
             setIsFavorite(editingDocument?.isFavorite);
             setIsDeleted(editingDocument?.isDeleted);
-            setId(editingDocument?._id)
+            setId(editingDocument?._id);
+            setTags(editingDocument?.tags);
         }
     }, [editingDocument, path]);
 
@@ -97,9 +107,10 @@ const EditorInformation = () => {
                 flex-direction: column;
                 font-size: 1rem;
                 border-radius: 10px;
-                border: 1.5px solid #e0e0e0;
-                padding: 10px;
-                box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
+                border: 1px solid #e0e0e0;
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+                padding: 15px;
             `}
         >
             <div
@@ -118,6 +129,7 @@ const EditorInformation = () => {
                 <div
                     css={css`
                         margin-left: auto;
+                        cursor: pointer;
                     `}
                 >
                     {isFavorite === false ? (
@@ -160,7 +172,7 @@ const EditorInformation = () => {
                     <div>
                         <Avatar
                             alt="Orin"
-                            src="https://orinlin.s3.us-east-1.amazonaws.com/1678244338311-448458.jpeg"
+                            src="https://image.notesmall.site/resized-mypic.jpeg"
                             sx={{ width: 30, height: 30 }}
                         />
                     </div>
@@ -172,6 +184,49 @@ const EditorInformation = () => {
                 <div className="docInfoBlock">
                     <div className="docInfoTitle">Update at</div>
                     <div>{updated_at && updated_at}</div>
+                </div>
+                <div className="docInfoBlock">
+                    <div className="docInfoTitle">Project</div>
+                    <div>
+                        <ProjectSelector
+                            currentHtmlsaveToreducer={currentHtmlsaveToreducer}
+                        />
+                    </div>
+                </div>
+                <div
+                    className="docInfoBlock"
+                    css={css`
+                        align-items: flex-start;
+                    `}
+                >
+                    <div className="docInfoTitle">Tags</div>
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-wrap: wrap;
+                        `}
+                    >
+                        {tags?.map((item) => (
+                            <Chip
+                                key={item._id}
+                                label={item.name}
+                                size="small"
+                                css={css`
+                                    background-color: ${item.colorCode};
+                                    margin: 2px;
+                                    padding: 1px;
+                                    font-weight: 700;
+                                    color: ${getTextColorFromBackground(
+                                        item.colorCode.slice(1)
+                                    )};
+                                `}
+                                variant="outlined"
+                            />
+                        ))}
+                        <TagContent
+                            currentHtmlsaveToreducer={currentHtmlsaveToreducer}
+                        />
+                    </div>
                 </div>
                 <div className="docInfoBlock">
                     <div className="docInfoTitle">Counts</div>
@@ -187,45 +242,64 @@ const EditorInformation = () => {
                     <div className="docInfoTitle">Images</div>
                     <div>{imageslength && imageslength}</div>
                 </div>
-                <div css={css`
-                margin-left: auto;
-                `}>
-                                {isDeleted === false ? (
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        onClick={() => {
-                                            Delete(dispatch, id);
-                                        }}
-                                        startIcon={<DeleteIcon />}
-                                        size="small"
-                                        css={css`
-                                            border-radius: 20px;
-                                            font-size: 0.5rem;
-                                            font-weight: 700;
-                                        `}
-                                    >
-                                        Delete
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="contained"
-                                        color="warning"
-                                        onClick={() => {
-                                            PermentDelete(dispatch, id);
-                                        }}
-                                        startIcon={<DeleteIcon />}
-                                        size="small"
-                                        css={css`
-                                            border-radius: 20px;
-                                            font-size: 12px;
-                                            font-weight: 700;
-                                        `}
-                                    >
-                                        Perment Delete
-                                    </Button>
-                                )}
-                            </div>
+                <div
+                    className="docInfoBlock"
+                    css={css`
+                        align-items: flex-start;
+                    `}
+                >
+                    <div className="docInfoTitle">Content</div>
+                    <div>
+                        <TOC
+                            tracingDoc={tracingDoc}
+                            pathID={pathID}
+                            reducerID={reducerID}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div
+                css={css`
+                    margin-left: auto;
+                    cursor: pointer;
+                `}
+            >
+                {isDeleted === false ? (
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => {
+                            Delete(dispatch, id);
+                        }}
+                        startIcon={<DeleteIcon />}
+                        size="small"
+                        css={css`
+                            border-radius: 20px;
+                            font-size: 0.5rem;
+                            font-weight: 700;
+                        `}
+                    >
+                        Delete
+                    </Button>
+                ) : (
+                    <Button
+                        variant="contained"
+                        color="warning"
+                        onClick={() => {
+                            PermentDelete(dispatch, id);
+                        }}
+                        startIcon={<DeleteIcon />}
+                        size="small"
+                        css={css`
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 700;
+                        `}
+                    >
+                        Perment Delete
+                    </Button>
+                )}
             </div>
         </div>
     );

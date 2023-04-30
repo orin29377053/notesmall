@@ -80,7 +80,6 @@ export function EditorToolbar() {
             <HeadingLevelButtonGroup showAll />
             <VerticalDivider />
             <BasicFormattingButtonGroup />
-            <VerticalDivider />
             <ToggleBlockquoteButton />
             <InsertHorizontalRuleButton />
             <ToggleBulletListButton />

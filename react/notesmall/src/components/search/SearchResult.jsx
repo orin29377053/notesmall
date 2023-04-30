@@ -17,15 +17,18 @@ const SearchResult = ({ searchResult }) => (
     color: #1976d2;
     font-size: 20px;
     font-weight: 700;
+    margin-bottom: 10px;
 
     `}>
-        {searchResult.length>1?"There are":"There is"}  {searchResult.length} {searchResult.length>1?"documents":"document"}{searchResult.length>1?" have ":" have"}  your search term
+        {searchResult.length>1?"There are":"There is"} found {searchResult.length} relevant {searchResult.length>1?"documents":"document"}   
     </div>
         {searchResult?.map((item, i) => (
             <div key={item._id}>
                 <Row 
                     css={css`
                         align-items: stretch;
+                        padding: 10px;
+                        
                     `}
                     
                 >
@@ -52,7 +55,7 @@ const SearchResult = ({ searchResult }) => (
                         />
                     </Col>
                 </Row>
-                {searchResult.length - 1 !== i && <hr />}
+                {/* {searchResult.length - 1 !== i && <hr />} */}
             </div>
         ))}
     </>
