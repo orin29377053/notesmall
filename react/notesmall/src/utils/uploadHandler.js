@@ -69,7 +69,7 @@ export default function uploadHandler(files) {
                         console.log("file", file);
 
                         reader.readAsDataURL(file);
-                    }, 500);
+                    }, 1000);
                 })
         );
     }
