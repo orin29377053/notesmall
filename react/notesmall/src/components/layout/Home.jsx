@@ -285,7 +285,7 @@ const Home = () => {
                             >
                                 <DocumentCard
                                     title={doc?.title}
-                                    content={sanitizeContent(doc?.content)}
+                                    content={markdownHandler(doc?.content)}
                                     _id={doc?._id}
                                     image={extractImageURL(doc?.content)}
                                 />
