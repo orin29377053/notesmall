@@ -33,7 +33,7 @@ module.exports = buildSchema(`
     isArchived: Boolean!
     created_at: String!
     updated_at: String!
-    documents: [Document]
+    documents: [Document!]
     user: User
   }
 

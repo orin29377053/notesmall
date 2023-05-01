@@ -10,6 +10,7 @@ import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
 import { getFormattedTime } from "../../utils/timehandling";
 import { Row, Col } from "react-bootstrap";
+import guset from "../../image/guestIMG.png";
 
 function buildActivityCalendar(documents) {
     const dateCounts = {};
@@ -157,7 +158,7 @@ const Home = () => {
                 <Col md={3} className="text-center">
                     <Avatar
                         alt="Orin"
-                        src="https://image.notesmall.site/resized-mypic.jpeg"
+                        src={user.role=='guest'?guset:"https://image.notesmall.site/resized-mypic.jpeg"}
                         sx={{ width: 150, height: 150, margin: "auto" }}
                     />
                     <div

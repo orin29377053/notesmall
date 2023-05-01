@@ -122,9 +122,10 @@
     font-size: small;
     display: flex;
     flex-direction: row;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     align-items: center;
     overflow-y: auto;
+    padding: 1px;
 }
 .infoBlock {
     display: flex;

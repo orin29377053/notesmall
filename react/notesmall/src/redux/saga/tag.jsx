@@ -19,6 +19,8 @@ function* addTag(action) {
         path: GRAPHQL_URL,
         reducer: "ADD_TAG",
         queryString: action.payload,
+        error: "Add Tag Error",
+        success: "Add Tag Success",
     });
 }
 function* updateTag(action) {
@@ -37,6 +39,8 @@ function* deleteTag(action) {
         path: GRAPHQL_URL,
         reducer: "DELETE_TAG",
         queryString: action.payload,
+        error: "Delete Tag Error",
+        success: "Delete Tag Success",
     });
 }
 

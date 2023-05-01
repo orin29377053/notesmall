@@ -256,9 +256,9 @@ const SmallEditor = () => {
 
     return (
         // <AllStyledComponent>
-        <ThemeProvider>
-            <div className="editArea">
-                <div className="editPart">
+        <div className="editArea">
+            <div className="editPart">
+                <ThemeProvider>
                     <Remirror manager={manager} initialContent={state}>
                         <Row className="px-3 mb-2 mt-3">
                             <Title
@@ -282,42 +282,41 @@ const SmallEditor = () => {
                         ></OnChangeHTML>
                         <TextEditor className="px-1" />
                     </Remirror>
-                </div>
+                </ThemeProvider>
+            </div>
+            <div
+                className="editMenu"
+                md={3}
+                css={css`
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 1rem;
+                    margin-right: 2px;
+                    padding-right: 20px;
+                `}
+            >
                 <div
-                    className="editMenu"
-                    md={3}
                     css={css`
                         display: flex;
                         flex-direction: column;
-                        margin-top: 1rem;
-                        margin-right: 2px;
+                        align-items: flex-start;
                     `}
                 >
                     <div
                         css={css`
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-start;
+                            width: 100%;
                         `}
                     >
-                        <div
-                            css={css`
-                                width: 100%;
-                            `}
-                        >
-                            <EditorInformation
-                                currentHtmlsaveToreducer={
-                                    currentHtmlsaveToreducer
-                                }
-                                tracingDoc={refVContent.current.html}
-                                pathID={id}
-                                reducerID={newID}
-                            />
-                        </div>
+                        <EditorInformation
+                            currentHtmlsaveToreducer={currentHtmlsaveToreducer}
+                            tracingDoc={refVContent.current.html}
+                            pathID={id}
+                            reducerID={newID}
+                        />
                     </div>
                 </div>
             </div>
-        </ThemeProvider>
+        </div>
     );
 };
 

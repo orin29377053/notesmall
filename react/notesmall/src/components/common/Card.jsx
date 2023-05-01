@@ -33,7 +33,7 @@ export default function DocumentCard({ title, content, _id, image = "" }) {
                 <CardMedia
                     sx={{ height: 140 }}
                     image={image ? image : noImg}
-                    title="green iguana"
+                    title={title}
                 />
 
                 <CardContent>

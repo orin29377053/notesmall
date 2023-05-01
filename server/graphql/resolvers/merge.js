@@ -43,7 +43,6 @@ const userLoader = new Dataloader((userID) => {
 });
 
 const getDocument = async (documentID, depth = 2) => {
-    console.log("document", depth);
 
     try {
         // const usedMemoryBefore = process.memoryUsage().heapUsed;
@@ -143,7 +142,6 @@ const getUser = async (userID) => {
 const getTag = async (tagID, depth = 2) => {
     try {
         const tag = await tagLoader.load(tagID._id.toString());
-        console.log("tag", depth);
 
         if (!tag) {
             return;

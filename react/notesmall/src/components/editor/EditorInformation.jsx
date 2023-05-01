@@ -17,7 +17,7 @@ import getTextColorFromBackground from "../../utils/getTextColorFromBackground";
 import Chip from "@mui/material/Chip";
 import TagContent from "./TagContent";
 import TOC from "./TOC";
-
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 const EditorInformation = ({
     currentHtmlsaveToreducer,
     tracingDoc,
@@ -38,9 +38,9 @@ const EditorInformation = ({
     const [id, setId] = useState("");
     const [tags, setTags] = useState([]);
     const favorite = async () => {
+        currentHtmlsaveToreducer();
         const token = localStorage.getItem("token");
 
-        setIsFavorite(!isFavorite);
         const query = `
                 mutation{
                     updatedDocument(document: { _id: "${
@@ -57,6 +57,21 @@ const EditorInformation = ({
                 token: token,
             },
         });
+        dispatch({
+            type: "UPDATE_FAVORITE",
+            payload: { id: editingDocument._id, isFavorite: !isFavorite },
+        });
+
+        dispatch({
+            type: "FETCH_RESULT_INFORMATION",
+            data: {
+                type: "success",
+                message: !isFavorite===true?"Add to favorite success":"Remove from favorite success",
+                title: "Success",
+            },
+        });
+
+        setIsFavorite(!isFavorite);
     };
 
     const Delete = (dispatch, id) => {
@@ -70,6 +85,18 @@ const EditorInformation = ({
             },
         });
         history("/");
+    };
+    const Restore = (dispatch, id) => {
+        dispatch({
+            type: "RESTORE_SIDEBAR_LIST",
+            payload: {
+                gqlMethod: "mutation",
+                api: "deleteDocument",
+                format: `(document:{ _id: "${id}" ,isDeleted: false})`,
+                response: "_id ",
+            },
+        });
+        // history("/");
     };
     const PermentDelete = (dispatch, id) => {
         dispatch({
@@ -259,13 +286,13 @@ const EditorInformation = ({
                 </div>
             </div>
 
-            <div
-                css={css`
-                    margin-left: auto;
-                    cursor: pointer;
-                `}
-            >
-                {isDeleted === false ? (
+            {isDeleted === false ? (
+                <div
+                    css={css`
+                        margin-left: auto;
+                        cursor: pointer;
+                    `}
+                >
                     <Button
                         variant="contained"
                         color="error"
@@ -282,7 +309,31 @@ const EditorInformation = ({
                     >
                         Delete
                     </Button>
-                ) : (
+                </div>
+            ) : (
+                <div
+                    css={css`
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    `}
+                >
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                            Restore(dispatch, id);
+                        }}
+                        startIcon={<AutorenewIcon />}
+                        size="small"
+                        css={css`
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 700;
+                        `}
+                    >
+                        Restore
+                    </Button>
                     <Button
                         variant="contained"
                         color="warning"
@@ -293,14 +344,14 @@ const EditorInformation = ({
                         size="small"
                         css={css`
                             border-radius: 20px;
-                            font-size: 12px;
+                            font-size: 1px;
                             font-weight: 700;
                         `}
                     >
-                        Perment Delete
+                        Perment
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

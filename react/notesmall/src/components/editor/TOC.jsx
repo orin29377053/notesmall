@@ -37,6 +37,8 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
             >
                 {headings.map((heading, index) => (
                     <li
+                    className="singleLine"
+
                         key={index}
                         css={css`
                             list-style: none;
@@ -49,12 +51,14 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
                                 color: black;
                                 font-size: 0.8rem;
                                 width: 100%;
+                                padding: 3px 1px;
+                                
                                 
                                 border-radius: 5px;
                                 &:hover {
                                     background-color: #ecf1fe;
                                     color: #1976d2;
-                                    font-weight: 700 !important;
+                                    font-weight: 600 !important;
                                 }
                             `}
                         >

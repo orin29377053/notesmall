@@ -80,6 +80,15 @@ const editorReducer = (state = initState, action) => {
                     project: action.data.data.updatedDocument.project,
                 },
             };
+        case "RESTORE_DOCUMENT":
+            return {
+                ...state,
+                editingDocument: {
+                    ...state.editingDocument,
+                    isDeleted: false,
+                },
+            };
+        
 
         default:
             return state;

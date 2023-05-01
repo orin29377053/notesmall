@@ -111,11 +111,42 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 information: action.data,
             };
-        
+
         case "CLEAR_SEARCH_RESULT":
             return {
                 ...state,
                 searchResult: [],
+            };
+
+        case "RESTORE_SIDEBAR_LIST_RESULT":
+            const restoredDocumentId = action.data.data.deleteDocument._id;
+            const updatedSidebar = state.sidebar.map((item) => {
+                if (item._id === restoredDocumentId) {
+                    return {
+                        ...item,
+                        isDeleted: false,
+                    };
+                }
+                return item;
+            });
+            return {
+                ...state,
+                sidebar: updatedSidebar,
+            };
+        
+        case "UPDATE_FAVORITE":
+            const updatedFavoriteSidebar = state.sidebar.map((item) => {
+                if (item._id === action.payload.id) {
+                    return {
+                        ...item,
+                        isFavorite: action.payload.isFavorite,
+                    };
+                }
+                return item;
+            });
+            return {
+                ...state,
+                sidebar: updatedFavoriteSidebar,
             };
         
 

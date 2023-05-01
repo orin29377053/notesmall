@@ -39,6 +39,7 @@ function* fetchSignUp(action) {
     });
 }
 function* fetchUserInfo(action) {
+    console.log(action);
     const response = yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

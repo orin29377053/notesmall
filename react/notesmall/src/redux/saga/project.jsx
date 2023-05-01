@@ -18,6 +18,8 @@ function* createNewProject(action) {
         path: GRAPHQL_URL,
         reducer: "CREATE_PROJECT_RESULT",
         queryString: action.payload,
+        error: "Create Project Error",
+        success: "Create Project Success",
     });
     yield* someOtherGenerator();
 }
@@ -30,6 +32,8 @@ function* deleteProject(action) {
         path: GRAPHQL_URL,
         reducer: "DELETE_PROJECT_RESULT",
         queryString: action.payload,
+        error: "Delete Project Error",
+        success: "Delete Project Success",
     });
 }
 function* updateProject(action) {
