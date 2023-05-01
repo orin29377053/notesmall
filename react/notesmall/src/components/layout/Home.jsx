@@ -11,6 +11,7 @@ import extractImageURL from "../../utils/extractImageURL";
 import { getFormattedTime } from "../../utils/timehandling";
 import { Row, Col } from "react-bootstrap";
 import guset from "../../image/guestIMG.png";
+import markdownHandler from "../../utils/markdownHandler";
 
 function buildActivityCalendar(documents) {
     const dateCounts = {};
@@ -246,7 +247,7 @@ const Home = () => {
                         >
                             <DocumentCard
                                 title={doc?.title}
-                                content={sanitizeContent(doc?.content)}
+                                content={markdownHandler(doc?.content)}
                                 _id={doc?._id}
                                 image={extractImageURL(doc?.content)}
                             />

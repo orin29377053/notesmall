@@ -16,6 +16,7 @@ import TagImage from "../../image/Scrum board-bro.svg";
 import { Row, Col } from "react-bootstrap";
 import extractImageURL from "../../utils/extractImageURL";
 import sanitizeContent from "../../utils/sanitizeContent";
+import markdownHandler from "../../utils/markdownHandler";
 import DocumentCard from "../common/Card";
 import TagEditor from "./TagEditor";
 import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
@@ -359,7 +360,7 @@ const Taglist = () => {
                                         >
                                             <DocumentCard
                                                 title={doc?.title}
-                                                content={sanitizeContent(
+                                                content={markdownHandler(
                                                     doc?.content
                                                 )}
                                                 _id={doc?._id}
@@ -418,7 +419,7 @@ const Taglist = () => {
                                                 >
                                                     <DocumentCard
                                                         title={doc?.title}
-                                                        content={sanitizeContent(
+                                                        content={markdownHandler(
                                                             doc?.content
                                                         )}
                                                         _id={doc?._id}

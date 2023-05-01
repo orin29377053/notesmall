@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DocumentCard from "../common/Card";
 import sanitizeContent from "../../utils/sanitizeContent";
 import extractImageURL from "../../utils/extractImageURL";
+import markdownHandler from "../../utils/markdownHandler";
 import { css } from "@emotion/react";
 import { IconButton, Chip, Modal, Box } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -284,7 +285,7 @@ const ProjectList = ({ list }) => {
                                         >
                                             <DocumentCard
                                                 title={doc?.title}
-                                                content={sanitizeContent(
+                                                content={markdownHandler(
                                                     doc?.content
                                                 )}
                                                 _id={doc?._id}
@@ -343,7 +344,7 @@ const ProjectList = ({ list }) => {
                                                 >
                                                     <DocumentCard
                                                         title={doc?.title}
-                                                        content={sanitizeContent(
+                                                        content={markdownHandler(
                                                             doc?.content
                                                         )}
                                                         _id={doc?._id}
