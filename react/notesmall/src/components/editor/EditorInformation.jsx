@@ -18,6 +18,7 @@ import Chip from "@mui/material/Chip";
 import TagContent from "./TagContent";
 import TOC from "./TOC";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import markdownHandler from "../../utils/markdownHandler";
 const EditorInformation = ({
     currentHtmlsaveToreducer,
     tracingDoc,
@@ -105,7 +106,7 @@ const EditorInformation = ({
                 gqlMethod: "mutation",
                 api: "permantDeleteDocument",
                 format: `(id:"${id}")`,
-                response: "_id ",
+                response: "_id",
             },
         });
         history("/");
@@ -113,17 +114,18 @@ const EditorInformation = ({
 
     useEffect(() => {
         // console.log("qqq")
-        // console.log("editingDocument", editingDocument)
+        console.log("editingDocument", editingDocument)
         if (Object.keys(editingDocument).length !== 0) {
             setUpdated_at(getFormattedTime(editingDocument?.updated_at));
             setCreated_at(getFormattedTime(editingDocument?.created_at));
             setTitle(editingDocument?.title);
-            setContentlength(editingDocument?.content.length || 0);
+            // setContentlength(markdownHandler(editingDocument?.content).length-1|| 0);
             setImageslength(editingDocument?.images.length || 0);
             setIsFavorite(editingDocument?.isFavorite);
             setIsDeleted(editingDocument?.isDeleted);
             setId(editingDocument?._id);
             setTags(editingDocument?.tags);
+            console.log(markdownHandler(editingDocument?.content));
         }
     }, [editingDocument, path]);
 
@@ -255,7 +257,7 @@ const EditorInformation = ({
                         />
                     </div>
                 </div>
-                <div className="docInfoBlock">
+                {/* <div className="docInfoBlock">
                     <div className="docInfoTitle">Counts</div>
                     <div
                         css={css`
@@ -264,7 +266,7 @@ const EditorInformation = ({
                     >
                         {contentlength && contentlength}
                     </div>
-                </div>
+                </div> */}
                 <div className="docInfoBlock">
                     <div className="docInfoTitle">Images</div>
                     <div>{imageslength && imageslength}</div>

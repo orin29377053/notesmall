@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Chip from "@mui/material/Chip";
 import { Button } from "@mui/material";
 import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
+import TagEditor from "../tag/TagEditor";
+import { memo } from "react";
 
 const selectTag = (tag, select, setSelect, unselect, setUnselect, dispatch) => {
     setSelect([...select, tag]);
@@ -16,6 +18,7 @@ const unselectTag = (tag, select, setSelect, unselect, setUnselect) => {
     setUnselect([...unselect, tag]);
     setSelect(select.filter((item) => item._id !== tag._id));
 };
+
 
 const UnSelectTagList = ({
     select,
@@ -91,10 +94,10 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
     const { editingDocument } = useSelector((state) => state.editor);
     const documentTags = editingDocument?.tags;
     useEffect(() => {
-        if (taglist.length === 0) {
-            getTagList();
-            return;
-        }
+        // if (taglist.length === 0) {
+        //     getTagList();
+        //     return;
+        // }
 
         const filteredTags = taglist.filter(
             (tag) => !documentTags.some((docTag) => docTag._id === tag._id)
@@ -103,18 +106,6 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
         setSelect(documentTags);
         setUnselect(filteredTags);
     }, [taglist, documentTags]);
-
-    const getTagList = () => {
-        dispatch({
-            type: "FETCH_TAG_LIST",
-            payload: {
-                gqlMethod: "query",
-                api: "tags",
-                response:
-                    "_id name colorCode  document{_id title content isDeleted}",
-            },
-        });
-    };
 
     const handleSave = () => {
         currentHtmlsaveToreducer();
@@ -189,13 +180,28 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
                 >
                     Click to select
                 </div>
-                <UnSelectTagList
-                    unselect={unselect}
-                    select={select}
-                    setSelect={setSelect}
-                    setUnselect={setUnselect}
-                    getTextColorFromBackground={getTextColorFromBackground}
-                />
+                <div
+                    css={css`
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: center;
+                    `}
+                >
+                    {taglist.length > 0 ? (
+                        <UnSelectTagList
+                            unselect={unselect}
+                            select={select}
+                            setSelect={setSelect}
+                            setUnselect={setUnselect}
+                            getTextColorFromBackground={
+                                getTextColorFromBackground
+                            }
+                        />
+                    ) : (
+                        "Create your first tag "
+                    )}
+                    <TagEditor />
+                </div>
             </div>
             <div
                 css={css`
@@ -231,25 +237,24 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
                     getTextColorFromBackground={getTextColorFromBackground}
                 />
             </div>
-            
-                <Button
-                    variant="contained"
-                    onClick={() => handleSave()}
+
+            <Button
+                variant="contained"
+                onClick={() => handleSave()}
                 css={css`
-                    
-                        background-color: #1976d2;
-                        border-radius: 30px;
-                        margin-top: 20px;
-                        font-size: 12px;
-                        font-weight: bold;
-                        padding: 5px 20px;
-                        &:hover {
-                            background-color: #1976d2 !important;
-                        }
-                    `}
-                >
-                    Save
-                </Button>
+                    background-color: #1976d2;
+                    border-radius: 30px;
+                    margin-top: 20px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    padding: 5px 20px;
+                    &:hover {
+                        background-color: #1976d2 !important;
+                    }
+                `}
+            >
+                Save
+            </Button>
         </div>
     );
 };

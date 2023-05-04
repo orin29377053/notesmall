@@ -18,7 +18,7 @@ const transformProject = async (project) => {
         documents:
             project.documents?.length > 0
                 ? await Promise.all(project.documents.map(getDocument))
-                : null,
+                : [],
         user: getUser.bind(this, project.user),
     };
 };

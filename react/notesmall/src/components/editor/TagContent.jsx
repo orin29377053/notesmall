@@ -7,7 +7,7 @@ import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import Box from "@mui/material/Box";
 import TagSelector from "./TagSelector";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Modal, IconButton } from "@mui/material";
 
 const style = {
@@ -38,9 +38,15 @@ const TagContent = ({ currentHtmlsaveToreducer }) => {
     return (
         <>
             <IconButton aria-label="delete" onClick={handleOpen} size="small">
-                <AddCircleOutlineIcon fontSize="small" css={css`
-                color:#1976d2;
-                ` } />
+                <AddCircleOutlineIcon
+                    fontSize="small"
+                    css={css`
+                        color: #1976d2;
+                    `}
+                    onClick={() => {
+                        currentHtmlsaveToreducer();
+                    }}
+                />
             </IconButton>
 
             <Modal
@@ -51,7 +57,7 @@ const TagContent = ({ currentHtmlsaveToreducer }) => {
             >
                 <Box sx={style}>
                     <TagSelector
-                        setOpen={setOpen}
+                    setOpen={setOpen}
                         currentHtmlsaveToreducer={currentHtmlsaveToreducer}
                     />
                 </Box>

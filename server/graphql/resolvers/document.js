@@ -342,44 +342,65 @@ module.exports = {
         },
         permantDeleteDocument: async (_, { id }, { isAuth, userID }) => {
             try {
-                const document = await Document.findById(id);
-                checkUserID(document, userID);
-                const permantDeleDocument = await Document.findByIdAndDelete(
-                    id
-                );
+                // const document = await Document.findById(id);
+                // // checkUserID(document, userID);
+                // const permantDeleDocument = await Document.findByIdAndDelete(
+                //     id
+                // );
 
-                if (!permantDeleDocument) {
-                    throw new Error(`Document with ID ${id} not found`);
-                }
+                // if (!permantDeleDocument) {
+                //     throw new Error(`Document with ID ${id} not found`);
+                // }
 
-                try {
-                    //tags
-                    await Tag.updateMany(
-                        { document: { $in: id } },
-                        { $pull: { document: { $in: id } } }
-                    );
-                    //project
-                    await Project.updateMany(
-                        { documents: { $in: id } },
-                        { $pull: { documents: { $in: id } } }
-                    );
+                // try {
+                //     //tags
+                //     await Tag.updateMany(
+                //         { document: { $in: id } },
+                //         { $pull: { document: { $in: id } } }
+                //     );
+                //     //project
+                //     await Project.updateMany(
+                //         { documents: { $in: id } },
+                //         { $pull: { documents: { $in: id } } }
+                //     );
 
-                    //user
-                    await User.updateMany(
-                        { documents: { $in: id } },
-                        { $pull: { documents: { $in: id } } }
-                    );
-                } catch {
-                    throw new Error("Deleting document failed");
-                }
+                //     //user
+                //     await User.updateMany(
+                //         { documents: { $in: id } },
+                //         { $pull: { documents: { $in: id } } }
+                //     );
+                // } catch {
+                //     throw new Error("Deleting document failed");
+                // }
+                const [permantDeleDocument, tags, projects, users] =
+                    await Promise.all([
+                        Document.findByIdAndDelete(id).lean(),
+                        Tag.updateMany(
+                            { document: { $in: id } },
+                            { $pull: { document: { $in: id } } }
+                        ),
+                        Project.updateMany(
+                            { documents: { $in: id } },
+                            { $pull: { documents: { $in: id } } }
+                        ),
+                        User.updateMany(
+                            { documents: { $in: id } },
+                            { $pull: { documents: { $in: id } } }
+                        ),
+                    ]);
+                    console.log(permantDeleDocument);
+                permantDeleDocument.tags?.map((tag) => {
+                    tagLoader.clear(tag.toString());
+                });
+                permantDeleDocument.project?.map((project) => {
+                    projectLoader.clear(project.toString());
+                });
 
                 documentLoader.clear(id);
 
-                return {
-                    ...permantDeleDocument._doc,
-                    _id: permantDeleDocument.id,
-                };
+                return permantDeleDocument;
             } catch (error) {
+                console.log(error);
                 throw error;
             }
         },

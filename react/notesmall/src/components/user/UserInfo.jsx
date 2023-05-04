@@ -13,9 +13,17 @@ const UserInfo = ({ user, handleClose }) => {
 
     const logout = () => {
         dispatch({ type: "LOGOUT" });
+        
         //reload
         history("/home");
         window.location.reload();
+        // dispatch({
+        //     type: "FETCH_RESULT_INFORMATION", data: {
+        //         type: "success",
+        //         title: "Success",
+        //         message: "Logout successfully",
+        //     }
+        //  });
     };
 
     return (

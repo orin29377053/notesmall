@@ -148,7 +148,7 @@
 .alert-information {
     position: fixed;
     bottom: 0;
-    right: 0;
+    left: 0;
     margin: 20px;
     animation: fade-out 4s ease-in-out;
 }

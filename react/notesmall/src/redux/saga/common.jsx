@@ -1,4 +1,4 @@
-import { takeLatest, put } from "redux-saga/effects";
+import { takeLatest, put ,takeEvery} from "redux-saga/effects";
 import { API_METHOD } from "../api/apiService";
 import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
@@ -79,11 +79,11 @@ function* fetchPermentDeleteDocument(action) {
 }
 
 function* mySaga() {
-    yield takeLatest("FETCH_SIDEBAR_LIST", fetch);
-    yield takeLatest("DELETE_SIDEBAR_LIST", deleteDocument);
-    yield takeLatest("SEARCH_LIST", searchDocuments);
-    yield takeLatest("PERMENT_DELETE_DOCUMENT", fetchPermentDeleteDocument);
-    yield takeLatest("RESTORE_SIDEBAR_LIST", restoreDocument);
+    yield takeEvery("FETCH_SIDEBAR_LIST", fetch);
+    yield takeEvery("DELETE_SIDEBAR_LIST", deleteDocument);
+    yield takeEvery("SEARCH_LIST", searchDocuments);
+    yield takeEvery("PERMENT_DELETE_DOCUMENT", fetchPermentDeleteDocument);
+    yield takeEvery("RESTORE_SIDEBAR_LIST", restoreDocument);
 }
 
 export default mySaga;

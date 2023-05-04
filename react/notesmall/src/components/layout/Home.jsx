@@ -12,6 +12,7 @@ import { getFormattedTime } from "../../utils/timehandling";
 import { Row, Col } from "react-bootstrap";
 import guset from "../../image/guestIMG.png";
 import markdownHandler from "../../utils/markdownHandler";
+import { set } from "lodash";
 
 function buildActivityCalendar(documents) {
     const dateCounts = {};
@@ -49,25 +50,6 @@ function buildActivityCalendar(documents) {
     return activityCalendar;
 }
 
-const ItemCard = ({ item }) => {
-    return item?.map((doc) => (
-        <div
-            css={css`
-                padding: 10px;
-                margin-top: 10px;
-                display: flex;
-            `}
-        >
-            {console.log(doc)}
-            <DocumentCard
-                title={doc?.title}
-                content={sanitizeContent(doc?.content)}
-                _id={doc?._id}
-                image={extractImageURL(doc?.content)}
-            />
-        </div>
-    ));
-};
 
 const Home = () => {
     const { user } = useSelector((state) => state.user);
@@ -76,6 +58,7 @@ const Home = () => {
     const [activityCalendar, setActivityCalendar] = useState([]);
     const [recentItem, setRecentItem] = useState([]);
     const [favoriteItem, setFavoriteItem] = useState([]);
+    const [allitems, setAllItems] = useState([]);
 
     // console.log(user);
     const dispatch = useDispatch();
@@ -119,9 +102,10 @@ const Home = () => {
     }, [user]);
 
     useEffect(() => {
-        if (sidebar.length === 0) {
-            return;
-        }
+        // if (sidebar.length === 0) {
+        //     return;
+        // }
+        console.log(sidebar,"change");
         const deletedItems = sidebar?.filter((item) => item.isDeleted);
         const archivedItems = sidebar?.filter(
             (item) => item.isArchived && !item.isDeleted
@@ -129,16 +113,20 @@ const Home = () => {
         const favoriteItems = sidebar?.filter(
             (item) => item.isFavorite && !item.isArchived && !item.isDeleted
         );
-        const otherItems = sidebar?.filter(
-            (item) => !item.isFavorite && !item.isArchived && !item.isDeleted
+        
+        const allItems = sidebar?.filter(
+            (item) => !item.isArchived && !item.isDeleted
         );
-        const allItems = [...favoriteItems, ...otherItems];
         const compareFunction = (a, b) => {
             const aTime = new Date(a.updated_at).getTime();
             // console.log("aTime", aTime)
             const bTime = new Date(b.updated_at).getTime();
             return bTime - aTime;
         };
+        console.log(allitems.length, "before");
+        console.log(allItems.length, "after");
+        
+        setAllItems(allItems);
         const recentItems = allItems.slice().sort(compareFunction);
         setRecentItem(recentItems);
         setFavoriteItem(favoriteItems);
@@ -194,7 +182,7 @@ const Home = () => {
                             `}
                         >
                             <div className="fs-2">
-                                {user?.documents?.length}
+                                {allitems.length}
                             </div>
                             <div>
                                 <small>Documents</small>

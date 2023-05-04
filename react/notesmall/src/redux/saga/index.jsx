@@ -35,17 +35,26 @@ export function* fetchApi({
         }).then((res) => res.json());
 
         if (response.errors) {
+            console.log("dwdw",response.errors);
             yield put({
                 type: "FETCH_RESULT_INFORMATION",
                 data: {
                     type: "error",
                     title: "Error",
-                    message: error,
+                    message: error ?? response.errors[0]?.message ?? "Unknown error occurred",
                 },
             });
+            if (helper) {
+                try {
+                    helper.history("/home");
+                } catch {
+                    return;
+                }
+            }
             return;
         } else {
             if (success) {
+                console.log("success",success);
                 yield put({
                     type: "FETCH_RESULT_INFORMATION",
                     data: {
@@ -63,6 +72,7 @@ export function* fetchApi({
                     helper: helper,
                 });
         }
+        console.log("hello");
         return response;
     } catch (e) {
         console.log(e);

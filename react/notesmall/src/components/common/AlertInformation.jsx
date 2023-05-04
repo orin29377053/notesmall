@@ -7,6 +7,7 @@ const AlertInformation = () => {
     const [severity, setSeverity] = useState("success");
     const [message, setMessage] = useState("");
     const [title, setTitle] = useState("Success");
+    const [key, setKey] = useState(0); // 添加key以强制组件重新渲染
 
     const { information } = useSelector((state) => state.common);
 
@@ -21,9 +22,14 @@ const AlertInformation = () => {
 
     useEffect(() => {
         console.log(information);
-        setSeverity(information.type);
+        if (!information || Object.keys(information).length === 0) {
+            return;
+        }
+            setSeverity(information.type);
         setMessage(information.message);
         setTitle(information.title);
+        setKey(key + 1); // 在更新通知内容时增加key，强制组件重新渲染
+
         setVisible(true);
     }, [information]);
 
@@ -32,7 +38,7 @@ const AlertInformation = () => {
     return (
         <>
             {visible && (
-                <Alert severity={severity||"success"} className="alert-information">
+                <Alert  key={key}  severity={severity||"success"} className="alert-information">
                     <AlertTitle>{title}</AlertTitle>
                     {message}
                 </Alert>

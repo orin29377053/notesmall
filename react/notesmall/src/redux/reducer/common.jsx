@@ -19,14 +19,15 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 sidebar: action.data?.data?.documents,
             };
+
         case "DELETE_SIDEBAR_LIST_RESULT":
-            index = _.findIndex(state.sidebar, {
-                _id: action.data?.data?.deleteDocument._id,
-            });
-            state.sidebar.splice(index, 1);
             return {
                 ...state,
-                // sidebar: action.data?.data?.documents,
+                sidebar: state.sidebar.map((item) =>
+                item._id === action.data?.data?.deleteDocument._id
+                        ? { ...item, isDeleted: true }
+                        : item
+                ),
             };
 
         case "PERMENT_DELETE_SIDEBAR_LIST_RESULT":
@@ -69,13 +70,9 @@ const commonReducer = (state = initState, action) => {
                 ),
             };
         case "CREATE_DOCUMENT_RESULT":
-            variable = {};
-            variable.title = action.data?.data.createDocument.title;
-            variable._id = action.data?.data.createDocument._id;
-            variable.updated_at = action.data?.data.createDocument.updated_at;
             return {
                 ...state,
-                sidebar: [...state.sidebar, variable],
+                sidebar: [...state.sidebar, action.data?.data.createDocument],
                 selectedID: action.data?.data?.createDocument._id,
             };
         case "CHANGE_DOCUMENT":
@@ -102,6 +99,7 @@ const commonReducer = (state = initState, action) => {
                 path: action.payload.path,
             };
         case "USER_DOCUMENTS_LIST":
+            console.log("wdw",action.data);
             return {
                 ...state,
                 sidebar: action.data,
@@ -133,7 +131,7 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 sidebar: updatedSidebar,
             };
-        
+
         case "UPDATE_FAVORITE":
             const updatedFavoriteSidebar = state.sidebar.map((item) => {
                 if (item._id === action.payload.id) {
@@ -148,7 +146,6 @@ const commonReducer = (state = initState, action) => {
                 ...state,
                 sidebar: updatedFavoriteSidebar,
             };
-        
 
         default:
             return state;

@@ -15,11 +15,16 @@ import note from "../../image/Taking notes-bro.svg";
 import { Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { margin } from "@mui/system";
+import SignUp from "./SignUp";
 
 const Login = ({ setOpen }) => {
     const dispatch = useDispatch();
     const history = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [signupform, setSignupform] = useState(false);
+    const [signUpEmail, setSignUpEmail] = useState("");
+    const [signUpPassword, setSignUpPassword] = useState("");
+    const [checkPassword, setCheckPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (event) => {
@@ -50,14 +55,14 @@ const Login = ({ setOpen }) => {
                     tags{
                         _id name colorCode document{ _id title content  isDeleted  }
                     }
-                    `
+                    `,
             },
         });
 
         setOpen(false);
         history("/home");
     };
-    const signUp = (email, password) => {
+    const signUp = async (email, password) => {
         dispatch({
             type: "FETCH_SIGN_UP",
             payload: {
@@ -65,21 +70,27 @@ const Login = ({ setOpen }) => {
                 api: "signup",
                 format: `(email:"${email}",password:"${password}")`,
                 response: `_id 
-                email 
-                token
-                role 
-                documents{
-                    _id title updated_at isDeleted isFavorite isArchived created_at
-                }
-                projects{
-                    _id name  documents {
-                        _id title content updated_at isDeleted
+                    email 
+                    token 
+                    role
+                    created_at
+                    documents{
+                        _id title updated_at isDeleted isFavorite isArchived created_at content
                     }
-                }`,
+                    projects{
+                        _id name  documents {
+                            _id title content updated_at isDeleted
+                        }
+                    }
+                    tags{
+                        _id name colorCode document{ _id title content  isDeleted  }
+                    }
+                    `,
             },
         });
-        setOpen(false);
-        history("/home");
+
+        // setOpen(false);
+        // history("/home");
     };
     return (
         <div
@@ -102,143 +113,155 @@ const Login = ({ setOpen }) => {
                         flex-direction: column;
                     `}
                 >
-                    <FormControl
-                        sx={{ m: 2, width: "25ch" }}
-                        variant="outlined"
-                        required={true}
-                        css={css`
-                            margin-bottom: 10px;
-                        `}
-                    >
-                        <InputLabel htmlFor="outlined-adornment-password">
-                            Email
-                        </InputLabel>
+                    {!signupform ? (
+                        <>
+                            <FormControl
+                                sx={{ m: 2, width: "25ch" }}
+                                variant="outlined"
+                                required={true}
+                                css={css`
+                                    margin-bottom: 10px;
+                                `}
+                            >
+                                <InputLabel htmlFor="outlined-adornment-password">
+                                    Email
+                                </InputLabel>
 
-                        <OutlinedInput
-                            id="outlined-adornment-password"
-                            type={"text"}
-                            label="Email"
-                            size="small"
-                            defaultValue={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl
-                        sx={{ m: 2, width: "25ch" }}
-                        variant="outlined"
-                        required={true}
-                        css={css`
-                            margin-bottom: 10px;
-                        `}
-                    >
-                        <InputLabel htmlFor="outlined-adornment-password">
-                            Password
-                        </InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    type={"text"}
+                                    label="Email"
+                                    size="small"
+                                    defaultValue={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </FormControl>
+                            <FormControl
+                                sx={{ m: 2, width: "25ch" }}
+                                variant="outlined"
+                                required={true}
+                                css={css`
+                                    margin-bottom: 10px;
+                                `}
+                            >
+                                <InputLabel htmlFor="outlined-adornment-password">
+                                    Password
+                                </InputLabel>
 
-                        <OutlinedInput
-                            id="outlined-adornment-password"
-                            type={showPassword ? "text" : "password"}
-                            defaultValue={password}
-                            
-                            size="small"
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? (
-                                            <VisibilityOff />
-                                        ) : (
-                                            <Visibility />
-                                        )}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            label="Password"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl
-                        sx={{ m: 1, width: "15ch", borderRadius: 3 }}
-                        variant="outlined"
-                        css={css`
-                            align-self: center;
-                        `}
-                    >
-                        <Button
-                            variant="contained"
-                            onClick={() => signIn(email, password)}
-                            sx={{ borderRadius: 15 , fontWeight: 600 }}
-                        >
-                            Sign in
-                        </Button>
-                    </FormControl>
-                    <div
-                        css={css`
-                            box-sizing: border-box;
-                            margin-top: 15px;
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    type={showPassword ? "text" : "password"}
+                                    defaultValue={password}
+                                    size="small"
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={
+                                                    handleClickShowPassword
+                                                }
+                                                onMouseDown={
+                                                    handleMouseDownPassword
+                                                }
+                                                edge="end"
+                                            >
+                                                {showPassword ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                />
+                            </FormControl>
+                            <FormControl
+                                sx={{ m: 1, width: "15ch", borderRadius: 3 }}
+                                variant="outlined"
+                                css={css`
+                                    align-self: center;
+                                `}
+                            >
+                                <Button
+                                    variant="contained"
+                                    onClick={() => signIn(email, password)}
+                                    sx={{ borderRadius: 15, fontWeight: 600 }}
+                                >
+                                    Sign in
+                                </Button>
+                            </FormControl>
+                            <div
+                                css={css`
+                                    box-sizing: border-box;
+                                    margin-top: 15px;
 
-                            min-width: 0px;
-                            display: flex;
-                            -webkit-box-align: center;
-                            align-items: center;
-                            -webkit-box-pack: justify;
-                            justify-content: space-between;
-                        `}
-                    >
-                        <div
-                            css={css`
-                                box-sizing: border-box;
-                                margin: 0px;
-                                min-width: 0px;
-                                height: 1px;
-                                flex: 1 1 0%;
-                                background-color: rgb(234, 236, 239);
-                            `}
-                        />
-                        <div
-                            css={css`
-                                box-sizing: border-box;
-                                margin: 0px 10px;
-                                min-width: 0px;
-                                font-weight: 500;
-                                font-size: 14px;
-                                line-height: 20px;
-                                color: rgb(112, 122, 138);
-                            `}
-                        >
-                            Don't have an account yet?
-                        </div>
-                        <div
-                            css={css`
-                                box-sizing: border-box;
-                                margin: 0px;
-                                min-width: 0px;
-                                height: 1px;
-                                flex: 1 1 0%;
-                                background-color: rgb(234, 236, 239);
-                            `}
-                        />
-                    </div>
-                    <FormControl
-                        sx={{ m: 1, width: "15ch" }}
-                        variant="outlined"
-                        css={css`
-                            align-self: center;
-                            margin-top: 15px;
-                        `}
-                    >
-                        <Button
-                            variant="outlined"
-                            onClick={() => signUp(email, password)}
-                            sx={{ borderRadius: 15, fontWeight: 600 }}
-                        >
-                            Sign up
-                        </Button>
-                    </FormControl>
+                                    min-width: 0px;
+                                    display: flex;
+                                    -webkit-box-align: center;
+                                    align-items: center;
+                                    -webkit-box-pack: justify;
+                                    justify-content: space-between;
+                                `}
+                            >
+                                <div
+                                    css={css`
+                                        box-sizing: border-box;
+                                        margin: 0px;
+                                        min-width: 0px;
+                                        height: 1px;
+                                        flex: 1 1 0%;
+                                        background-color: rgb(234, 236, 239);
+                                    `}
+                                />
+                                <div
+                                    css={css`
+                                        box-sizing: border-box;
+                                        margin: 0px 10px;
+                                        min-width: 0px;
+                                        font-weight: 500;
+                                        font-size: 14px;
+                                        line-height: 20px;
+                                        color: rgb(112, 122, 138);
+                                    `}
+                                >
+                                    Don't have an account yet?
+                                </div>
+                                <div
+                                    css={css`
+                                        box-sizing: border-box;
+                                        margin: 0px;
+                                        min-width: 0px;
+                                        height: 1px;
+                                        flex: 1 1 0%;
+                                        background-color: rgb(234, 236, 239);
+                                    `}
+                                />
+                            </div>
+                            <FormControl
+                                sx={{ m: 1, width: "15ch" }}
+                                variant="outlined"
+                                css={css`
+                                    align-self: center;
+                                    margin-top: 15px;
+                                `}
+                            >
+                                <Button
+                                    variant="outlined"
+                                    // onClick={() => signUp(email, password)}
+                                    onClick={() => setSignupform(true)}
+                                    sx={{ borderRadius: 15, fontWeight: 600 }}
+                                >
+                                    Sign up
+                                </Button>
+                            </FormControl>
+                        </>
+                    ) : (
+                            <SignUp setSignupform={setSignupform} setOpen={setOpen}/>
+                    )}
                 </div>
             </Col>
         </div>

@@ -16,6 +16,7 @@ import { Row, Col } from "react-bootstrap";
 import ProjectEditor from "./ProjectEditor";
 import Autocomplete from "@mui/material/Autocomplete";
 import ProjectImage from "../../image/Accept tasks-bro.svg";
+import AddDocument from "./AddDocument";
 const style = {
     position: "absolute",
     top: "50%",
@@ -30,8 +31,6 @@ const style = {
     p: 4,
 };
 
-
-
 const ProjectList = ({ list }) => {
     const dispatch = useDispatch();
     const { projectlist } = useSelector((state) => state.project);
@@ -42,8 +41,8 @@ const ProjectList = ({ list }) => {
     const [showDelete, setShowDelete] = useState(false);
     const [isActive, setIsActive] = useState(false);
 
-
     const handleButtonClick = (button) => {
+        console.log("button", button);
         setSelectedButton(button);
     };
     const handleClose = () => {
@@ -78,6 +77,10 @@ const ProjectList = ({ list }) => {
         });
     };
 
+    useEffect(() => {
+        console.log("selectedButton", selectedButton);
+    }, [selectedButton]);
+
     return (
         <div>
             <Row
@@ -102,14 +105,13 @@ const ProjectList = ({ list }) => {
                         &ensp;Project Manager
                     </h5>
                     <div
-                    css={css`
-                        font-size: 12px;
-                        color: #8f9a97;
-                        
-                    `}
-                >
-                    Select a project to view its documents
-                </div>
+                        css={css`
+                            font-size: 12px;
+                            color: #8f9a97;
+                        `}
+                    >
+                        Select a project to view its documents
+                    </div>
 
                     <div
                         css={css`
@@ -117,35 +119,48 @@ const ProjectList = ({ list }) => {
                             align-items: center;
                         `}
                     >
-                        <div>
-                            {projectlist?.map((item) => (
-                                <Chip
-                                    key={item._id}
-                                    label={item.name}
-                                    className={
-                                        isActive == item._id
-                                            ? "projectIsActive"
-                                            : "project"
-                                    }
-                                    size="large"
-                                    css={css`
-                                        margin-right: 5px;
-                                    `}
-                                    variant="outlined"
-                                    onClick={() => {
-                                        // console.log(item.name);
-                                        setIsActive(item._id);
-                                        handleButtonClick(item);
-                                    }}
-                                    deleteIcon={<EditOutlinedIcon />}
-                                    onDelete={() => {
-                                        console.log(item._id);
-                                        handleOpen(item._id, item.name);
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <ProjectEditor />
+                        {projectlist.length > 0 ? (
+                            <>
+                                <div>
+                                    {projectlist?.map((item) => (
+                                        <Chip
+                                            key={item._id}
+                                            label={item.name}
+                                            className={
+                                                isActive == item._id
+                                                    ? "projectIsActive"
+                                                    : "project"
+                                            }
+                                            size="large"
+                                            css={css`
+                                                margin-right: 5px;
+                                            `}
+                                            variant="outlined"
+                                            onClick={() => {
+                                                console.log(item.name);
+                                                setIsActive(item._id);
+                                                handleButtonClick(item);
+                                            }}
+                                            deleteIcon={<EditOutlinedIcon />}
+                                            onDelete={() => {
+                                                handleOpen(item._id, item.name);
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                                <ProjectEditor />
+                            </>
+                        ) : (
+                            <div
+                                css={css`
+                                    display: flex;
+                                    align-items: center;
+                                `}
+                            >
+                                Create a project first{" "}
+                                <ProjectEditor first={false} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </Row>
@@ -201,6 +216,9 @@ const ProjectList = ({ list }) => {
                             onClick={() => {
                                 deleteProject(id);
                                 handleClose();
+                                if (id == selectedButton?._id) {
+                                    setSelectedButton(null);
+                                }
                             }}
                             css={css`
                                 margin-top: 10px;
@@ -237,14 +255,23 @@ const ProjectList = ({ list }) => {
                         >
                             <div
                                 css={css`
-                                    color: #6c757d;
-                                    font-size: 1rem;
+                                    display: flex;
+                                    align-items: center;
                                 `}
                             >
-                                {/* <i className="fa-regular fa-square-check"></i> */}
-                                <i className="fa-solid fa-list"></i>
-                                &ensp;List
+                                <div
+                                    css={css`
+                                        font-size: 14px;
+                                    `}
+                                >
+                                    <AddDocument
+                                        first={false}
+                                        selectedButton={selectedButton}
+                                        setSelectedButton={setSelectedButton}
+                                    />
+                                </div>
                             </div>
+
                             <div
                                 css={css`
                                     display: flex;
@@ -253,6 +280,7 @@ const ProjectList = ({ list }) => {
                                     font-size: 14px;
                                 `}
                             >
+                                {" "}
                                 Show deleted
                                 <Switch
                                     onChange={(e) => {
@@ -272,29 +300,59 @@ const ProjectList = ({ list }) => {
                     >
                         <Col className="d-inline-flex mt-2">
                             {selectedButton &&
-                                selectedButton?.documents
-                                    ?.filter((doc) => !doc.isDeleted)
-                                    .map((doc) => (
-                                        <div
-                                            key={doc?._id}
-                                            className="mb-2 d-block me-3"
-                                            css={css`
-                                                min-width: 300px !important;
-                                                width: 300px !important;
-                                            `}
-                                        >
-                                            <DocumentCard
-                                                title={doc?.title}
-                                                content={markdownHandler(
-                                                    doc?.content
-                                                )}
-                                                _id={doc?._id}
-                                                image={extractImageURL(
-                                                    doc?.content
-                                                )}
-                                            />
-                                        </div>
-                                    ))}
+                            selectedButton?.documents.length === 0 ? (
+                                <div
+                                    css={css`
+                                        display: flex;
+                                        justify-content: space-around;
+                                        align-items: center;
+                                        flex-direction: row;
+                                    `}
+                                >
+                                    <div
+                                        css={css`
+                                            color: #6c757d;
+                                            font-size: 1rem;
+                                            margin-right: 10px;
+                                            font-style: italic;
+                                        `}
+                                    >
+                                        This project is empty, Please add some documents
+                                    </div>
+                                    {/* <AddDocument
+                                        first={true}
+                                        selectedButton={selectedButton}
+                                        setSelectedButton={setSelectedButton}
+                                    /> */}
+                                </div>
+                            ) : (
+                                <>
+                                    {selectedButton &&
+                                        selectedButton?.documents
+                                            ?.filter((doc) => !doc.isDeleted)
+                                            .map((doc) => (
+                                                <div
+                                                    key={doc?._id}
+                                                    className="mb-2 d-block me-3"
+                                                    css={css`
+                                                        min-width: 300px !important;
+                                                        width: 300px !important;
+                                                    `}
+                                                >
+                                                    <DocumentCard
+                                                        title={doc?.title}
+                                                        content={markdownHandler(
+                                                            doc?.content
+                                                        )}
+                                                        _id={doc?._id}
+                                                        image={extractImageURL(
+                                                            doc?.content
+                                                        )}
+                                                    />
+                                                </div>
+                                            ))}
+                                </>
+                            )}
                         </Col>
                     </Row>
                     {showDelete && (
@@ -363,15 +421,11 @@ const ProjectList = ({ list }) => {
             ) : (
                 <div
                     css={css`
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                flex-direction: row
-
-
-
-
-                `}
+                        display: flex;
+                        justify-content: space-around;
+                        align-items: center;
+                        flex-direction: row;
+                    `}
                 >
                     <div
                         css={css`
@@ -382,6 +436,7 @@ const ProjectList = ({ list }) => {
                     >
                         Easily Organize Your Documents Through Project
                         Management.
+                        <ProjectEditor first={true} />
                     </div>
                     <img
                         css={css`

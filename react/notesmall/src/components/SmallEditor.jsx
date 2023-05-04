@@ -18,6 +18,8 @@ import showdown from "showdown";
 import { Extension, EditorToolbar } from "./editor/extension/Extension";
 import { graphqlAPI } from "../utils/const";
 import { createTheme, styled } from "@mui/material/styles";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import "remirror/styles/all.css";
 import {
     Remirror,
@@ -126,6 +128,7 @@ const SmallEditor = () => {
     const { editingDocument } = useSelector((state) => state.editor);
     const { path } = useSelector((state) => state.common);
     const { id } = useParams();
+    const [isloading, setIsloading] = useState(true);
 
     const location = useLocation();
     let history = useNavigate();
@@ -141,9 +144,10 @@ const SmallEditor = () => {
 
     const { manager, state } = useRemirror({
         extensions: Extension,
-        content: "<p>is loading....></p>",
+        content: "",
         selection: "start",
         stringHandler: "markdown",
+        
     });
 
     const currentHtmlsaveToreducer = () => {
@@ -187,14 +191,6 @@ const SmallEditor = () => {
         });
         const markdown = turndownService.turndown(html);
 
-        // const query = `
-        //         mutation{
-        //             updatedDocument(document: { _id: "${id}",content: """${markdown}""" , title: "${title}"}) {
-        //                 content
-        //             }}
-        //             `;
-        console.log(id, markdown);
-
         const query = `
                     mutation{
                         updatedDocumentContent(id: "${id}",content: """${markdown}""" ) }
@@ -231,11 +227,21 @@ const SmallEditor = () => {
                 gqlMethod: "query",
                 api: "document",
                 format: `(id:"${id}")`,
+                helper:{history},
                 response:
-                    "_id title content updated_at created_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived images{ url}",
+                    "_id title content updated_at created_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived images{ url autoTags}",
             },
         });
     }, [id]);
+
+    useEffect(() => {
+        if (newID !== id) {
+            setIsloading(true);
+            console.log("newID", newID, id);
+        } else {
+            setIsloading(false);
+        }
+    }, [newID, id]);
 
     useEffect(() => {
         setTitle(editingDocument.title);
@@ -255,69 +261,95 @@ const SmallEditor = () => {
     }, [location, path]);
 
     return (
-        // <AllStyledComponent>
-        <div className="editArea">
-            <div className="editPart">
-                <ThemeProvider>
-                    <Remirror manager={manager} initialContent={state}>
-                        <Row className="px-3 mb-2 mt-3">
-                            <Title
-                                currentHtmlsaveToreducer={
-                                    currentHtmlsaveToreducer
-                                }
-                            />
-                        </Row>
-
-                        <Row
-                            className="px-1 mb-4"
-                            css={css`
-                                font-size: 0.9rem;
-                            `}
-                        >
-                            <EditorToolbar />
-                        </Row>
-                        <MdToContent htmlContents={rawContent} />
-                        <OnChangeHTML
-                            onChange={debounce(handleEditorChange, 500)}
-                        ></OnChangeHTML>
-                        <TextEditor className="px-1" />
-                    </Remirror>
-                </ThemeProvider>
-            </div>
-            <div
-                className="editMenu"
-                md={3}
-                css={css`
-                    display: flex;
-                    flex-direction: column;
-                    margin-top: 1rem;
-                    margin-right: 2px;
-                    padding-right: 20px;
-                `}
-            >
+        <>
+            {isloading ? (
                 <div
                     css={css`
+                        margin: auto 0;
+                        width: 100%;
+                        height: 80vh;
                         display: flex;
                         flex-direction: column;
-                        align-items: flex-start;
+
+
                     `}
                 >
-                    <div
+                    <CircularProgress
                         css={css`
+                            margin: auto 0;
+                            align-self: center;
                             width: 100%;
                         `}
+                    />
+                </div>
+            ) : (
+                <div className="editArea">
+                    <div className="editPart">
+                        <ThemeProvider>
+                            <Remirror manager={manager} initialContent={state} placeholder={`What's on your mind?`}>
+                                <Row className="px-3 mb-2 mt-3">
+                                    <Title
+                                        currentHtmlsaveToreducer={
+                                            currentHtmlsaveToreducer
+                                        }
+                                    />
+                                </Row>
+
+                                <Row
+                                    className="px-1 mb-4"
+                                    css={css`
+                                        font-size: 0.9rem;
+                                    `}
+                                >
+                                    <EditorToolbar />
+                                </Row>
+                                <MdToContent htmlContents={rawContent} />
+                                <OnChangeHTML
+                                    onChange={debounce(handleEditorChange, 500)}
+                                ></OnChangeHTML>
+                                <TextEditor className="px-1" />
+                            </Remirror>
+                        </ThemeProvider>
+                    </div>
+                    <div
+                        className="editMenu"
+                        md={3}
+                        css={css`
+                            display: flex;
+                            flex-direction: column;
+                            margin-top: 1rem;
+                            margin-right: 2px;
+                            padding-right: 20px;
+                        `}
                     >
-                        <EditorInformation
-                            currentHtmlsaveToreducer={currentHtmlsaveToreducer}
-                            tracingDoc={refVContent.current.html}
-                            pathID={id}
-                            reducerID={newID}
-                        />
+                        <div
+                            css={css`
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
+                            `}
+                        >
+                            <div
+                                css={css`
+                                    width: 100%;
+                                `}
+                            >
+                                <EditorInformation
+                                    currentHtmlsaveToreducer={
+                                        currentHtmlsaveToreducer
+                                    }
+                                    tracingDoc={refVContent.current.html}
+                                    pathID={id}
+                                    reducerID={newID}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            )}
+        </>
     );
+    // <AllStyledComponent>
 };
 
 export default SmallEditor;

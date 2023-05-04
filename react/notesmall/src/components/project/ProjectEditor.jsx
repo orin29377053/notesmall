@@ -9,19 +9,8 @@ import { Modal, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import ProjectList from "./ProjectList";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 
-const ItemCard = ({ item }) => {
-    return item?.documents?.map((doc) => (
-        <DocumentCard
-            title={doc.title}
-            content={sanitizeContent(doc.content)}
-            _id={doc._id}
-            image={extractImageURL(doc.content)}
-        />
-    ));
-};
 const style = {
     position: "absolute",
     top: "50%",
@@ -35,7 +24,7 @@ const style = {
     p: 4,
 };
 
-const ProjectEditor = () => {
+const ProjectEditor = ({ first }) => {
     const dispatch = useDispatch();
     const [projectName, setProjectName] = useState("");
     const [open, setOpen] = useState(false);
@@ -57,13 +46,29 @@ const ProjectEditor = () => {
 
     return (
         <div>
-            <IconButton
-                aria-label="delete"
-                color="primary"
-                onClick={handleOpen}
-            >
-                <AddCircleIcon fontSize="large" />
-            </IconButton>
+            {first ? (
+                <Button
+                    css={css`
+                        margin-top: 10px;
+                        float: right;
+                        font-weight: bold;
+                        border-radius: 10px;
+                    `}
+                    variant="contained"
+                    onClick={handleOpen}
+                >
+                    Try it now !
+                </Button>
+            ) : (
+                <IconButton
+                    aria-label="delete"
+                    color="primary"
+                    onClick={handleOpen}
+                >
+                    <AddCircleIcon fontSize="large" />
+                </IconButton>
+            )}
+
             {/* <IconButton onClick={handleOpen}>Create project</IconButton> */}
             <Modal
                 open={open}
@@ -78,7 +83,7 @@ const ProjectEditor = () => {
                             font-weight: bold;
                         `}
                     >
-                        Create New project
+                        Create New Project
                     </div>
                     <TextField
                         fullWidth

@@ -40,31 +40,42 @@ module.exports = {
 
     Mutation: {
         signup: async (_, { email, password }) => {
-            console.log(email, password);
-            const user = await User.findOne({ email });
-            if (user) {
-                throw new Error("Email already exists");
+            try {
+                
+                const user = await User.findOne({ email });
+                console.log(user);
+                if (user) {
+                    throw new Error("Email already exists");
+                }
+                const hash = await bcrypt.hash(password, +saltRounds);
+                const newUser = await new User({
+                    email,
+                    password: hash,
+                }).save();
+                console.log(newUser);
+                return tarnsformUser(newUser);
+            } catch (e) {
+                throw e;
+                
             }
-            const hash = await bcrypt.hash(password, +saltRounds);
-            const newUser = await new User({
-                email,
-                password: hash,
-            }).save();
-            console.log(newUser);
-            return tarnsformUser(newUser);
         },
         signin: async (_, { email, password }) => {
             // console.log(token);
+            try {
+                const user = await User.findOne({ email });
+                if (!user) {
+                    throw new Error("Email not exists");
+                }
+                const valid = await bcrypt.compare(password, user.password);
+                if (!valid) {
+                    throw new Error("Password is not correct");
+                }
+                return tarnsformUser(user);
+                
+            }catch(e){
+                throw e;
+            }
 
-            const user = await User.findOne({ email });
-            if (!user) {
-                throw new Error("Email not exists");
-            }
-            const valid = await bcrypt.compare(password, user.password);
-            if (!valid) {
-                throw new Error("Password is not correct");
-            }
-            return tarnsformUser(user);
         },
     },
 };

@@ -1,4 +1,4 @@
-import { takeLatest, put } from "redux-saga/effects";
+import { takeLatest, put,takeEvery } from "redux-saga/effects";
 import { API_METHOD } from "../api/apiService";
 import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
@@ -52,9 +52,9 @@ function* updateProject(action) {
 
 function* mySaga() {
     yield takeLatest("FETCH_Project_LIST", getProjectList);
-    yield takeLatest("FETCH_CREATE_PROJECT", createNewProject);
-    yield takeLatest("FETCH_DELETE_PROJECT", deleteProject);
-    yield takeLatest("FETCH_UPDATE_PROJECT", updateProject);
+    yield takeEvery("FETCH_CREATE_PROJECT", createNewProject);
+    yield takeEvery("FETCH_DELETE_PROJECT", deleteProject);
+    yield takeEvery("FETCH_UPDATE_PROJECT", updateProject);
 
 
 }

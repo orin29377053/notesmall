@@ -2,7 +2,7 @@
 
 import { css } from "@emotion/react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect ,memo} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Modal, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";

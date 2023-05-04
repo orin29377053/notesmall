@@ -1,4 +1,4 @@
-import { takeLatest, put } from "redux-saga/effects";
+import { takeLatest, put ,takeEvery} from "redux-saga/effects";
 import { API_METHOD } from "../api/apiService";
 import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
@@ -41,6 +41,10 @@ function* fetchQueryDocument(action) {
         path: GRAPHQL_URL,
         reducer: "EDITING_DOCUMENT",
         queryString: action.payload,
+        helper: action.payload.helper,
+        error: "Loading Document Error, Please Try Again or Check Your Internet Connection",
+        success: "Loading Document Success",
+
     });
 }
 function* fetchCreateDocument(action) {
@@ -75,10 +79,10 @@ function* fetchUpdateProject(action) {
 
 function* mySaga() {
     yield takeLatest("EDIT_TITLE", fetch);
-    yield takeLatest("UPDATE_TAGS", fetchUpdateTags);
+    yield takeEvery("UPDATE_TAGS", fetchUpdateTags);
     yield takeLatest("QUERY_DOCUMENTS", fetchQueryDocument);
-    yield takeLatest("CREATE_DOCUMENTS", fetchCreateDocument);
-    yield takeLatest("UPDATE_PROJECT", fetchUpdateProject);
+    yield takeEvery("CREATE_DOCUMENTS", fetchCreateDocument);
+    yield takeEvery("UPDATE_PROJECT", fetchUpdateProject);
 
 }
 
