@@ -168,8 +168,7 @@ const AddDocument = ({ first, selectedButton, setSelectedButton }) => {
                                 };
                                 setSelectedButton(newSelectProject);
 
-                                // console.log(selectDocument,"setSelectedButton")
-                                // setSelectedButton(selectDocument)
+                                
                                 handleClose();
                             }}
                             css={css`

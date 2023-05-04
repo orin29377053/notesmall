@@ -4,7 +4,6 @@ import { GRAPHQL_URL } from "../api/API";
 import { fetchApi } from ".";
 
 function* fetchSignIn(action) {
-    console.log("OKOK");
     const response = yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,
@@ -13,7 +12,6 @@ function* fetchSignIn(action) {
         success: "Sign in Success",
     });
     if (response) {
-        console.log(response, "swswswsw");
         yield put({
             type: "USER_DOCUMENTS_LIST",
             data: response.data.signin.documents,
@@ -51,7 +49,6 @@ function* fetchSignUp(action) {
 }
 
 function* fetchUserInfo(action) {
-    console.log(action);
     const response = yield fetchApi({
         method: API_METHOD.POST,
         path: GRAPHQL_URL,

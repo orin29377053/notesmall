@@ -113,8 +113,6 @@ const EditorInformation = ({
     };
 
     useEffect(() => {
-        // console.log("qqq")
-        console.log("editingDocument", editingDocument)
         if (Object.keys(editingDocument).length !== 0) {
             setUpdated_at(getFormattedTime(editingDocument?.updated_at));
             setCreated_at(getFormattedTime(editingDocument?.created_at));
@@ -125,7 +123,6 @@ const EditorInformation = ({
             setIsDeleted(editingDocument?.isDeleted);
             setId(editingDocument?._id);
             setTags(editingDocument?.tags);
-            console.log(markdownHandler(editingDocument?.content));
         }
     }, [editingDocument, path]);
 

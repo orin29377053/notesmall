@@ -21,7 +21,6 @@ const AlertInformation = () => {
     }, [visible]);
 
     useEffect(() => {
-        console.log(information);
         if (!information || Object.keys(information).length === 0) {
             return;
         }

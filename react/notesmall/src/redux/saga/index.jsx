@@ -35,7 +35,6 @@ export function* fetchApi({
         }).then((res) => res.json());
 
         if (response.errors) {
-            console.log("dwdw",response.errors);
             yield put({
                 type: "FETCH_RESULT_INFORMATION",
                 data: {
@@ -54,7 +53,6 @@ export function* fetchApi({
             return;
         } else {
             if (success) {
-                console.log("success",success);
                 yield put({
                     type: "FETCH_RESULT_INFORMATION",
                     data: {
@@ -72,10 +70,8 @@ export function* fetchApi({
                     helper: helper,
                 });
         }
-        console.log("hello");
         return response;
     } catch (e) {
-        console.log(e);
         if (error) {
             yield put({
                 type: "FETCH_RESULT_INFORMATION",

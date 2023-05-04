@@ -63,7 +63,6 @@ const TagEditor = () => {
     };
 
     useEffect(() => {
-        console.log("useEffect");
         getTagList();
     }, []);
 

@@ -138,7 +138,6 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
         return { r: r, g: g, b: b };
     }
 
-    // console.log(select, unselect);
 
     return (
         <div

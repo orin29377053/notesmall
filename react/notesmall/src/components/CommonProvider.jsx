@@ -92,7 +92,6 @@ const CommonProvider = ({ children }) => {
             //reload
             history("/home");
             window.location.reload();
-            console.log("i am logout")
         }
         dispatch({
             type: "UPDATE_PATH",

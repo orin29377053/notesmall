@@ -27,7 +27,6 @@ const HighlightsCard = ({ item }) => {
     };
     
     const content = highlightsprocess(item.texts);
-    console.log(content, "content")
 
     return (
         <Card>

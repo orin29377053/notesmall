@@ -42,7 +42,6 @@ const commonReducer = (state = initState, action) => {
 
         case "SEARCH_LIST_RESULT":
             res = action.data?.data?.searchDocuments;
-            console.log("res", res);
             if (res.length === 0) {
                 res.push("No result found");
             } else {
@@ -76,15 +75,12 @@ const commonReducer = (state = initState, action) => {
                 selectedID: action.data?.data?.createDocument._id,
             };
         case "CHANGE_DOCUMENT":
-            // console.log(action.payload.id);
             return {
                 ...state,
                 selectedID: action.payload.id,
             };
 
         case "UPDATE_DOCUMENT_TITLE":
-            // console.log(action.data.data.updatedDocument);
-            // console.log(state.sidebar);
             return {
                 ...state,
                 sidebar: state.sidebar.map((item) =>
@@ -99,7 +95,6 @@ const commonReducer = (state = initState, action) => {
                 path: action.payload.path,
             };
         case "USER_DOCUMENTS_LIST":
-            console.log("wdw",action.data);
             return {
                 ...state,
                 sidebar: action.data,

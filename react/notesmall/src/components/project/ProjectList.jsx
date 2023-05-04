@@ -42,7 +42,6 @@ const ProjectList = ({ list }) => {
     const [isActive, setIsActive] = useState(false);
 
     const handleButtonClick = (button) => {
-        console.log("button", button);
         setSelectedButton(button);
     };
     const handleClose = () => {
@@ -78,7 +77,6 @@ const ProjectList = ({ list }) => {
     };
 
     useEffect(() => {
-        console.log("selectedButton", selectedButton);
     }, [selectedButton]);
 
     return (
@@ -137,7 +135,6 @@ const ProjectList = ({ list }) => {
                                             `}
                                             variant="outlined"
                                             onClick={() => {
-                                                console.log(item.name);
                                                 setIsActive(item._id);
                                                 handleButtonClick(item);
                                             }}

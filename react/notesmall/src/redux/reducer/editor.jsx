@@ -16,8 +16,6 @@ const editorReducer = (state = initState, action) => {
             };
 
         case "UPDATE_TITLE":
-            console.log(action.payload.id,state.editingDocument._id)
-            // console.log(state.editingDocument._id)
             return {
                 ...state,
                 editingDocument: {
@@ -49,7 +47,6 @@ const editorReducer = (state = initState, action) => {
                 
             };
         case "UPDATE_TAGS_RESULT":
-            console.log(action.data.data.updatedDocument.tags)
             return {
                 ...state,
                 editingDocument: {
@@ -58,7 +55,6 @@ const editorReducer = (state = initState, action) => {
                 },
             };
         case "CREATE_DOCUMENT_RESULT":
-            console.log(action.data.data.createDocument)
             action.helper.history(`/${action.data.data.createDocument._id}`)
             return {
                 ...state,
@@ -72,7 +68,6 @@ const editorReducer = (state = initState, action) => {
                 // },
             };
         case "UPDATE_DOCUMENT_PROJECT":
-            console.log(action,"wdewd")
             return {
                 ...state,
                 editingDocument: {

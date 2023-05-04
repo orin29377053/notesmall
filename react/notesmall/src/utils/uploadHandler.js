@@ -9,7 +9,6 @@ async function getPresignedUrl(fileName) {
 }
 
 async function handleUpload(url, image) {
-    console.log("image", image);
     try {
         const result = await fetch(url, {
             method: "PUT",
@@ -19,13 +18,36 @@ async function handleUpload(url, image) {
         if (!result.ok) {
             throw new Error("Image upload failed");
         } else {
-            console.log("Image upload successful");
             return;
         }
     } catch (e) {
-        console.log(e);
         return -1;
     }
+}
+
+async function checkImageExists(newFilename) {
+    try {
+        const response = await fetch(
+            "https://orinlin-resized.s3.amazonaws.com/resized-" + newFilename,
+            {
+                method: "HEAD",
+            }
+        );
+        return response.ok;
+    } catch (e) {
+        return false;
+    }
+}
+
+async function waitForImage(newFilename, interval = 1000, retries = 10) {
+    for (let i = 0; i < retries; i++) {
+        const exists = await checkImageExists(newFilename);
+        if (exists) {
+            return true;
+        }
+        await new Promise((resolve) => setTimeout(resolve, interval));
+    }
+    return false;
 }
 
 export default function uploadHandler(files) {
@@ -41,35 +63,38 @@ export default function uploadHandler(files) {
 
                     const url = await getPresignedUrl(newFilename);
                     await handleUpload(url.presignedUrl, file);
+                    const isImageReady = await waitForImage(newFilename);
+                    if (!isImageReady) {
+                        // Handle this case as needed
+                        return;
+                    }
 
-                    // reader.addEventListener(
-                    //     "load",
-                    //     (readerEvent) => {
-                    //         resolve({
-                    //             src: url.objectUrl,
-                    //             fileName: newFilename,
-                    //         });
-                    //     },
-                    //     { once: true }
-                    // );
-                    // console.log("file", file)
+                    reader.addEventListener(
+                        "load",
+                        (readerEvent) => {
+                            resolve({
+                                src: url.objectUrl,
+                                fileName: newFilename,
+                            });
+                        },
+                        { once: true }
+                    );
 
-                    // reader.readAsDataURL(file);
-                    setTimeout(async () => {
-                        reader.addEventListener(
-                            "load",
-                            (readerEvent) => {
-                                resolve({
-                                    src: url.objectUrl,
-                                    fileName: newFilename,
-                                });
-                            },
-                            { once: true }
-                        );
-                        console.log("file", file);
+                    reader.readAsDataURL(file);
+                    // setTimeout(async () => {
+                    //     reader.addEventListener(
+                    //         "load",
+                    //         (readerEvent) => {
+                    //             resolve({
+                    //                 src: url.objectUrl,
+                    //                 fileName: newFilename,
+                    //             });
+                    //         },
+                    //         { once: true }
+                    //     );
 
-                        reader.readAsDataURL(file);
-                    }, 1500);
+                    //     reader.readAsDataURL(file);
+                    // }, 1500);
                 })
         );
     }

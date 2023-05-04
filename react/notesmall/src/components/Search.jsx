@@ -105,7 +105,6 @@ const Search = () => {
     };
 
     useEffect(() => {
-        console.log("searchResult", searchResult);
     }, [searchResult]);
 
     useEffect(() => {

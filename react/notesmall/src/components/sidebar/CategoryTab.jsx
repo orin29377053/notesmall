@@ -32,7 +32,6 @@ const CategoryTab = () => {
     const allItems = [...favoriteItems, ...otherItems];
     const compareFunction = (a, b) => {
         const aTime = new Date(a.updated_at).getTime();
-        // console.log("aTime", aTime)
         const bTime = new Date(b.updated_at).getTime();
         return bTime - aTime;
     };

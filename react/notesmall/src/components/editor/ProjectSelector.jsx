@@ -26,7 +26,6 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                     "_id title content tags{_id,name,colorCode} project{_id,name} ",
             },
         });
-        console.log("event.target.value", event.target.value);
         // setProject(event.target.value);
     };
     useEffect(() => {
@@ -39,7 +38,6 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
 
     useEffect(() => {
         if (editingDocument.project) {
-            console.log("editingDocument.project", editingDocument.project);
             setProject(editingDocument?.project?._id || "");
         } else {
             setProject("none");

@@ -14,7 +14,6 @@ const ProjectDocument = ({ projectlist }) => {
         ...project,
         documents: project.documents?.filter(document => document.isDeleted === false)
     }));
-    console.log(projectlist,filteredProjects);
 
     return (
         <List

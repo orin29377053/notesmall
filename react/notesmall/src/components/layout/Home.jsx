@@ -60,7 +60,6 @@ const Home = () => {
     const [favoriteItem, setFavoriteItem] = useState([]);
     const [allitems, setAllItems] = useState([]);
 
-    // console.log(user);
     const dispatch = useDispatch();
     const getUser = (dispatch) => {
         dispatch({
@@ -105,7 +104,6 @@ const Home = () => {
         // if (sidebar.length === 0) {
         //     return;
         // }
-        console.log(sidebar,"change");
         const deletedItems = sidebar?.filter((item) => item.isDeleted);
         const archivedItems = sidebar?.filter(
             (item) => item.isArchived && !item.isDeleted
@@ -119,12 +117,10 @@ const Home = () => {
         );
         const compareFunction = (a, b) => {
             const aTime = new Date(a.updated_at).getTime();
-            // console.log("aTime", aTime)
             const bTime = new Date(b.updated_at).getTime();
             return bTime - aTime;
         };
-        console.log(allitems.length, "before");
-        console.log(allItems.length, "after");
+
         
         setAllItems(allItems);
         const recentItems = allItems.slice().sort(compareFunction);

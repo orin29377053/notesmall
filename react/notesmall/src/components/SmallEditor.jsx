@@ -237,7 +237,6 @@ const SmallEditor = () => {
     useEffect(() => {
         if (newID !== id) {
             setIsloading(true);
-            console.log("newID", newID, id);
         } else {
             setIsloading(false);
         }

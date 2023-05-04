@@ -14,4 +14,3 @@ const mdfile = fs.readFileSync('notesmall/react/notesmall/README.md', 'utf8');
 // }
 const htmlContent = marked(mdfile);
 
-console.log(htmlContent);

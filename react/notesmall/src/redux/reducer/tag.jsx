@@ -4,22 +4,16 @@ const initState = {
 const tagReducer = (state = initState, action) => {
     switch (action.type) {
         case "TAG_LIST_RESULT":
-            console.log("1");
-            console.log("1",action.data.data.tags);
             return {
                 ...state,
                 taglist: action.data.data.tags,
             };
         case "ADD_TAG":
-            console.log("2");
-
             return {
                 ...state,
                 taglist: [...state.taglist, action.data.data.createTag],
             };
         case "UPDATE_TAG":
-            console.log("3");
-
             return {
                 ...state,
                 taglist: state.taglist.map((tag) => {
@@ -31,8 +25,6 @@ const tagReducer = (state = initState, action) => {
                 }),
             };
         case "DELETE_TAG":
-            console.log("4");
-
             return {
                 ...state,
                 taglist: state.taglist.filter((tag) => {
@@ -40,9 +32,6 @@ const tagReducer = (state = initState, action) => {
                 }),
             };
         case "USER_TAGS_LIST":
-            // console.log("5");
-            console.log("5",action.data);
-
             return {
                 ...state,
                 taglist: action.data,

@@ -25,7 +25,6 @@ const Sidebar = () => {
     const allItems = sidebar?.filter(
         (item) => !item.isArchived && !item.isDeleted
     );
-    console.log("projectlist", projectlist);
 
     let history = useNavigate();
     const dispatch = useDispatch();

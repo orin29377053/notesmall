@@ -4,7 +4,6 @@ import { css } from "@emotion/react";
 /** @jsxImportSource @emotion/react */
 
 const SearchDetails = ({ highlights }) => {
-    console.log(highlights);
     return (
         <div >
             {Object.keys(highlights).map((item, index) => (

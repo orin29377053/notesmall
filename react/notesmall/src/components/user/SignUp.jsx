@@ -91,7 +91,6 @@ const SignUp = ({ setSignupform ,setOpen}) => {
             history("/home");
         }
 
-        console.log(response);
 
         // setOpen(false);
         // history("/home");

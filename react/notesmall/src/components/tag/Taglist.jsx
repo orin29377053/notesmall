@@ -93,7 +93,6 @@ const Taglist = () => {
     };
 
     useEffect(() => {
-        console.log("taglist", taglist);
     }, [taglist]);
 
     const getTagList = () => {
@@ -109,7 +108,6 @@ const Taglist = () => {
     };
 
     useEffect(() => {
-        console.log("useEffect");
         getTagList();
     }, []);
 
@@ -190,7 +188,6 @@ const Taglist = () => {
                                         <EditOutlinedIcon fontSize="small" />
                                     }
                                     onDelete={() => {
-                                        console.log(item._id);
                                         handleOpen(
                                             item._id,
                                             item.name,

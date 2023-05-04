@@ -21,11 +21,8 @@ function* createNewProject(action) {
         error: "Create Project Error",
         success: "Create Project Success",
     });
-    yield* someOtherGenerator();
 }
-function* someOtherGenerator() {
-    console.log("data~~~");
-}
+
 function* deleteProject(action) {
     yield fetchApi({
         method: API_METHOD.POST,
