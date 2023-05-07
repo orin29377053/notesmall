@@ -6,7 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useSelector, useDispatch } from "react-redux";
-const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
+const ProjectSelector = ({ currentHtmlsaveToreducer ,isEditable }) => {
     const dispatch = useDispatch();
     const { editingDocument } = useSelector((state) => state.editor);
     const { projectlist } = useSelector((state) => state.project);
@@ -84,6 +84,7 @@ const ProjectSelector = ({ currentHtmlsaveToreducer }) => {
                     id="demo-simple-select-standard"
                     value={project || ""}
                     onChange={handleChange}
+                    disabled={!isEditable}
                     label="project"
                     css={css`
                         font-size: 13px;

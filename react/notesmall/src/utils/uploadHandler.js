@@ -25,23 +25,20 @@ async function handleUpload(url, image) {
     }
 }
 
-async function checkImageExists(newFilename) {
+async function checkImageExists(url) {
     try {
-        const response = await fetch(
-            "https://orinlin-resized.s3.amazonaws.com/resized-" + newFilename,
-            {
-                method: "HEAD",
-            }
-        );
+        const response = await fetch(url, {
+            method: "HEAD",
+        });
         return response.ok;
     } catch (e) {
         return false;
     }
 }
 
-async function waitForImage(newFilename, interval = 1000, retries = 10) {
+async function waitForImage(url, interval = 1000, retries = 10) {
     for (let i = 0; i < retries; i++) {
-        const exists = await checkImageExists(newFilename);
+        const exists = await checkImageExists(url);
         if (exists) {
             return true;
         }
@@ -63,7 +60,7 @@ export default function uploadHandler(files) {
 
                     const url = await getPresignedUrl(newFilename);
                     await handleUpload(url.presignedUrl, file);
-                    const isImageReady = await waitForImage(newFilename);
+                    const isImageReady = await waitForImage(url.objectUrl);
                     if (!isImageReady) {
                         // Handle this case as needed
                         return;

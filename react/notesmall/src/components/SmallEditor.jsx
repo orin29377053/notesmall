@@ -50,7 +50,7 @@ const theme = createTheme({
         tonalOffset: 0.2,
     },
 });
-const Title = ({ currentHtmlsaveToreducer }) => {
+const Title = ({ currentHtmlsaveToreducer, isEditable }) => {
     const [oldtitle, setTitle] = useState("");
     const { editingDocument } = useSelector((state) => state.editor);
     const { id } = useParams();
@@ -100,6 +100,7 @@ const Title = ({ currentHtmlsaveToreducer }) => {
             value={oldtitle}
             placeholder="Please enter title"
             onChange={handleChange}
+            disabled={!isEditable}
             css={css`
                 padding: 0.25rem;
                 border: none;
@@ -129,6 +130,7 @@ const SmallEditor = () => {
     const { path } = useSelector((state) => state.common);
     const { id } = useParams();
     const [isloading, setIsloading] = useState(true);
+    const [isEditable, setIsEditable] = useState(true);
 
     const location = useLocation();
     let history = useNavigate();
@@ -137,6 +139,7 @@ const SmallEditor = () => {
     const title = editingDocument?.title;
     const rawContent = editingDocument?.content;
     const newID = editingDocument?._id;
+    const isDeleted = editingDocument?.isDeleted;
 
     const refVContent = useRef({ id: "", html: "" });
     const refUploading = useRef(true);
@@ -147,7 +150,6 @@ const SmallEditor = () => {
         content: "",
         selection: "start",
         stringHandler: "markdown",
-        
     });
 
     const currentHtmlsaveToreducer = () => {
@@ -207,6 +209,7 @@ const SmallEditor = () => {
         if (!result.data.updatedDocumentContent) {
             alert("Update error");
         }
+
         refUploading.current = true;
     };
 
@@ -227,7 +230,7 @@ const SmallEditor = () => {
                 gqlMethod: "query",
                 api: "document",
                 format: `(id:"${id}")`,
-                helper:{history},
+                helper: { history },
                 response:
                     "_id title content updated_at created_at tags{_id,name,colorCode} project{_id,name} isDeleted isFavorite isArchived images{ url autoTags}",
             },
@@ -238,6 +241,7 @@ const SmallEditor = () => {
         if (newID !== id) {
             setIsloading(true);
         } else {
+            // setIsEditable(!isDeleted);
             setIsloading(false);
         }
     }, [newID, id]);
@@ -269,8 +273,6 @@ const SmallEditor = () => {
                         height: 80vh;
                         display: flex;
                         flex-direction: column;
-
-
                     `}
                 >
                     <CircularProgress
@@ -282,15 +284,32 @@ const SmallEditor = () => {
                     />
                 </div>
             ) : (
-                <div className="editArea">
-                    <div className="editPart">
+                    <div className="editArea " >
+                    <div className="editPart" onClick={() => {
+                        if (isDeleted === false) return;
+                        dispatch({
+                            type: "FETCH_RESULT_INFORMATION",
+                            data: {
+                                type: "warning",
+                                title: "Warning",
+                                message: "This document has been deleted , if you want to edit it , please restore it first",
+                            },
+                        });
+
+                }}>
                         <ThemeProvider>
-                            <Remirror manager={manager} initialContent={state} placeholder={`What's on your mind?`}>
+                            <Remirror
+                                manager={manager}
+                                initialContent={state}
+                                placeholder={`What's on your mind?`}
+                                editable={!isDeleted}
+                            >
                                 <Row className="px-3 mb-2 mt-3">
                                     <Title
                                         currentHtmlsaveToreducer={
                                             currentHtmlsaveToreducer
                                         }
+                                        isEditable={!isDeleted}
                                     />
                                 </Row>
 
@@ -337,9 +356,10 @@ const SmallEditor = () => {
                                     currentHtmlsaveToreducer={
                                         currentHtmlsaveToreducer
                                     }
-                                    tracingDoc={refVContent.current.html}
+                                    tracingDoc={refVContent}
                                     pathID={id}
                                     reducerID={newID}
+                                    isEditable={!isDeleted}
                                 />
                             </div>
                         </div>

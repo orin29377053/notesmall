@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import { useSelector } from "react-redux";
 
-import TocIcon from "@mui/icons-material/Toc";
 const TOC = ({ tracingDoc, pathID, reducerID }) => {
+    const { editingDocument } = useSelector((state) => state.editor);
     const [headings, setHeadings] = useState([]);
+    const content = editingDocument?.content;
+
+    const cr = tracingDoc.current.html;
+    console.log("cr", cr);
 
     useEffect(() => {
+        console.log("tracingDoc", tracingDoc);
         const headingElements = document.querySelectorAll(
             "h1, h2, h3, h4, h5, h6"
         );
@@ -19,12 +25,16 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
         });
 
         setHeadings(headingsArray);
-    }, [tracingDoc, pathID, reducerID]);
+    }, [tracingDoc, pathID, reducerID,content]);
+
+    useEffect(() => {
+        // 監聽 refVContent.current.html 的變化，以觸發重新渲染 EditorInformation 元件
+        console.log(tracingDoc.current.html);
+    }, [tracingDoc.current.html]);
 
     return (
         <nav
             css={css`
-                
                 font-size: 1rem;
                 display: flex;
                 flex-direction: column;
@@ -37,8 +47,7 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
             >
                 {headings.map((heading, index) => (
                     <li
-                    className="singleLine"
-
+                        className="singleLine"
                         key={index}
                         css={css`
                             list-style: none;
@@ -52,8 +61,7 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
                                 font-size: 0.8rem;
                                 width: 100%;
                                 padding: 3px 1px;
-                                
-                                
+
                                 border-radius: 5px;
                                 &:hover {
                                     background-color: #ecf1fe;

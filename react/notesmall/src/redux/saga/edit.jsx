@@ -43,7 +43,6 @@ function* fetchQueryDocument(action) {
         queryString: action.payload,
         helper: action.payload.helper,
         error: "Loading Document Error, Please Try Again or Check Your Internet Connection",
-        success: "Loading Document Success",
 
     });
 }

@@ -29,6 +29,7 @@ const tarnsformUser = (user) => {
 module.exports = {
     Query: {
         me: async (_, __, { isAuth, userID }) => {
+            console.log("HI");
             if (!isAuth) {
                 const me = await User.findById(guest);
                 return tarnsformUser(me);

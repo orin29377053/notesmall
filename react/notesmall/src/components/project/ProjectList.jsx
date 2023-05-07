@@ -76,8 +76,25 @@ const ProjectList = ({ list }) => {
         });
     };
 
+    useEffect(() => {}, [selectedButton]);
+
     useEffect(() => {
-    }, [selectedButton]);
+        if (projectlist.length > 0) {
+            let i = 0;
+            while (i < projectlist.length) {
+                if (projectlist[i].length > 0) {
+                    setSelectedButton(projectlist[i]);
+                    setIsActive(projectlist[i]._id);
+                    break;
+                }
+                i++;
+            }
+            if (i == projectlist.length) {
+                setSelectedButton(projectlist[0]);
+                setIsActive(projectlist[0]._id);
+            }
+        }
+    }, [projectlist]);
 
     return (
         <div>
@@ -297,7 +314,9 @@ const ProjectList = ({ list }) => {
                     >
                         <Col className="d-inline-flex mt-2">
                             {selectedButton &&
-                            selectedButton?.documents.length === 0 ? (
+                            selectedButton?.documents.filter(
+                                (doc) => !doc.isDeleted
+                            ).length === 0 ? (
                                 <div
                                     css={css`
                                         display: flex;
@@ -314,7 +333,8 @@ const ProjectList = ({ list }) => {
                                             font-style: italic;
                                         `}
                                     >
-                                        This project is empty, Please add some documents
+                                        This project is empty, Please add some
+                                        documents
                                     </div>
                                     {/* <AddDocument
                                         first={true}

@@ -9,7 +9,9 @@ import { useSelector, useDispatch } from "react-redux";
 import UserInfo from "../user/UserInfo";
 import logo from "../../image/logo.png";
 import { useNavigate } from "react-router-dom";
-
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 const style = {
     position: "absolute",
     top: "50%",
@@ -48,6 +50,35 @@ const Header = () => {
 
     const handleClose = () => {
         setOpen(false);
+    };
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open2 = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose2 = () => {
+        setAnchorEl(null);
+    };
+
+    const goToDashboard = () => {
+        history("/home");
+        handleClose2();
+    };
+    const logout = () => {
+        dispatch({ type: "LOGOUT" });
+
+        //reload
+        handleClose2();
+        history("/home");
+
+        window.location.reload();
+        // dispatch({
+        //     type: "FETCH_RESULT_INFORMATION", data: {
+        //         type: "success",
+        //         title: "Success",
+        //         message: "Logout successfully",
+        //     }
+        //  });
     };
 
     return (
@@ -107,46 +138,89 @@ const Header = () => {
                                 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
                         }
                     `}
-                    onClick={handleOpen}
                 >
                     {role === "guest" ? (
                         <>
-                            SIGN IN&ensp;
-                            <i className="fa-solid fa-right-to-bracket"></i>
+                            <div onClick={handleOpen}>
+                                SIGN IN&ensp;
+                                <i className="fa-solid fa-right-to-bracket"></i>
+                            </div>
+                            <Modal
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                            >
+                                <Box sx={style}>
+                                    <Login setOpen={setOpen} />
+                                </Box>
+                            </Modal>
                         </>
                     ) : (
                         <>
-                            {user?.email}&ensp;
-                            <Avatar
-                                alt="Orin"
-                                src="https://image.notesmall.site/resized-mypic.jpeg"
-                                sx={{ width: 30, height: 30 }}
-                            />
+                            <div
+                                onClick={handleClick}
+                                css={css`
+                                    display: flex;
+                                    align-items: center;
+                                `}
+                            >
+                                {user?.email}&ensp;
+                                <Avatar
+                                    alt="Orin"
+                                    src="https://image.notesmall.site/resized-mypic.jpeg"
+                                    sx={{ width: 30, height: 30 }}
+                                />
+                            </div>
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open2}
+                                onClose={handleClose2}
+                                MenuListProps={{
+                                    "aria-labelledby": "basic-button",
+                                }}
+                            >
+                                <MenuItem onClick={goToDashboard}>
+                                    <div
+                                        css={css`
+                                            font-size: 14px;
+                                        `}
+                                    >
+                                        <i
+                                            class="fa-solid fa-table-columns"
+                                            style={{ color: "#1a77d3" }}
+                                        ></i>{" "}
+                                        &ensp;Dashboard
+                                    </div>
+                                </MenuItem>
+                                <MenuItem onClick={logout}>
+                                    <div
+                                        css={css`
+                                            font-size: 14px;
+                                        `}
+                                    >
+                                        <i
+                                            class="fa-solid fa-arrow-right-from-bracket"
+                                            style={{ color: "#1a77d3" }}
+                                        ></i>
+                                        &ensp; Logout
+                                    </div>
+                                </MenuItem>
+                            </Menu>
                         </>
                     )}
                 </div>
 
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
+                {/* <Button
+                    id="basic-button"
+                    aria-controls={open ? "basic-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    onClick={handleClick}
                 >
-                    {role !== "guest" ? (
-                        <Box
-                            sx={userInfoStyle}
-                            css={css`
-                                border-radius :30px !important; 
-                            `}
-                        >
-                            <UserInfo user={user} handleClose={handleClose} />
-                        </Box>
-                    ) : (
-                        <Box sx={style}>
-                            <Login setOpen={setOpen} />
-                        </Box>
-                    )}
-                </Modal>
+                    Dashboard
+                </Button> */}
             </div>
         </div>
     );

@@ -111,6 +111,14 @@ const Taglist = () => {
         getTagList();
     }, []);
 
+    useEffect(() => {
+        if (taglist?.length > 0) {
+            setSelectedButton(taglist[0]);
+            setIsActive(taglist[0]._id);
+        }
+    }, [taglist]);
+    
+
     return (
         <div>
             <Row

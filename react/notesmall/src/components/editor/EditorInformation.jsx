@@ -5,6 +5,8 @@ import { getFormattedTime } from "../../utils/timehandling";
 import { useSelector, useDispatch } from "react-redux";
 import { css } from "@emotion/react";
 import Avatar from "@mui/material/Avatar";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarRateIcon from "@mui/icons-material/StarRate";
@@ -18,12 +20,27 @@ import Chip from "@mui/material/Chip";
 import TagContent from "./TagContent";
 import TOC from "./TOC";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import HelpIcon from "@mui/icons-material/Help";
 import markdownHandler from "../../utils/markdownHandler";
+import Tooltip from "@mui/material/Tooltip";
+const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    borderRadius: 3,
+
+    // border: "2px solid #000",
+    boxShadow: 10,
+    p: 3,
+};
 const EditorInformation = ({
     currentHtmlsaveToreducer,
     tracingDoc,
     pathID,
     reducerID,
+    isEditable,
 }) => {
     const dispatch = useDispatch();
     const history = useNavigate();
@@ -38,6 +55,10 @@ const EditorInformation = ({
     const [isDeleted, setIsDeleted] = useState(false);
     const [id, setId] = useState("");
     const [tags, setTags] = useState([]);
+    const [open, setOpen] = useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
     const favorite = async () => {
         currentHtmlsaveToreducer();
         const token = localStorage.getItem("token");
@@ -67,7 +88,10 @@ const EditorInformation = ({
             type: "FETCH_RESULT_INFORMATION",
             data: {
                 type: "success",
-                message: !isFavorite===true?"Add to favorite success":"Remove from favorite success",
+                message:
+                    !isFavorite === true
+                        ? "Add to favorite success"
+                        : "Remove from favorite success",
                 title: "Success",
             },
         });
@@ -158,26 +182,38 @@ const EditorInformation = ({
                         cursor: pointer;
                     `}
                 >
-                    {isFavorite === false ? (
-                        <StarBorderIcon
-                            size="large"
-                            onClick={favorite}
-                            css={css`
+                    {isEditable ? (
+                        isFavorite === false ? (
+                            <StarBorderIcon
+                                size="large"
+                                onClick={favorite}
+                                css={css`
                                 color: #faaf00;
                                 :hover {
                                     transform: scale(1.2);
                                     `}
-                        />
-                    ) : (
-                        <StarRateIcon
-                            size="large"
-                            css={css`
+                            />
+                        ) : (
+                            <StarRateIcon
+                                size="large"
+                                css={css`
                                     color: #faaf00;
                                     :hover {
                                         transform: scale(1.2);
                                         `}
-                            onClick={favorite}
-                        />
+                                onClick={favorite}
+                            />
+                        )
+                    ) : (
+                        <Tooltip title="This document has been deleted">
+                            <div
+                                css={css`
+                                    color: gray;
+                                `}
+                            >
+                                <i className="fa-regular fa-trash-can"></i>
+                            </div>
+                        </Tooltip>
                     )}
                 </div>
             </div>
@@ -208,7 +244,7 @@ const EditorInformation = ({
                     <div>{created_at && created_at}</div>
                 </div>
                 <div className="docInfoBlock">
-                    <div className="docInfoTitle">Update at</div>
+                    <div className="docInfoTitle">Updated at</div>
                     <div>{updated_at && updated_at}</div>
                 </div>
                 <div className="docInfoBlock">
@@ -216,6 +252,7 @@ const EditorInformation = ({
                     <div>
                         <ProjectSelector
                             currentHtmlsaveToreducer={currentHtmlsaveToreducer}
+                            isEditable={isEditable}
                         />
                     </div>
                 </div>
@@ -249,9 +286,13 @@ const EditorInformation = ({
                                 variant="outlined"
                             />
                         ))}
-                        <TagContent
-                            currentHtmlsaveToreducer={currentHtmlsaveToreducer}
-                        />
+                        {isEditable ? (
+                            <TagContent
+                                currentHtmlsaveToreducer={
+                                    currentHtmlsaveToreducer
+                                }
+                            />
+                        ) : null}
                     </div>
                 </div>
                 {/* <div className="docInfoBlock">
@@ -265,7 +306,18 @@ const EditorInformation = ({
                     </div>
                 </div> */}
                 <div className="docInfoBlock">
-                    <div className="docInfoTitle">Images</div>
+                    <div className="docInfoTitle">
+                        Images
+                        <Tooltip
+                            title="This will fetch the images in the document. If it doesn't fetch automatically, please try refreshing the page."
+                            css={css`
+                                cursor: pointer;
+                                margin-left: 5px;
+                            `}
+                        >
+                            <HelpIcon sx={{ fontSize: "12px" }} />
+                        </Tooltip>
+                    </div>
                     <div>{imageslength && imageslength}</div>
                 </div>
                 <div
@@ -274,7 +326,18 @@ const EditorInformation = ({
                         align-items: flex-start;
                     `}
                 >
-                    <div className="docInfoTitle">Content</div>
+                    <div className="docInfoTitle">
+                        Heading
+                        <Tooltip
+                            title="This will fetch the headings ( h1, h2,...) in the document. If it doesn't fetch automatically, please try refreshing the page."
+                            css={css`
+                                cursor: pointer;
+                                margin-left: 5px;
+                            `}
+                        >
+                            <HelpIcon sx={{ fontSize: "12px" }} />
+                        </Tooltip>
+                    </div>
                     <div>
                         <TOC
                             tracingDoc={tracingDoc}
@@ -315,6 +378,7 @@ const EditorInformation = ({
                         display: flex;
                         align-items: center;
                         justify-content: space-between;
+                        margin-top: 10px;
                     `}
                 >
                     <Button
@@ -337,7 +401,8 @@ const EditorInformation = ({
                         variant="contained"
                         color="warning"
                         onClick={() => {
-                            PermentDelete(dispatch, id);
+                            // PermentDelete(dispatch, id);
+                            setOpen(true);
                         }}
                         startIcon={<DeleteIcon />}
                         size="small"
@@ -349,6 +414,78 @@ const EditorInformation = ({
                     >
                         Perment
                     </Button>
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style}>
+                            <div
+                                css={css`
+                                    margin-right: 5px;
+                                    font-size: 20px;
+                                    font-weight: 700;
+                                    margin-bottom: 10px;
+
+                                `}
+                            >
+                                This action cannot be undone
+                            </div>
+                            <div
+                                css={css`
+                                    font-size: 14px;
+                                    color: #8f9a97;
+                                    margin-right: 5px;
+
+                                    margin-bottom: 10px;
+                                `}
+                            >
+                                This document will be deleted permanently and
+                                cannot be recovered.
+                            </div>
+                            <div
+                                css={css`
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                `}
+                            >
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                        setOpen(false);
+                                    }}
+                                    size="small"
+                                    css={css`
+                                        border-radius: 20px;
+                                        font-size: 1px;
+                                        font-weight: 700;
+                                    `}
+                                >
+                                    cancel
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="warning"
+                                    onClick={() => {
+                                        PermentDelete(dispatch, id);
+                                        setOpen(false);
+                                    }}
+                                    startIcon={<DeleteIcon />}
+                                    size="small"
+                                    css={css`
+                                        border-radius: 20px;
+                                        font-size: 1px;
+                                        font-weight: 700;
+                                    `}
+                                >
+                                    yes
+                                </Button>
+                            </div>
+                        </Box>
+                    </Modal>
                 </div>
             )}
         </div>
