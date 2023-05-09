@@ -1,7 +1,6 @@
 require("dotenv").config();
 const { translateToList } = require("../constant/translateToList");
 const { stopWords } = require("../constant/stopWords");
-const text = "Hello, world!";
 const { Translate } = require("@google-cloud/translate").v2;
 const credentials = JSON.parse(process.env.GOOGLE_API_JSON);
 

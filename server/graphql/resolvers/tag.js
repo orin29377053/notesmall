@@ -1,10 +1,9 @@
 const Document = require("../../models/document");
 const Tag = require("../../models/tag");
 const User = require("../../models/user");
-const Project = require("../../models/project");
 const dataToString = require("../../utils/dataToString");
-const { getDocument, getProject } = require("./merge");
-const { tagLoader, getUser, checkUserID } = require("./merge");
+const { getDocument } = require("./merge");
+const { tagLoader, getUser } = require("./merge");
 
 const transformTag = async (tag) => {
     return {
@@ -21,8 +20,7 @@ const transformTag = async (tag) => {
 
 module.exports = {
     Query: {
-        tag: async (parent, { id }, context, info) => {
-            // console.log(parent, context, info);
+        tag: async (parent, { id }) => {
             try {
                 const tag = await Tag.findById(id);
                 if (!tag) {
@@ -30,22 +28,22 @@ module.exports = {
                 }
                 return transformTag(tag);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
-        tags: async (parent, args, { isAuth, userID }, info) => {
+        tags: async (parent, args, { userID }) => {
             try {
                 const tags = await Tag.find().where("user").equals(userID);
                 return tags.map(async (tag) => {
                     return transformTag(tag);
                 });
             } catch (error) {
-                throw error;
+                return error;
             }
         },
     },
     Mutation: {
-        createTag: async (_, args, { isAuth, userID }) => {
+        createTag: async (_, args, { userID }) => {
             try {
                 const { name, colorCode } = args.tag;
                 const tag = new Tag({
@@ -62,10 +60,10 @@ module.exports = {
 
                 return transformTag(newTag);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
-        updatedTag: async (_, args, { isAuth, userID }) => {
+        updatedTag: async (_, args, { userID }) => {
             try {
                 const { _id, name, colorCode, document } = args.tag;
 
@@ -81,7 +79,7 @@ module.exports = {
                 tagLoader.clear(_id);
                 return transformTag(tag);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
         deleteTag: async (_, args) => {
@@ -109,7 +107,7 @@ module.exports = {
 
                 return transformTag(tag);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
     },

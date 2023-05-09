@@ -11,7 +11,6 @@ async function imageDetection( url) {
             private_key: credentials.private_key,
         },
     });
-    console.log("i am start to call cloud vision api");
     const [result] = await ImageAnnotatorClient.labelDetection({
         image: {
             source: {
@@ -19,9 +18,7 @@ async function imageDetection( url) {
             },
         },
     });
-    // console.log(result.labelAnnotations);
     const autoTags = result.labelAnnotations.map((item) => item.description);
-    console.log(autoTags);
     return autoTags;
 }
 

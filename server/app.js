@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 
 const http = require("http");
 require("dotenv").config();
+
 const app = express();
 const jwt = require("jsonwebtoken");
 
@@ -17,7 +18,6 @@ const { expressMiddleware } = require("@apollo/server/express4");
 const {
     ApolloServerPluginDrainHttpServer,
 } = require("@apollo/server/plugin/drainHttpServer");
-const Keyv = require("keyv");
 const { KeyvAdapter } = require("@apollo/utils.keyvadapter");
 
 const graphqlSchema = require("./graphql/schema");
@@ -28,7 +28,6 @@ const {
 } = require("apollo-server-core");
 const responseCachePlugin = require("@apollo/server-plugin-response-cache");
 const { cache } = require("./utils/cache");
-const { translateKeyword } = require("./utils/translate");
 
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
@@ -47,11 +46,10 @@ const server = new ApolloServer({
 });
 // mongoose
 const mongoose = require("mongoose");
-const { application } = require("express");
 const url = process.env.MONGOATLAS_URL;
 mongoose
     .connect(url)
-    .then((res) => console.log("connect success"))
+    .then(() => console.log("connect success"))
     .catch((error) => {
         throw error;
     });
@@ -101,7 +99,7 @@ app.get("/cloudvision", async (req, res) => {
     res.json({ data: dcd });
 });
 
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res,next) {
     console.log(err);
     res.status(500).send("Internal Server Error");
 });

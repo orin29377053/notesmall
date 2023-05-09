@@ -1,3 +1,4 @@
+require("dotenv").config();
 const secret = process.env.SECRET;
 const expireTime = 3600;
 const saltRounds = process.env.SALT;
@@ -6,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../../models/user");
 const dataToString = require("../../utils/dataToString");
-const { getTag, getProject, getUser, documentLoader,checkUserID,getDocument } = require("./merge");
+const { getTag, getProject,getDocument } = require("./merge");
 
 const createToken = (id, email, secret, expireTime) => {
     return jwt.sign({ id, email }, secret, { expiresIn: expireTime });
@@ -55,13 +56,12 @@ module.exports = {
                 }).save();
                 console.log(newUser);
                 return tarnsformUser(newUser);
-            } catch (e) {
-                throw e;
+            } catch (error) {
+                return error;
                 
             }
         },
         signin: async (_, { email, password }) => {
-            // console.log(token);
             try {
                 const user = await User.findOne({ email });
                 if (!user) {
@@ -73,8 +73,8 @@ module.exports = {
                 }
                 return tarnsformUser(user);
                 
-            }catch(e){
-                throw e;
+            }catch(error){
+                return error;
             }
 
         },

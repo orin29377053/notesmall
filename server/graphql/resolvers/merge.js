@@ -17,7 +17,7 @@ const documentLoader = new Dataloader(async (documentIDs) => {
         );
         return documentIDs.map((id) => documentsMap.get(id.toString()) || null);
     } catch (error) {
-        throw error;
+        return error;
     }
 });
 
@@ -29,7 +29,7 @@ const tagLoader = new Dataloader(async (tagIDs) => {
         const tagsMap = new Map(tags.map((tag) => [tag._id.toString(), tag]));
         return tagIDs.map((id) => tagsMap.get(id.toString()) || null);
     } catch (error) {
-        throw error;
+        return error;
     }
 });
 
@@ -43,7 +43,6 @@ const userLoader = new Dataloader((userID) => {
 });
 
 const getDocument = async (documentID, depth = 2) => {
-
     try {
         // const usedMemoryBefore = process.memoryUsage().heapUsed;
 
@@ -81,7 +80,7 @@ const getDocument = async (documentID, depth = 2) => {
             user: getUser.bind(this, document.user),
         };
     } catch (error) {
-        throw error;
+        return error;
     }
 };
 
@@ -103,7 +102,7 @@ const getProject = async (projectID) => {
             user: getUser.bind(this, project.user),
         };
     } catch (error) {
-        throw error;
+        return error;
     }
 };
 
@@ -135,7 +134,7 @@ const getUser = async (userID) => {
             tags: tags,
         };
     } catch (error) {
-        throw error;
+        return error;
     }
 };
 
@@ -161,7 +160,7 @@ const getTag = async (tagID, depth = 2) => {
             document,
         };
     } catch (error) {
-        throw error;
+        return error;
     }
 };
 

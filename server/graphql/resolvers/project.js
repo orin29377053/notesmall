@@ -1,15 +1,11 @@
 const Document = require("../../models/document");
-const Tag = require("../../models/tag");
 const Project = require("../../models/project");
 const User = require("../../models/user");
-const { documentFuzzySearch } = require("../search");
 const dataToString = require("../../utils/dataToString");
-const { getDocument, getProject, getTag,getUser,checkUserID } = require("./merge");
-const {projectLoader}=require("./merge");
+const { getDocument, getUser } = require("./merge");
+const { projectLoader } = require("./merge");
 
 const transformProject = async (project) => {
-    // console.log("project",project.documents);
-
     return {
         ...project._doc,
         _id: project.id,
@@ -23,13 +19,13 @@ const transformProject = async (project) => {
     };
 };
 
+
+
 module.exports = {
     Query: {
-        projects: async (parent,args, { isAuth, userID }) => {
+        projects: async (parent, args, { userID }) => {
             try {
-                const projects = userID?await Project.find().where("user")
-                .equals(userID):await Project.find();
-                // console.log("projects", projects);
+                const projects = await Project.find().where("user").equals(userID)
                 const transformedProjects = await Promise.all(
                     projects.map(async (project) => {
                         return transformProject(project);
@@ -37,7 +33,7 @@ module.exports = {
                 );
                 return transformedProjects;
             } catch (error) {
-                throw error;
+                return error;
             }
         },
         project: async (parent, { id }) => {
@@ -48,18 +44,16 @@ module.exports = {
                 }
                 return transformProject(project);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
     },
     Mutation: {
-        createProject: async (_, args,{ isAuth, userID }) => {
-            // console.log(args);
+        createProject: async (_, args, { userID }) => {
             try {
-                const { name, description } = args.project;
+                const { name } = args.project;
                 const project = new Project({
                     name,
-                    description,
                     user: userID,
                 });
 
@@ -69,92 +63,76 @@ module.exports = {
                     $push: { projects: project._id },
                 });
 
-
                 const newProject = await project.save();
                 projectLoader.load(newProject._id);
                 return { ...newProject._doc, _id: newProject.id };
             } catch (error) {
-                throw error;
+                return error;
             }
         },
-        updateProject: async (_, args,{ isAuth, userID }) => {
+        updateProject: async (_, args, { userID }) => {
             try {
-                const { _id, name, isArchived, isFavorite, documents ,user} =
+                console.log(args,"args")
+                const { _id, name} =
                     args.project;
                 const updated_at = Date.now();
 
-
                 const oldProject = await Project.findById(_id);
-
-                checkUserID(oldProject,userID);
-
 
                 const project = await Project.findByIdAndUpdate(
                     _id,
                     {
                         _id,
                         name,
-                        isArchived,
-                        isFavorite,
-                        documents,
+                        // documents,
                         updated_at,
-                        user
+                        // user,
                     },
                     { new: true }
                 );
                 const newProject = await project.save();
-                console.log("newProject", newProject);
                 projectLoader.clear(newProject._id.toString());
 
-                if (documents) {
-                    const oldDocuments = oldProject.documents;
-                    const newDocuments = documents;
-                    const deletedDocuments = oldDocuments.filter(
-                        (document) => !newDocuments.includes(document)
-                    );
-                    const addedDocuments = newDocuments.filter(
-                        (document) => !oldDocuments.includes(document)
-                    );
-                    deletedDocuments.forEach(async (documentID) => {
-                        const document = await Document.findById(documentID);
-                        document.project = null;
-                        await document.save();
-                    });
-                    addedDocuments.forEach(async (documentID) => {
-                        const document = await Document.findById(documentID);
-                        document.project = _id;
-                        await document.save();
-                    });
-                }
+                // if (documents) {
+                //     console.log("documents",documents)
+                //     const oldDocuments = oldProject.documents;
+                //     const newDocuments = documents;
+                //     const deletedDocuments = oldDocuments.filter(
+                //         (document) => !newDocuments.includes(document)
+                //     );
+                //     const addedDocuments = newDocuments.filter(
+                //         (document) => !oldDocuments.includes(document)
+                //     );
+                //     deletedDocuments.forEach(async (documentID) => {
+                //         const document = await Document.findById(documentID);
+                //         document.project = null;
+                //         await document.save();
+                //     });
+                //     addedDocuments.forEach(async (documentID) => {
+                //         const document = await Document.findById(documentID);
+                //         document.project = _id;
+                //         await document.save();
+                //     });
+                // }
                 // add project to user
                 const userInfo = await User.findById(userID);
-                // console.log(user)
-                console.log("userInfo", userInfo)
                 userInfo.projects = userInfo.projects.filter(
                     (projectID) => projectID != _id
                 );
                 userInfo.projects.push(_id);
                 await userInfo.save();
 
-
-
-
                 return transformProject(newProject);
             } catch (error) {
-                console.log(error)
+                console.log(error);
                 throw error;
             }
         },
-        deleteProject: async (_, args,{ isAuth, userID }) => {
+        deleteProject: async (_, args, { userID }) => {
             try {
                 const { id } = args;
-                // console.log(_id, isDeleted);
-                const oldProject = await Project.findById(id);
-                // checkUserID(oldProject,userID);
-
 
                 const project = await Project.findByIdAndDelete(id);
-                console.log("project", project);
                 if (!project) {
                     throw new Error(`Project with ID ${id} not found`);
                 }
@@ -165,21 +143,17 @@ module.exports = {
                 });
 
                 //delete project from user
-                const user = await User.findById(project.user);
+                const user = await User.findById(userID);
                 user.projects = user.projects.filter(
                     (projectID) => projectID != id
                 );
                 await user.save();
 
-
-
-
-
                 projectLoader.clear(id);
 
                 return transformProject(project);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
     },
