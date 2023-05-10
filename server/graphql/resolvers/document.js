@@ -10,7 +10,6 @@ const {
     getProject,
     getUser,
     documentLoader,
-
     tagLoader,
     projectLoader,
     checkUserID,
@@ -37,14 +36,14 @@ function getAddDeleteUrls(oldArray, checkArray) {
 
     return [add, deleteUrls];
 }
-
+//FIXME: trans
 const tarnsformDocument = async (document) => {
     return {
         ...document._doc,
         _id: document.id,
         created_at: dataToString(document._doc.created_at),
         updated_at: dataToString(document._doc.updated_at),
-        user: document.user ? getProject.bind(this, document.user) : null,
+        // user: document.user ? getProject.bind(this, document.user) : null,
         tags:
             document.tags?.length > 0
                 ? await Promise.all(document.tags.map((tagID) => getTag(tagID)))
@@ -67,21 +66,27 @@ const tarnsformDocument = async (document) => {
 module.exports = {
     Query: {
         documents: async (parent, { isDeleted }, { isAuth, userID }) => {
-            if (!isAuth) {
-                // throw new Error("Unauthenticated");
-            }
+            // if (!isAuth) {
+            //     // throw new Error("Unauthenticated");
+            // }
 
             try {
+                //FIXME:
                 const documents = userID
                     ? await Document.find().where("user").equals(userID)
                     : await Document.find();
                 // .where("isDeleted")
                 // .equals(isDeleted);
+                //FIXME: async
                 return documents.map(async (document) => {
                     return tarnsformDocument(document);
                 });
             } catch (error) {
-                throw error;
+                //FIXME: error?
+                // return error;
+                throw new GraphQLError(`Document with ID  not found`, {
+                    extensions: { code: 400, },
+                });
             }
         },
         document: async (parent, { id }, _, info) => {
@@ -107,7 +112,7 @@ module.exports = {
                 const documents = await Document.aggregate(query);
 
                 return documents.map(async (document) => {
-                    document.highlights.map((highlight) => {});
+                    // document.highlights.map((highlight) => {});
 
                     return {
                         ...document,
@@ -127,7 +132,7 @@ module.exports = {
                     };
                 });
             } catch (error) {
-                throw error;
+                return error;
             }
         },
         autoComplete: async (parent, { keyword }, { isAuth, userID }) => {
@@ -135,6 +140,7 @@ module.exports = {
                 const query = documentAutoComplete(keyword, userID);
 
                 const documents = await Document.aggregate(query);
+                //FIXME: hash new Set{}
                 const keywords = documents.map((document) =>
                     document.highlights
                         .map((highlight) =>
@@ -152,7 +158,7 @@ module.exports = {
                 console.log(trimmedArray);
                 return trimmedArray;
             } catch (error) {
-                throw error;
+                return error;
             }
         },
     },
@@ -174,7 +180,7 @@ module.exports = {
                 documentLoader.load(newDocument._id.toString());
                 return tarnsformDocument(newDocument);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
         updatedDocument: async (_, args, { isAuth, userID }) => {
@@ -193,7 +199,9 @@ module.exports = {
 
                 const documentded = await Document.findById(_id);
 
-                checkUserID(documentded, userID);
+                // checkUserID(documentded, userID);
+
+                //FIXME: userID
 
                 const document = await Document.findByIdAndUpdate(
                     _id,
@@ -208,19 +216,22 @@ module.exports = {
                     },
                     { new: true }
                 ).populate("tags");
+                //FIXME: tags
 
                 const newDocument = await document.save();
 
-                if (user) {
-                    await User.updateMany(
-                        { _id: { $in: user } },
-                        { $addToSet: { documents: _id } }
-                    );
-                    await User.updateMany(
-                        { _id: { $nin: user } },
-                        { $pull: { documents: _id } }
-                    );
-                }
+                //
+
+                // if (user) {
+                //     await User.updateMany(
+                //         { _id: { $in: user } },
+                //         { $addToSet: { documents: _id } }
+                //     );
+                //     await User.updateMany(
+                //         { _id: { $nin: user } },
+                //         { $pull: { documents: _id } }
+                //     );
+                // }
 
                 if (tags) {
                     await Tag.updateMany(
@@ -263,7 +274,7 @@ module.exports = {
 
                 return tarnsformDocument(newDocument);
             } catch (error) {
-                throw error;
+                return error;
             }
         },
         updatedDocumentContent: async (_, args, { isAuth, userID }) => {
@@ -272,7 +283,7 @@ module.exports = {
                 const updated_at = Date.now();
                 const documentded = await Document.findById(id);
 
-                checkUserID(documentded, userID);
+                // checkUserID(documentded, userID);
 
                 const pattern =
                     /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
@@ -288,6 +299,8 @@ module.exports = {
                 dele.map((url) => {
                     deleteImage(url);
                 });
+
+                //FIXME:
 
                 for (let url of add) {
                     const autoTags = await imageDetection(url);
@@ -322,8 +335,8 @@ module.exports = {
         deleteDocument: async (_, args, { isAuth, userID }) => {
             try {
                 const { _id, isDeleted } = args.document;
-                const document = await Document.findById(_id);
-                checkUserID(document, userID);
+                // const document = await Document.findById(_id);
+                // checkUserID(document, userID);
 
                 const newdocument = await Document.findByIdAndUpdate(
                     _id,
@@ -331,13 +344,13 @@ module.exports = {
                     { new: true }
                 );
                 if (!newdocument) {
-                    throw new Error(`Document with ID ${id} not found`);
+                    throw new Error(`Document with ID ${_id} not found`);
                 }
                 documentLoader.clear(_id.toString());
 
                 return { ...newdocument._doc, _id: newdocument.id };
             } catch (error) {
-                throw error;
+                return error;
             }
         },
         permantDeleteDocument: async (_, { id }, { isAuth, userID }) => {
@@ -388,7 +401,7 @@ module.exports = {
                             { $pull: { documents: { $in: id } } }
                         ),
                     ]);
-                    console.log(permantDeleDocument);
+                console.log(permantDeleDocument);
                 permantDeleDocument.tags?.map((tag) => {
                     tagLoader.clear(tag.toString());
                 });
@@ -404,6 +417,7 @@ module.exports = {
                 throw error;
             }
         },
+        //FIXME:
         permantDeleteALLDocument: async (_, args, { isAuth, userID }) => {
             try {
                 const { isDeleted } = args.document;
@@ -436,11 +450,13 @@ module.exports = {
                         {},
                         { $pull: { documents: { $in: deletedDocumentIds } } }
                     );
-                } catch {}
+                } catch (error) {
+                    return error;
+                }
 
                 return result;
             } catch (error) {
-                throw error;
+                return error;
             }
         },
     },

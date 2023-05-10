@@ -40,9 +40,11 @@ async function detectLanguage(text) {
 
 async function translateKeyword(text) {
     try {
+        // abc de=>[abc,de]
         const searchInputArray = text.split(" ");
 
         const detectResult = await detectLanguage(searchInputArray);
+        //FIXME: forEach
         detectResult.map((item) => {
             item.translateTo =
                 item.confidence > 0.8 ? translateToList[item.language] : "en";
@@ -59,6 +61,8 @@ async function translateKeyword(text) {
                 return acc;
             }, {})
         );
+                //FIXME:
+
         const translatResult = await Promise.all(
             translateList.map(async ({ input, translateTo }) => {
                 const translated = await translateText(input, translateTo);
@@ -69,8 +73,11 @@ async function translateKeyword(text) {
                 return { input: input, output: filtered };
             })
         );
+                //FIXME:
+
         const flattenedTranslatResult = [
             ...new Set(
+                //FIXME:
                 translatResult.flatMap((item) => [
                     ...item.input,
                     ...item.output,

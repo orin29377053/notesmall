@@ -74,7 +74,7 @@ module.exports = buildSchema(`
     type: String!
   }
 
-  type User {
+  type User @cacheControl(maxAge: 10 scope: PUBLIC inheritMaxAge: true){
     _id: ID!
     name: String
     email: String!
@@ -139,7 +139,7 @@ module.exports = buildSchema(`
     tags:[Tag!]
     projects:[Project!]
     project(id:ID!): Project
-    me: User
+    me: User 
 
   }
 

@@ -7,7 +7,6 @@ const User = require("../../models/user");
 
 const documentLoader = new Dataloader(async (documentIDs) => {
     try {
-        // documentLoader.clearAll();
 
         const documents = await Document.find({
             _id: { $in: documentIDs },
@@ -20,6 +19,9 @@ const documentLoader = new Dataloader(async (documentIDs) => {
         return error;
     }
 });
+
+
+
 
 const tagLoader = new Dataloader(async (tagIDs) => {
     console.log("tagIDs", tagIDs);
@@ -37,6 +39,7 @@ const projectLoader = new Dataloader((projectIDs) => {
     console.log("projectIDs", projectIDs);
     return Project.find({ _id: { $in: projectIDs } });
 });
+
 
 const userLoader = new Dataloader((userID) => {
     return User.find({ _id: { $in: userID } });

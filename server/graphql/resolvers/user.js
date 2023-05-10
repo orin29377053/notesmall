@@ -29,8 +29,11 @@ const tarnsformUser = (user) => {
 
 module.exports = {
     Query: {
-        me: async (_, __, { isAuth, userID }) => {
-            console.log("HI");
+        me: async (_, __, { isAuth, userID },info) => {
+            info.cacheControl.setCacheHint({ maxAge: 3, scope: 'PUBLIC' });
+
+
+            // console.log("HI");
             if (!isAuth) {
                 const me = await User.findById(guest);
                 return tarnsformUser(me);

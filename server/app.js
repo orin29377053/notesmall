@@ -57,6 +57,7 @@ mongoose
 // cloud vision
 const vision = require("@google-cloud/vision");
 const credentials = JSON.parse(process.env.GOOGLE_API_JSON);
+//FIXME:
 const client = new vision.ImageAnnotatorClient({
     credentials: {
         client_email: credentials.client_email,
@@ -88,21 +89,24 @@ async function imageDetection(client, url) {
     return result;
 }
 
-app.get("/cloudvision", async (req, res) => {
-    const dcd = await imageDetection(
-        client,
-        "https://orinlin.s3.amazonaws.com/%E6%88%AA%E5%9C%96+2023-04-19+%E4%B8%8A%E5%8D%8811.37.03.png"
-    );
-    // console.log(process.env.GOOGLE_API_JSON)
+//FIXME:
 
-    // detections.forEach((text) => console.log(text));
-    res.json({ data: dcd });
-});
+// app.get("/cloudvision", async (req, res) => {
+//     const dcd = await imageDetection(
+//         client,
+//         "https://orinlin.s3.amazonaws.com/%E6%88%AA%E5%9C%96+2023-04-19+%E4%B8%8A%E5%8D%8811.37.03.png"
+//     );
+//     // console.log(process.env.GOOGLE_API_JSON)
+
+//     // detections.forEach((text) => console.log(text));
+//     res.json({ data: dcd });
+// });
 
 app.use(function (err, req, res,next) {
     console.log(err);
     res.status(500).send("Internal Server Error");
 });
+//FIXME:
 
 function tokenVerify(token, secret) {
     return new Promise((resolve, reject) => {
@@ -120,6 +124,7 @@ const graph = async () => {
     await server.start();
     app.use(
         "/graphql",
+        //FIXME:
         cors(),
         bodyParser.json(),
         expressMiddleware(server, {
