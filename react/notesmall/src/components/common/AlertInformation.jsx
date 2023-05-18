@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, } from "react-redux";
 const AlertInformation = () => {
     const [visible, setVisible] = useState(false);
     const [severity, setSeverity] = useState("success");

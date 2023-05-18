@@ -94,10 +94,7 @@ const TagSelector = ({ setOpen, currentHtmlsaveToreducer }) => {
     const { editingDocument } = useSelector((state) => state.editor);
     const documentTags = editingDocument?.tags;
     useEffect(() => {
-        // if (taglist.length === 0) {
-        //     getTagList();
-        //     return;
-        // }
+        
 
         const filteredTags = taglist.filter(
             (tag) => !documentTags.some((docTag) => docTag._id === tag._id)

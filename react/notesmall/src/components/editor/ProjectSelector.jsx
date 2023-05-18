@@ -26,7 +26,6 @@ const ProjectSelector = ({ currentHtmlsaveToreducer ,isEditable }) => {
                     "_id title content tags{_id,name,colorCode} project{_id,name} ",
             },
         });
-        // setProject(event.target.value);
     };
     useEffect(() => {
         if (editingDocument.project) {
@@ -65,16 +64,7 @@ const ProjectSelector = ({ currentHtmlsaveToreducer ,isEditable }) => {
                 }
             `}
         >
-            {/* <div>
-                <AccountTreeOutlinedIcon
-                    css={css`
-                        color: #1976d2;
-                        margin-right: 5px;
-
-                    `}
-                />
-                Project
-            </div> */}
+           
             <FormControl
                 variant="standard"
                 sx={{ minWidth: 130}}

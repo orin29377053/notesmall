@@ -3,14 +3,11 @@ import React from "react";
 import { css } from "@emotion/react";
 
 import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import { Link } from "react-router-dom";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import Tooltip from "@mui/material/Tooltip";
 
 const DocumentListItem = ({ list }) => {
-    
     return list?.map((item) => (
         <Tooltip
             title={`Last updated: ${item.updated_at
@@ -56,15 +53,6 @@ const DocumentListItem = ({ list }) => {
                             }
                         `}
                     >
-                        {/* <ListItemIcon
-                            css={css`
-                                align-items: center;
-                            `}
-                            sx={{
-                                maxWidth: "25px",
-                                minWidth: "25px",
-                            }}
-                        > */}
                         <InsertDriveFileOutlinedIcon
                             fontSize="small"
                             sx={{
@@ -72,24 +60,8 @@ const DocumentListItem = ({ list }) => {
                                 marginRight: "5px",
                             }}
                         />
-                        {/* </ListItemIcon> */}
                         {item.title}
-                        {/* <ListItemText
-                            primary={item.title}
-                            css={css`
-                                warpping: break-word;
-                                &:hover {
-                                    background-color: #ecf1fe;
-                                    color: #1976d2;
-                                    font-weight: 700 !important;
-                                }
-                            `}
-                        /> */}
                     </div>
-
-                    {/* <ListItemText
-                    secondary={item.updated_at?.slice(0, 19).replace("T", " ")}
-                /> */}
                 </Link>
             </ListItem>
         </Tooltip>

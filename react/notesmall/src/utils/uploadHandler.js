@@ -1,8 +1,15 @@
+import { v4 as uuidv4 } from 'uuid';
 const { imageAPI } = require("./const");
 
 async function getPresignedUrl(fileName) {
+    
     const rawUrl = await fetch(
-        `${imageAPI}api/1.0/image/getImagePresignedUrl?fileName=${fileName}`
+        `${imageAPI}api/1.0/image/getImagePresignedUrl?fileName=${fileName}`,
+        {
+            headers: {
+                token: localStorage.getItem("token"),
+            },
+        }
     );
     const url = await rawUrl.json();
     return url;
@@ -58,11 +65,11 @@ export default function uploadHandler(files) {
 
                     let newFilename = file.name.replace(/[\s\)]/g, "");
 
-                    const url = await getPresignedUrl(newFilename);
+                
+                    const url = await getPresignedUrl(uuidv4()+newFilename);
                     await handleUpload(url.presignedUrl, file);
                     const isImageReady = await waitForImage(url.objectUrl);
                     if (!isImageReady) {
-                        // Handle this case as needed
                         return;
                     }
 
@@ -78,20 +85,7 @@ export default function uploadHandler(files) {
                     );
 
                     reader.readAsDataURL(file);
-                    // setTimeout(async () => {
-                    //     reader.addEventListener(
-                    //         "load",
-                    //         (readerEvent) => {
-                    //             resolve({
-                    //                 src: url.objectUrl,
-                    //                 fileName: newFilename,
-                    //             });
-                    //         },
-                    //         { once: true }
-                    //     );
-
-                    //     reader.readAsDataURL(file);
-                    // }, 1500);
+                   
                 })
         );
     }

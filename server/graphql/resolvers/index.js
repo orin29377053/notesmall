@@ -1,11 +1,7 @@
-// Resolvers define how to fetch the types defined in your schema.
-// This resolver retrieves books from the "books" array above.
-
 
 const documentResolver = require("./document")
 const tagResolver = require("./tag")
 const projectResolver = require("./project")
-const articleResolver = require("./article")
 const userResolver = require("./user")
 
 
@@ -16,7 +12,6 @@ const rootResolver = {
         ...documentResolver.Query,
         ...tagResolver.Query,
         ...projectResolver.Query,
-        ...articleResolver.Query,
         ...userResolver.Query,
 
     },
@@ -28,5 +23,4 @@ const rootResolver = {
 
     }
 }
-// console.log("rootResolver", rootResolver);
 module.exports =  rootResolver ;

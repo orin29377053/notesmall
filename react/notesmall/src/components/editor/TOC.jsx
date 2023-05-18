@@ -8,11 +8,8 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
     const [headings, setHeadings] = useState([]);
     const content = editingDocument?.content;
 
-    const cr = tracingDoc.current.html;
-    console.log("cr", cr);
 
     useEffect(() => {
-        console.log("tracingDoc", tracingDoc);
         const headingElements = document.querySelectorAll(
             "h1, h2, h3, h4, h5, h6"
         );
@@ -27,10 +24,7 @@ const TOC = ({ tracingDoc, pathID, reducerID }) => {
         setHeadings(headingsArray);
     }, [tracingDoc, pathID, reducerID,content]);
 
-    useEffect(() => {
-        // 監聽 refVContent.current.html 的變化，以觸發重新渲染 EditorInformation 元件
-        console.log(tracingDoc.current.html);
-    }, [tracingDoc.current.html]);
+    
 
     return (
         <nav

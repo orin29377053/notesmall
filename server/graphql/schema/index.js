@@ -2,12 +2,6 @@ const { buildSchema } = require("graphql");
 
 module.exports = buildSchema(`
 
-  type Article  {
-    _id: ID! 
-    title: String! 
-    body: String! 
-    createdAt: String! 
-  }
   type Document @cacheControl(maxAge: 1 scope: PUBLIC inheritMaxAge: true) {
     _id: ID! 
     title: String! 
@@ -101,10 +95,6 @@ module.exports = buildSchema(`
   }
 
 
-  input ArticleInput {
-    title: String!
-    body: String!
-  }
 
   input DocumentInput {
     _id: ID
@@ -130,32 +120,25 @@ module.exports = buildSchema(`
 
 
   type Query {
-    articles:[Article!]
-    documents(isDeleted:Boolean):[Document!] 
     document(id: ID!): Document
     searchDocuments(keyword: String!): [Document!]
     autoComplete(keyword: String!): [String!]
-    tag(id:ID!): Tag
     tags:[Tag!]
     projects:[Project!]
-    project(id:ID!): Project
     me: User 
 
   }
 
   type Mutation {
-    createArticle(article:ArticleInput): Article
     createDocument(document:DocumentInput): Document
     updatedDocument(document:DocumentInput): Document
     updatedDocumentContent(id:ID! content:String!): Boolean
-
     deleteDocument(document:DocumentInput): Document
     createTag(tag:TagInput): Tag
     updatedTag(tag:TagInput): Tag
     createProject(project:ProjectInput): Project
     deleteTag(id:ID!): Tag
-    permantDeleteALLDocument(document:DocumentInput): [Document!]
-    permantDeleteDocument(id:ID!): Document
+    permanentDeleteDocument(id:ID!): Document
     updateProject(project:ProjectInput): Project
     deleteProject(id:ID!): Project
     signup(email: String!, password: String!): User

@@ -4,8 +4,7 @@ import Header from "./Header";
 import Sidebar from "../Sidebar";
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-// import Sidebar from "./Sidebar";
-// import Footer from "./Footer";
+
 
 const Layout = ({ children }) => {
     return (

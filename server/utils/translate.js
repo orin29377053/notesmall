@@ -4,7 +4,7 @@ const { stopWords } = require("../constant/stopWords");
 const { Translate } = require("@google-cloud/translate").v2;
 const credentials = JSON.parse(process.env.GOOGLE_API_JSON);
 
-const translate = new Translate({
+const translator = new Translate({
     credentials: {
         client_email: credentials.client_email,
         private_key: credentials.private_key,
@@ -21,34 +21,35 @@ const dropStopWords = (str) => {
         }
     }
 
-
-
     return newArray.join(" ");
 };
 
 async function translateText(text, target) {
-    let [translations] = await translate.translate(text, target);
+    let [translations] = await translator.translate(text, target);
     translations = Array.isArray(translations) ? translations : [translations];
     return translations;
 }
 
 async function detectLanguage(text) {
-    let [detections] = await translate.detect(text);
+    let [detections] = await translator.detect(text);
     detections = Array.isArray(detections) ? detections : [detections];
     return detections;
 }
 
 async function translateKeyword(text) {
     try {
-        // abc de=>[abc,de]
+        // abc de 你 好=>[abc,de,你,好]
         const searchInputArray = text.split(" ");
 
         const detectResult = await detectLanguage(searchInputArray);
-        //FIXME: forEach
-        detectResult.map((item) => {
+
+        detectResult.forEach((item) => {
             item.translateTo =
                 item.confidence > 0.8 ? translateToList[item.language] : "en";
         });
+
+        // [{input:[abc,de],translateTo:zh},{input:[你,好],translateTo:en}]
+
         const translateList = Object.values(
             detectResult.reduce((acc, curr) => {
                 if (!acc[curr.translateTo]) {
@@ -61,40 +62,40 @@ async function translateKeyword(text) {
                 return acc;
             }, {})
         );
-                //FIXME:
 
-        const translatResult = await Promise.all(
+        // translate the input to the target language
+
+        const translateResult = await Promise.all(
             translateList.map(async ({ input, translateTo }) => {
                 const translated = await translateText(input, translateTo);
 
-
                 const filtered = translated.map((item) => dropStopWords(item));
 
-                return { input: input, output: filtered };
+                return { input, output: filtered };
             })
         );
-                //FIXME:
 
-        const flattenedTranslatResult = [
+        // drop the duplicate words and then join them together to array
+        const flattenedTranslateResult = [
             ...new Set(
-                //FIXME:
-                translatResult.flatMap((item) => [
+                translateResult.flatMap((item) => [
                     ...item.input,
                     ...item.output,
                 ])
             ),
         ];
 
-        return flattenedTranslatResult.join(" ");
+        // [abc,de,你,好]=>abc de 你 好
+
+        return flattenedTranslateResult.join(" ");
     } catch {
         return text;
     }
 }
 
 module.exports = {
+    translateKeyword,
+    dropStopWords,
     translateText,
     detectLanguage,
-    translateKeyword,
 };
-
-// translateText(text);

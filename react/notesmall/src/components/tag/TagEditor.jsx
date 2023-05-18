@@ -2,7 +2,7 @@
 
 import { css } from "@emotion/react";
 
-import { useState, useEffect ,memo} from "react";
+import { useState, useEffect, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Modal, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -10,8 +10,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { MuiColorInput } from "mui-color-input";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-
-import Taglist from "./Taglist";
 
 const style = {
     position: "absolute",
@@ -26,7 +24,6 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-
 
 const TagEditor = () => {
     const dispatch = useDispatch();
@@ -57,7 +54,8 @@ const TagEditor = () => {
             payload: {
                 gqlMethod: "query",
                 api: "tags",
-                response: "_id name colorCode  document{_id title content isDeleted}",
+                response:
+                    "_id name colorCode  document{_id title content isDeleted}",
             },
         });
     };
@@ -141,16 +139,6 @@ const TagEditor = () => {
                     </div>
                 </Box>
             </Modal>
-            
-
-            {/* <div>
-                <Taglist
-                    css={css`
-                        display: flex;
-                    `}
-                    taglist={taglist}
-                />
-            </div> */}
         </div>
     );
 };

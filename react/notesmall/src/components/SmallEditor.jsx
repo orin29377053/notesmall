@@ -29,27 +29,7 @@ import {
     ThemeProvider,
 } from "@remirror/react";
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            // light: 如果省略將從 palette.primary.main 依照 tonalOffset 的值去計算
-            main: "#1976d2",
-            // dark: 如果省略將從 palette.primary.main 依照 tonalOffset 的值去計算,
-            // contrastText: 如果省略將從 palette.primary.main 依照 contrastThreshold 的值去計算
-        },
-        secondary: {
-            light: "#ff0000",
-            main: "#ff0000",
-            // dark: 如果省略將從 palette.secondary.main 的值去計算,
-            contrastText: "#ff0000",
-        },
-        // 這裡的值將會影響未定義的contrastText的計算結果
-        contrastThreshold: 3,
-        // “tonalOffset”值可以是 0 到 1 之間的數字，這將適用於淺色和深色變體
-        // E.g., shift from Red 500 to Red 300 or Red 700.
-        tonalOffset: 0.2,
-    },
-});
+
 const Title = ({ currentHtmlsaveToreducer, isEditable }) => {
     const [oldtitle, setTitle] = useState("");
     const { editingDocument } = useSelector((state) => state.editor);
@@ -368,7 +348,6 @@ const SmallEditor = () => {
             )}
         </>
     );
-    // <AllStyledComponent>
 };
 
 export default SmallEditor;

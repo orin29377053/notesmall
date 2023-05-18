@@ -9,11 +9,9 @@ import { graphqlAPI } from "../../utils/const";
 
 export function* fetchApi({
     reducer = null,
-    // failValue = null,
     params = null,
     helper = null,
-    // parameters = null,
-    // token=null,
+    
     error = null,
     success = null,
     queryString = null,

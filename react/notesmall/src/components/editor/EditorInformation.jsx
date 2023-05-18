@@ -128,7 +128,7 @@ const EditorInformation = ({
             type: "PERMENT_DELETE_DOCUMENT",
             payload: {
                 gqlMethod: "mutation",
-                api: "permantDeleteDocument",
+                api: "permanentDeleteDocument",
                 format: `(id:"${id}")`,
                 response: "_id",
             },
@@ -295,16 +295,7 @@ const EditorInformation = ({
                         ) : null}
                     </div>
                 </div>
-                {/* <div className="docInfoBlock">
-                    <div className="docInfoTitle">Counts</div>
-                    <div
-                        css={css`
-                            overflow: hidden;
-                        `}
-                    >
-                        {contentlength && contentlength}
-                    </div>
-                </div> */}
+                
                 <div className="docInfoBlock">
                     <div className="docInfoTitle">
                         Images

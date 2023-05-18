@@ -3,7 +3,14 @@ const Tag = require("../../models/tag");
 const User = require("../../models/user");
 const dataToString = require("../../utils/dataToString");
 const { getDocument } = require("./merge");
-const { tagLoader, getUser } = require("./merge");
+const { getUser } = require("./merge");
+const { documentLoader, tagLoader, clearCache } = require("../dataloader");
+const {
+    TagNotFoundError,
+    NotAuthError,
+    InternalServerError,
+} = require("../errorHandler");
+const logger = require("../../utils/logger");
 
 const transformTag = async (tag) => {
     return {
@@ -20,25 +27,16 @@ const transformTag = async (tag) => {
 
 module.exports = {
     Query: {
-        tag: async (parent, { id }) => {
-            try {
-                const tag = await Tag.findById(id);
-                if (!tag) {
-                    throw new Error(`Tag with ID ${id} not found`);
-                }
-                return transformTag(tag);
-            } catch (error) {
-                return error;
-            }
-        },
-        tags: async (parent, args, { userID }) => {
+        tags: async (_, args, { userID }) => {
             try {
                 const tags = await Tag.find().where("user").equals(userID);
+
+                logger.info("Fetching tags", `User ID ${userID} fetched tags`);
                 return tags.map(async (tag) => {
                     return transformTag(tag);
                 });
             } catch (error) {
-                return error;
+                return new InternalServerError(error, "Fetching tags error");
             }
         },
     },
@@ -58,56 +56,117 @@ module.exports = {
                     $push: { tags: newTag._id },
                 });
 
+                logger.info(
+                    "Creating tag",
+                    `User ID ${userID} created tag ${newTag._id}`
+                );
+
                 return transformTag(newTag);
             } catch (error) {
-                return error;
+                return new InternalServerError(error, "Creating tag error");
             }
         },
         updatedTag: async (_, args, { userID }) => {
             try {
-                const { _id, name, colorCode, document } = args.tag;
+                const { _id, name, colorCode } = args.tag;
+
+                let waitForUpdateTag;
+
+                try {
+                    waitForUpdateTag =
+                        (await Tag.findById(_id)) ||
+                        (await tagLoader.load(_id.toString()));
+                } catch (error) {
+                    return new TagNotFoundError(
+                        _id,
+                        error,
+                        `Tag with ID ${_id} not found`
+                    );
+                }
+
+                const user = waitForUpdateTag.user.toString();
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        `You do not have permission to  update this Tag `,
+                        "tag",
+                        _id.toString()
+                    );
+                }
 
                 const tag = await Tag.findOneAndUpdate(
                     { _id, user: userID },
-                    { name, colorCode, document },
-                    { new: true, runValidators: true }
+                    { name, colorCode },
+                    { new: true }
                 );
 
-                if (!tag) {
-                    throw new Error(`Tag with ID ${_id} not found`);
-                }
-                tagLoader.clear(_id);
+                clearCache(_id, tagLoader);
+
+                logger.info(
+                    "Updating tag",
+                    `User ID ${userID} updated tag ${_id}`
+                );
+
                 return transformTag(tag);
             } catch (error) {
-                return error;
+                return new InternalServerError(error, "Updating tag error");
             }
         },
-        deleteTag: async (_, args) => {
+        deleteTag: async (_, { id }, { userID }) => {
             try {
-                const { id } = args;
-                const tag = await Tag.findByIdAndDelete(id);
+                let waitForDeleteTag;
 
-                // user
-                await User.updateMany(
-                    { _id: { $in: tag.user } },
-                    { $pull: { tags: id } }
-                );
-
-                // console.log(tag);
-
-                if (!tag) {
-                    throw new Error(`Tag with ID ${id} not found`);
+                try {
+                    waitForDeleteTag =
+                        (await Tag.findById(id)) ||
+                        (await tagLoader.load(id.toString()));
+                } catch (error) {
+                    return new TagNotFoundError(
+                        id,
+                        error,
+                        `Tag with ID ${id} not found`
+                    );
                 }
-                //pull from document
-                await Document.updateMany(
-                    { _id: { $in: tag.document } },
-                    { $pull: { tags: id } }
+
+                const user = waitForDeleteTag.user.toString();
+                const document = waitForDeleteTag.document;
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to  delete this Tag `,
+                        "tag",
+                        id.toString()
+                    );
+                }
+
+                //Delete Tag and pull from user and document
+
+                const [tag] = await Promise.all([
+                    Tag.findByIdAndDelete(id),
+                    User.updateMany(
+                        { _id: { $in: userID } },
+                        { $pull: { tags: id } }
+                    ),
+                    Document.updateMany(
+                        { _id: { $in: document } },
+                        { $pull: { tags: id } }
+                    ),
+                ]);
+
+                // clear cache
+
+                clearCache(id, tagLoader);
+                clearCache(document, documentLoader);
+
+                logger.info(
+                    "Deleting tag",
+                    `User ID ${userID} deleted tag ${id}`
                 );
-                tagLoader.clear(id);
 
                 return transformTag(tag);
             } catch (error) {
-                return error;
+                return new InternalServerError(error, "Deleting tag error");
             }
         },
     },

@@ -3,7 +3,13 @@ const Project = require("../../models/project");
 const User = require("../../models/user");
 const dataToString = require("../../utils/dataToString");
 const { getDocument, getUser } = require("./merge");
-const { projectLoader } = require("./merge");
+const { documentLoader, projectLoader, clearCache } = require("../dataloader");
+const {
+    InternalServerError,
+    ProjectNotFoundError,
+    NotAuthError,
+} = require("../errorHandler");
+const logger = require("../../utils/logger");
 
 const transformProject = async (project) => {
     return {
@@ -19,32 +25,24 @@ const transformProject = async (project) => {
     };
 };
 
-
-
 module.exports = {
     Query: {
-        projects: async (parent, args, { userID }) => {
+        projects: async (_, args, { userID }) => {
             try {
-                const projects = await Project.find().where("user").equals(userID)
-                const transformedProjects = await Promise.all(
-                    projects.map(async (project) => {
-                        return transformProject(project);
-                    })
+                const projects = await Project.find()
+                    .where("user")
+                    .equals(userID);
+
+                logger.info(
+                    "Fetching projects",
+                    `User ID ${userID} fetched projects`
                 );
-                return transformedProjects;
+                return projects.map((project) => transformProject(project));
             } catch (error) {
-                return error;
-            }
-        },
-        project: async (parent, { id }) => {
-            try {
-                const project = await Project.findById(id);
-                if (!project) {
-                    throw new Error(`Project with ID ${id} not found`);
-                }
-                return transformProject(project);
-            } catch (error) {
-                return error;
+                return new InternalServerError(
+                    error,
+                    "Fetching projects error"
+                );
             }
         },
     },
@@ -58,102 +56,141 @@ module.exports = {
                 });
 
                 // add project to user
+                const newProject = await project.save();
 
                 await User.findByIdAndUpdate(userID, {
                     $push: { projects: project._id },
                 });
 
-                const newProject = await project.save();
-                projectLoader.load(newProject._id);
+                await projectLoader.load(newProject._id);
+
+                logger.info(
+                    "Creating project",
+                    `User ID ${userID} created project ${newProject._id}`
+                );
+
                 return { ...newProject._doc, _id: newProject.id };
             } catch (error) {
-                return error;
+                return new InternalServerError(error, "Creating project error");
             }
         },
         updateProject: async (_, args, { userID }) => {
             try {
-                console.log(args,"args")
-                const { _id, name} =
-                    args.project;
+                const { _id, name } = args.project;
                 const updated_at = Date.now();
 
-                const oldProject = await Project.findById(_id);
+                let waitForUpdateProject;
+
+                // check if the project exists
+                try {
+                    waitForUpdateProject =
+                        (await Project.findById(_id)) ||
+                        (await projectLoader.load(_id));
+                } catch (error) {
+                    return new ProjectNotFoundError(
+                        _id,
+                        error,
+                        `Project with ID ${_id} not found`
+                    );
+                }
+
+                // check if user is authorized to update the project
+
+                const user = waitForUpdateProject.user.toString();
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to  update this project `,
+                        "project",
+                        _id.toString()
+                    );
+                }
 
                 const project = await Project.findByIdAndUpdate(
-                    _id,
                     {
                         _id,
+                        user: userID,
+                    },
+                    {
                         name,
-                        // documents,
                         updated_at,
-                        // user,
                     },
                     { new: true }
                 );
-                const newProject = await project.save();
-                projectLoader.clear(newProject._id.toString());
 
-                // if (documents) {
-                //     console.log("documents",documents)
-                //     const oldDocuments = oldProject.documents;
-                //     const newDocuments = documents;
-                //     const deletedDocuments = oldDocuments.filter(
-                //         (document) => !newDocuments.includes(document)
-                //     );
-                //     const addedDocuments = newDocuments.filter(
-                //         (document) => !oldDocuments.includes(document)
-                //     );
-                //     deletedDocuments.forEach(async (documentID) => {
-                //         const document = await Document.findById(documentID);
-                //         document.project = null;
-                //         await document.save();
-                //     });
-                //     addedDocuments.forEach(async (documentID) => {
-                //         const document = await Document.findById(documentID);
-                //         document.project = _id;
-                //         await document.save();
-                //     });
-                // }
-                // add project to user
-                const userInfo = await User.findById(userID);
-                userInfo.projects = userInfo.projects.filter(
-                    (projectID) => projectID != _id
+                clearCache(_id, projectLoader);
+
+                logger.info(
+                    "Updating project",
+                    `User ID ${userID} updated project ${_id}`
                 );
-                userInfo.projects.push(_id);
-                await userInfo.save();
-
-                return transformProject(newProject);
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
-        },
-        deleteProject: async (_, args, { userID }) => {
-            try {
-                const { id } = args;
-
-                const project = await Project.findByIdAndDelete(id);
-                if (!project) {
-                    throw new Error(`Project with ID ${id} not found`);
-                }
-                project.documents.forEach(async (documentID) => {
-                    const document = await Document.findById(documentID);
-                    document.project = null;
-                    await document.save();
-                });
-
-                //delete project from user
-                const user = await User.findById(userID);
-                user.projects = user.projects.filter(
-                    (projectID) => projectID != id
-                );
-                await user.save();
-
-                projectLoader.clear(id);
 
                 return transformProject(project);
             } catch (error) {
-                return error;
+                return new InternalServerError(error, "Updating project error");
+            }
+        },
+        deleteProject: async (_, { id }, { userID }) => {
+            try {
+                let waitForDeleteProject;
+
+                // check if the project exists
+                try {
+                    waitForDeleteProject =
+                        (await Project.findById(id)) ||
+                        (await projectLoader.load(id));
+                } catch (error) {
+                    return new ProjectNotFoundError(
+                        id,
+                        error,
+                        `Project with ID ${id} not found`
+                    );
+                }
+
+                // check if user is authorized to delete the project
+
+                const user = waitForDeleteProject.user.toString();
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to  delete this project `,
+                        "project",
+                        id.toString()
+                    );
+                }
+
+                const deleteProject = await Project.findOneAndDelete({
+                    _id: id,
+                    user: userID, 
+                });
+
+                // Remove project reference from associated documents
+
+                await Document.updateMany(
+                    { project: id },
+                    { $unset: { project: "" } }
+                );
+
+                //delete project from user
+                const updateUser = await User.findById(userID);
+                updateUser.projects = updateUser.projects.filter(
+                    (projectID) => projectID != id
+                );
+                await updateUser.save();
+
+                clearCache(id, projectLoader);
+                clearCache(deleteProject.documents, documentLoader);
+
+                logger.info(
+                    "Deleting project",
+                    `User ID ${userID} deleted project ${id}`
+                );
+
+                return transformProject(deleteProject);
+            } catch (error) {
+                return new InternalServerError(error, "Deleting project error");
             }
         },
     },

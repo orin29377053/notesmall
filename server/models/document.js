@@ -73,9 +73,6 @@ const documentSchema = new Schema({
     },
 });
 
-documentSchema.pre("find", function (next) {
-    console.log("Document search started");
-    next();
-});
+
 
 module.exports = mongoose.model("Document", documentSchema);

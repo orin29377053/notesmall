@@ -72,13 +72,6 @@ const Header = () => {
         history("/home");
 
         window.location.reload();
-        // dispatch({
-        //     type: "FETCH_RESULT_INFORMATION", data: {
-        //         type: "success",
-        //         title: "Success",
-        //         message: "Logout successfully",
-        //     }
-        //  });
     };
 
     return (
@@ -120,6 +113,7 @@ const Header = () => {
                 `}
             >
                 <div
+                    onClick={role === "guest" ? handleOpen : handleClick}
                     css={css`
                         display: flex;
                         padding: 6px 10px;
@@ -141,25 +135,15 @@ const Header = () => {
                 >
                     {role === "guest" ? (
                         <>
-                            <div onClick={handleOpen}>
+                            <div
+                            >
                                 SIGN IN&ensp;
                                 <i className="fa-solid fa-right-to-bracket"></i>
                             </div>
-                            <Modal
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="modal-modal-title"
-                                aria-describedby="modal-modal-description"
-                            >
-                                <Box sx={style}>
-                                    <Login setOpen={setOpen} />
-                                </Box>
-                            </Modal>
                         </>
                     ) : (
                         <>
                             <div
-                                onClick={handleClick}
                                 css={css`
                                     display: flex;
                                     align-items: center;
@@ -172,55 +156,55 @@ const Header = () => {
                                     sx={{ width: 30, height: 30 }}
                                 />
                             </div>
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}
-                                open={open2}
-                                onClose={handleClose2}
-                                MenuListProps={{
-                                    "aria-labelledby": "basic-button",
-                                }}
-                            >
-                                <MenuItem onClick={goToDashboard}>
-                                    <div
-                                        css={css`
-                                            font-size: 14px;
-                                        `}
-                                    >
-                                        <i
-                                            class="fa-solid fa-table-columns"
-                                            style={{ color: "#1a77d3" }}
-                                        ></i>{" "}
-                                        &ensp;Dashboard
-                                    </div>
-                                </MenuItem>
-                                <MenuItem onClick={logout}>
-                                    <div
-                                        css={css`
-                                            font-size: 14px;
-                                        `}
-                                    >
-                                        <i
-                                            class="fa-solid fa-arrow-right-from-bracket"
-                                            style={{ color: "#1a77d3" }}
-                                        ></i>
-                                        &ensp; Logout
-                                    </div>
-                                </MenuItem>
-                            </Menu>
                         </>
                     )}
                 </div>
-
-                {/* <Button
-                    id="basic-button"
-                    aria-controls={open ? "basic-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                    onClick={handleClick}
+                <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
                 >
-                    Dashboard
-                </Button> */}
+                    <Box sx={style}>
+                        <Login setOpen={setOpen} />
+                    </Box>
+                </Modal>
+                <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open2}
+                    onClose={handleClose2}
+                    MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                    }}
+                >
+                    <MenuItem onClick={goToDashboard}>
+                        <div
+                            css={css`
+                                font-size: 14px;
+                            `}
+                        >
+                            <i
+                                class="fa-solid fa-table-columns"
+                                style={{ color: "#1a77d3" }}
+                            ></i>{" "}
+                            &ensp;Dashboard
+                        </div>
+                    </MenuItem>
+                    <MenuItem onClick={logout}>
+                        <div
+                            css={css`
+                                font-size: 14px;
+                            `}
+                        >
+                            <i
+                                class="fa-solid fa-arrow-right-from-bracket"
+                                style={{ color: "#1a77d3" }}
+                            ></i>
+                            &ensp; Logout
+                        </div>
+                    </MenuItem>
+                </Menu>
             </div>
         </div>
     );

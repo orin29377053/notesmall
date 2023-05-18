@@ -101,13 +101,8 @@ const Home = () => {
     }, [user]);
 
     useEffect(() => {
-        // if (sidebar.length === 0) {
-        //     return;
-        // }
-        const deletedItems = sidebar?.filter((item) => item.isDeleted);
-        const archivedItems = sidebar?.filter(
-            (item) => item.isArchived && !item.isDeleted
-        );
+       
+        
         const favoriteItems = sidebar?.filter(
             (item) => item.isFavorite && !item.isArchived && !item.isDeleted
         );
@@ -156,7 +151,6 @@ const Home = () => {
                         `}
                     >
                         {user?.email}
-                        {/* uiwehfiuesdsffdsfhfueheiuwf@fdsif.com */}
                     </div>
                 </Col>
 
@@ -213,9 +207,7 @@ const Home = () => {
                 `}
             >
                 <h4
-                    // css={css`
-                    //     color: #6c757d;
-                    // `}
+                    
                 >
                 Recent
                 </h4>
@@ -248,9 +240,7 @@ const Home = () => {
                 `}
             >
                 <h4
-                    // css={css`
-                    //     color: #6c757d;
-                    // `}
+                    
                 >
                    Favorite
                 </h4>

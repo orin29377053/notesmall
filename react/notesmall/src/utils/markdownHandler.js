@@ -5,7 +5,7 @@ export default function markdownHandler(content) {
         return "";
     }
     const html = marked(content);
-    const textWithoutMarkdown = html.replace(/<[^>]+>/g, "") // "Hello world"
+    const textWithoutMarkdown = html.replace(/<[^>]+>/g, "") 
 
     return textWithoutMarkdown.substring(0, 100)+'...(Read More)';
 }

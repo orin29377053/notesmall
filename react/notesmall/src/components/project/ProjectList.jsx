@@ -14,7 +14,6 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import Switch from "@mui/material/Switch";
 import { Row, Col } from "react-bootstrap";
 import ProjectEditor from "./ProjectEditor";
-import Autocomplete from "@mui/material/Autocomplete";
 import ProjectImage from "../../image/Accept tasks-bro.svg";
 import AddDocument from "./AddDocument";
 const style = {

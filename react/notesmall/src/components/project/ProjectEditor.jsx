@@ -1,9 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DocumentCard from "../common/Card";
-import sanitizeContent from "../../utils/sanitizeContent";
-import extractImageURL from "../../utils/extractImageURL";
+
 import { css } from "@emotion/react";
 import { Modal, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -19,7 +17,6 @@ const style = {
     width: 400,
     bgcolor: "background.paper",
     "border-radius": "20px",
-    // border: "2px solid #000",
     boxShadow: 24,
     p: 4,
 };
@@ -69,7 +66,6 @@ const ProjectEditor = ({ first }) => {
                 </IconButton>
             )}
 
-            {/* <IconButton onClick={handleOpen}>Create project</IconButton> */}
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -118,7 +114,6 @@ const ProjectEditor = ({ first }) => {
                 </Box>
             </Modal>
 
-            {/* <ProjectList list={projectlist} /> */}
         </div>
     );
 };

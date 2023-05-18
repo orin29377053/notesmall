@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const vision = require("@google-cloud/vision");
 
-async function imageDetection( url) {
+async function imageDetection(url) {
     const credentials = JSON.parse(process.env.GOOGLE_API_JSON);
     const ImageAnnotatorClient = new vision.ImageAnnotatorClient({
         credentials: {
@@ -18,11 +18,10 @@ async function imageDetection( url) {
             },
         },
     });
-    const autoTags = result.labelAnnotations.map((item) => item.description);
-    return autoTags;
+
+    return result.labelAnnotations.map((item) => item.description);
 }
 
 module.exports = {
     imageDetection,
-    
 };

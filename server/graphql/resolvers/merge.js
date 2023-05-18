@@ -1,77 +1,25 @@
-const Document = require("../../models/document");
-const Tag = require("../../models/tag");
-const Project = require("../../models/project");
-const Dataloader = require("dataloader");
 const dataToString = require("../../utils/dataToString");
-const User = require("../../models/user");
-
-const documentLoader = new Dataloader(async (documentIDs) => {
-    try {
-
-        const documents = await Document.find({
-            _id: { $in: documentIDs },
-        }).exec();
-        const documentsMap = new Map(
-            documents.map((doc) => [doc._id.toString(), doc])
-        );
-        return documentIDs.map((id) => documentsMap.get(id.toString()) || null);
-    } catch (error) {
-        return error;
-    }
-});
-
-
-
-
-const tagLoader = new Dataloader(async (tagIDs) => {
-    console.log("tagIDs", tagIDs);
-    try {
-        // tagLoader.clearAll();
-        const tags = await Tag.find({ _id: { $in: tagIDs } }).exec();
-        const tagsMap = new Map(tags.map((tag) => [tag._id.toString(), tag]));
-        return tagIDs.map((id) => tagsMap.get(id.toString()) || null);
-    } catch (error) {
-        return error;
-    }
-});
-
-const projectLoader = new Dataloader((projectIDs) => {
-    console.log("projectIDs", projectIDs);
-    return Project.find({ _id: { $in: projectIDs } });
-});
-
-
-const userLoader = new Dataloader((userID) => {
-    return User.find({ _id: { $in: userID } });
-});
+const {
+    documentLoader,
+    tagLoader,
+    projectLoader,
+    userLoader,
+} = require("../dataloader");
 
 const getDocument = async (documentID, depth = 2) => {
     try {
-        // const usedMemoryBefore = process.memoryUsage().heapUsed;
-
         const document = await documentLoader.load(documentID._id.toString());
-        // const usedMemoryAfter = process.memoryUsage().heapUsed;
-        // const memoryConsumption = usedMemoryAfter - usedMemoryBefore;
-        // console.log(`Memory consumption: ${memoryConsumption} bytes`);
-        // console.log(`Memory total: ${usedMemoryAfter} bytes`);
 
         if (!document) {
             return;
         }
-        // const tags = [];
-        // if (document.tags.length > 0 && depth > 0) {
-        //     for (const tagID of document.tags) {
-        //         const tag = await getTag(tagID._id, depth - 1);
-        //         tags.push(tag);
-        //     }
-        // }
+
         const tags =
             depth > 0
                 ? await Promise.all(
                       document.tags?.map((tagID) => getTag(tagID, depth - 1))
                   )
                 : document.tags;
-        // console.log("tags", tags,"document.tags",document.tags);
 
         return {
             ...document._doc,
@@ -83,6 +31,7 @@ const getDocument = async (documentID, depth = 2) => {
             user: getUser.bind(this, document.user),
         };
     } catch (error) {
+        console.error("Error loading document:", error);
         return error;
     }
 };
@@ -112,20 +61,16 @@ const getProject = async (projectID) => {
 const getUser = async (userID) => {
     try {
         const user = await userLoader.load(userID.toString());
-        // console.log("user", user);
 
         if (!user) {
             throw new Error(`Project with ID ${userID} not found`);
         }
-        const documents = await Promise.all(
-            user.documents?.map((documentID) => getDocument(documentID))
-        );
-        const projects = await Promise.all(
-            user.projects?.map((projectID) => getProject(projectID))
-        );
-        const tags = await Promise.all(
-            user.tags?.map((tagID) => getTag(tagID))
-        );
+
+        const [documents, projects, tags] = await Promise.all([
+            user.documents?.map((documentID) => getDocument(documentID)),
+            user.projects?.map((projectID) => getProject(projectID)),
+            user.tags?.map((tagID) => getTag(tagID)),
+        ]);
 
         return {
             ...user._doc,
@@ -167,26 +112,7 @@ const getTag = async (tagID, depth = 2) => {
     }
 };
 
-const checkUserID = (doc, userID) => {
-    try {
-        // console.log("doc.user", doc);
-        if (doc.user.toString() !== userID) {
-            //TODO: throw error
-            return;
-        } else {
-            return;
-        }
-    } catch {
-        return;
-    }
-};
-
 exports.getDocument = getDocument;
 exports.getProject = getProject;
 exports.getTag = getTag;
 exports.getUser = getUser;
-exports.documentLoader = documentLoader;
-exports.projectLoader = projectLoader;
-exports.tagLoader = tagLoader;
-exports.userLoader = userLoader;
-exports.checkUserID = checkUserID;

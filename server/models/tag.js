@@ -28,9 +28,5 @@ const tagSchema = new Schema({
         ref: "User",
     },
 });
-tagSchema.pre("find", function (next) {
-    console.log("Tag search started");
-    next();
-});
 
 module.exports = mongoose.model("Tag", tagSchema);

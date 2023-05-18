@@ -5,26 +5,30 @@ const User = require("../../models/user");
 const { documentFuzzySearch, documentAutoComplete } = require("../search");
 const dataToString = require("../../utils/dataToString");
 const { translateKeyword } = require("../../utils/translate");
+const { getTag, getProject, getUser } = require("./merge");
 const {
-    getTag,
-    getProject,
-    getUser,
     documentLoader,
     tagLoader,
     projectLoader,
-    checkUserID,
-} = require("./merge");
-const { GraphQLError } = require("graphql");
+    clearCache,
+} = require("../dataloader");
 const { deleteImage } = require("../../utils/bucket");
 const { imageDetection } = require("../../utils/cloudVision");
+const {
+    InternalServerError,
+    DocumentNotFoundError,
+    NotAuthError,
+    DetectImageError,
+} = require("../errorHandler");
+const logger = require("../../utils/logger");
 
 function getAddDeleteUrls(oldArray, checkArray) {
-    let add = [];
+    let newUrls = [];
     let deleteUrls = [];
 
     for (let checkUrl of checkArray) {
         if (!oldArray.some((oldItem) => oldItem.url === checkUrl)) {
-            add.push(checkUrl);
+            newUrls.push(checkUrl);
         }
     }
 
@@ -34,16 +38,14 @@ function getAddDeleteUrls(oldArray, checkArray) {
         }
     }
 
-    return [add, deleteUrls];
+    return [newUrls, deleteUrls];
 }
-//FIXME: trans
-const tarnsformDocument = async (document) => {
+const transformDocument = async (document) => {
     return {
         ...document._doc,
         _id: document.id,
         created_at: dataToString(document._doc.created_at),
         updated_at: dataToString(document._doc.updated_at),
-        // user: document.user ? getProject.bind(this, document.user) : null,
         tags:
             document.tags?.length > 0
                 ? await Promise.all(document.tags.map((tagID) => getTag(tagID)))
@@ -63,47 +65,54 @@ const tarnsformDocument = async (document) => {
         user: document.user ? getUser.bind(this, document.user) : null,
     };
 };
+
 module.exports = {
     Query: {
-        documents: async (parent, { isDeleted }, { isAuth, userID }) => {
-            // if (!isAuth) {
-            //     // throw new Error("Unauthenticated");
-            // }
-
+        document: async (_, { id }, { userID }) => {
             try {
-                //FIXME:
-                const documents = userID
-                    ? await Document.find().where("user").equals(userID)
-                    : await Document.find();
-                // .where("isDeleted")
-                // .equals(isDeleted);
-                //FIXME: async
-                return documents.map(async (document) => {
-                    return tarnsformDocument(document);
-                });
+                let document;
+
+                // fetch Document
+
+                try {
+                    document = await Document.findById(id);
+                } catch (error) {
+                    return new DocumentNotFoundError(
+                        id,
+                        error,
+                        `Document with ID ${id} not found `
+                    );
+                }
+
+                // check if user is authorized to view document
+
+                const { user } = document;
+
+                if (!user || user.toString() !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to view this document`,
+                        "document",
+                        id.toString()
+                    );
+                }
+                logger.info(
+                    "Fetching document",
+                    `Document ID ${id} has been fetched by user ID ${userID}`
+                );
+
+                return transformDocument(document);
             } catch (error) {
-                //FIXME: error?
-                // return error;
-                throw new GraphQLError(`Document with ID  not found`, {
-                    extensions: { code: 400, },
-                });
+                return new InternalServerError(
+                    error,
+                    "Document retrieval error"
+                );
             }
         },
-        document: async (parent, { id }, _, info) => {
-            try {
-                const document = await Document.findById(id);
-
-                return tarnsformDocument(document);
-            } catch (error) {
-                throw new GraphQLError(`Document with ID ${id} not found`, {
-                    extensions: { code: 400, id: id },
-                });
-            }
-        },
-        searchDocuments: async (parent, { keyword }, { isAuth, userID }) => {
+        searchDocuments: async (_, { keyword }, { userID }) => {
             try {
                 const translateKeywordResult = await translateKeyword(keyword);
-                console.log(translateKeywordResult);
+
                 const query = documentFuzzySearch(
                     translateKeywordResult,
                     userID
@@ -112,8 +121,6 @@ module.exports = {
                 const documents = await Document.aggregate(query);
 
                 return documents.map(async (document) => {
-                    // document.highlights.map((highlight) => {});
-
                     return {
                         ...document,
                         created_at: dataToString(document.created_at),
@@ -132,38 +139,49 @@ module.exports = {
                     };
                 });
             } catch (error) {
-                return error;
+                return new InternalServerError(
+                    error,
+                    "searchDocuments retrieval error"
+                );
             }
         },
-        autoComplete: async (parent, { keyword }, { isAuth, userID }) => {
+        autoComplete: async (_, { keyword }, { userID }) => {
             try {
                 const query = documentAutoComplete(keyword, userID);
 
                 const documents = await Document.aggregate(query);
-                //FIXME: hash new Set{}
-                const keywords = documents.map((document) =>
-                    document.highlights
-                        .map((highlight) =>
-                            highlight.texts
-                                .filter((text) => text.type === "hit")
-                                .map((text) => text.value)
-                        )
-                        .flat()
-                );
-                const flattenedArray = keywords.flat(); // flatten the nested array
-                const uniqueArray = [...new Set(flattenedArray)]; // create a new Set with unique values, then convert it back to an array using the spread syntax
+
+
+                const keywords = documents
+                    .map((document) =>
+                        document.highlights
+                            .map((highlight) =>
+                                highlight.texts
+                                    .filter((text) => text.type === "hit")
+                                    .map((text) => text.value)
+                            )
+                            .flat()
+                    )
+                    .flat();
+
+                // create a new Set with unique values, then convert it back to an array using the spread syntax
+
+                const uniqueArray = [...new Set(keywords)];
                 const trimmedArray = uniqueArray.map((str) => {
                     return str.replace(/[。\n_\\*#='`]/g, "");
                 });
-                console.log(trimmedArray);
+
                 return trimmedArray;
             } catch (error) {
-                return error;
+                return new InternalServerError(
+                    error,
+                    "autoComplete retrieval error"
+                );
             }
         },
     },
     Mutation: {
-        createDocument: async (_, args, { isAuth, userID }) => {
+        createDocument: async (_, args, { userID }) => {
             try {
                 const { title, content } = args.document;
                 const document = new Document({
@@ -171,37 +189,78 @@ module.exports = {
                     content,
                     user: userID,
                 });
-                const newDocument = await document.save();
 
-                await User.findByIdAndUpdate(userID, {
-                    $push: { documents: newDocument._id },
-                });
+                let newDocument;
+
+                try {
+                    newDocument = await document.save();
+
+                    await User.findByIdAndUpdate(userID, {
+                        $push: { documents: newDocument._id },
+                    });
+                } catch (error) {
+                    return new InternalServerError(
+                        error,
+                        "Access database to create document error ."
+                    );
+                }
 
                 documentLoader.load(newDocument._id.toString());
-                return tarnsformDocument(newDocument);
+
+                logger.info(
+                    "Creating document",
+                    `Document ID ${newDocument._id} has been created by user ID ${userID}`
+                );
+
+                return transformDocument(newDocument);
             } catch (error) {
-                return error;
+                return new InternalServerError(
+                    error,
+                    "createDocument retrieval error"
+                );
             }
         },
-        updatedDocument: async (_, args, { isAuth, userID }) => {
+        updatedDocument: async (_, args, { userID }) => {
             try {
-                const {
-                    _id,
-                    title,
-                    tags,
-                    project,
-                    isArchived,
-                    isFavorite,
-                    user,
-                } = args.document;
+                const { _id, title, tags, project, isArchived, isFavorite } =
+                    args.document;
 
                 const updated_at = Date.now();
 
-                const documentded = await Document.findById(_id);
+                // check if the document exists
 
-                // checkUserID(documentded, userID);
+                let waitForUpdateDocument;
 
-                //FIXME: userID
+                try {
+                    waitForUpdateDocument =
+                        (await documentLoader.load(_id.toString())) ||
+                        (await Document.findById(_id));
+                } catch (error) {
+                    return new DocumentNotFoundError(
+                        _id,
+                        error,
+                        `Document with ID ${_id} not found `
+                    );
+                }
+
+                const user = waitForUpdateDocument.user?.toString();
+                const oldProject = waitForUpdateDocument.project?.toString();
+                const oldTags = waitForUpdateDocument.tags?.map((tag) =>
+                    tag.toString()
+                );
+
+                // check if user is authorized to update document
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to update this document`,
+                        "document",
+                        _id.toString()
+                    );
+                }
+
+                // update document
 
                 const document = await Document.findByIdAndUpdate(
                     _id,
@@ -215,248 +274,274 @@ module.exports = {
                         user,
                     },
                     { new: true }
-                ).populate("tags");
-                //FIXME: tags
+                );
 
                 const newDocument = await document.save();
 
-                //
-
-                // if (user) {
-                //     await User.updateMany(
-                //         { _id: { $in: user } },
-                //         { $addToSet: { documents: _id } }
-                //     );
-                //     await User.updateMany(
-                //         { _id: { $nin: user } },
-                //         { $pull: { documents: _id } }
-                //     );
-                // }
+                // update tags and project if they are changed
 
                 if (tags) {
-                    await Tag.updateMany(
-                        { _id: { $in: tags } },
-                        { $addToSet: { document: _id } }
-                    );
-                    await Tag.updateMany(
-                        { _id: { $nin: tags } },
-                        { $pull: { document: _id } }
-                    );
+                    await Promise.all([
+                        Tag.updateMany(
+                            { _id: { $in: tags } },
+                            { $addToSet: { document: _id } }
+                        ),
+                        Tag.updateMany(
+                            { _id: { $nin: tags } },
+                            { $pull: { document: _id } }
+                        ),
+                    ]);
+
+                    clearCache(tags, tagLoader);
+                    clearCache(oldTags, tagLoader);
                 }
+
                 if (project === "none") {
                     await Project.updateMany(
-                        { _id: { $in: documentded.project } },
+                        { _id: { $in: oldProject } },
                         { $pull: { documents: _id } }
                     );
-                    projectLoader.clear(documentded.project.toString());
+                    clearCache(oldProject, projectLoader);
+                    
                 } else if (project) {
-                    await Project.updateMany(
-                        { _id: { $in: project } },
-                        { $addToSet: { documents: _id } }
-                    );
-                    const oldProject = await Project.find({
-                        _id: { $nin: project },
-                    })
-                        .where("documents")
-                        .in(_id);
+                    await Promise.all([
+                        Project.updateMany(
+                            { _id: { $in: project } },
+                            { $addToSet: { documents: _id } }
+                        ),
+                        Project.updateMany(
+                            { _id: { $nin: project } },
+                            { $pull: { documents: _id } }
+                        ),
+                    ]);
 
-                    await Project.updateMany(
-                        { _id: { $nin: project } },
-                        { $pull: { documents: _id } }
-                    );
-                    oldProject.map((p) => {
-                        projectLoader.clear(p._id.toString());
-                    });
-                    projectLoader.clear(project.toString());
+                    clearCache(project, projectLoader);
+                    clearCache(oldProject, projectLoader);
                 }
 
-                documentLoader.clear(_id.toString());
+                // clear cache
+                clearCache(_id, documentLoader);
 
-                return tarnsformDocument(newDocument);
+                logger.info(
+                    "Updating document",
+                    `Document ID ${_id} has been updated by user ID ${userID}`
+                );
+
+                return transformDocument(newDocument);
             } catch (error) {
-                return error;
+                return new InternalServerError(
+                    error,
+                    "updatedDocument retrieval error"
+                );
             }
         },
-        updatedDocumentContent: async (_, args, { isAuth, userID }) => {
+        updatedDocumentContent: async (_, args, { userID }) => {
             try {
                 const { id, content } = args;
                 const updated_at = Date.now();
-                const documentded = await Document.findById(id);
 
-                // checkUserID(documentded, userID);
+                let waitForUpdateDocument;
 
-                const pattern =
-                    /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
-
-                let imageslist = documentded.images;
-                let urls = [];
-                for (let match of content.matchAll(pattern)) {
-                    urls.push(match[1]);
-                }
-
-                const [add, dele] = getAddDeleteUrls(imageslist, urls);
-
-                dele.map((url) => {
-                    deleteImage(url);
-                });
-
-                //FIXME:
-
-                for (let url of add) {
-                    const autoTags = await imageDetection(url);
-                    imageslist.push({
-                        url: url,
-                        name: "image",
-                        autoTags: autoTags,
-                    });
-                }
-
-                for (let url of dele) {
-                    imageslist = imageslist.filter(
-                        (image) => image.url !== url
+                try {
+                    waitForUpdateDocument =
+                        (await documentLoader.load(id.toString())) ||
+                        (await Document.findById(id));
+                } catch (error) {
+                    return new DocumentNotFoundError(
+                        id,
+                        error,
+                        `Document with ID ${id} not found `
                     );
                 }
-                const document = await Document.findByIdAndUpdate(
-                    id,
-                    { content, updated_at, images: imageslist },
-                    { new: true }
-                );
-                documentLoader.clear(id.toString());
+
+                const user = waitForUpdateDocument.user?.toString();
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to update this document`,
+                        "document",
+                        id.toString()
+                    );
+                }
+
+                try {
+                    const pattern =
+                        /!\[.*\]\((https?:\/\/[^\s)]+\.(?:jpg|png|jpeg))\)/g;
+
+                    let { images } = waitForUpdateDocument;
+                    const newImagesUrls = Array.from(
+                        content.matchAll(pattern),
+                        (match) => match[1]
+                    );
+
+                    const [add, dele] = getAddDeleteUrls(images, newImagesUrls);
+
+                    // delete images from s3 and remove from imagesList
+                    await Promise.all(dele.map((url) => deleteImage(url)));
+
+                    for (let url of dele) {
+                        images = images.filter((image) => image.url !== url);
+                    }
+
+                    // add new images to imagesList and detect image tags
+
+                    const newImagesList = await Promise.all(
+                        add.map(async (url) => {
+                            const autoTags = await imageDetection(url);
+                            return {
+                                url,
+                                name: url.split("/").pop(),
+                                autoTags,
+                            };
+                        })
+                    );
+
+                    images = [...images, ...newImagesList];
+
+                    await Document.findByIdAndUpdate(
+                        id,
+                        { content, updated_at, images },
+                        { new: true }
+                    );
+                } catch (error) {
+                    return new DetectImageError(
+                        error,
+                        `${id}Detect image error`
+                    );
+                }
+
+                clearCache(id, documentLoader);
 
                 return true;
             } catch (error) {
-                console.log(error);
-                return false;
-
-                // throw error;
+                return new InternalServerError(
+                    error,
+                    "updatedDocumentContent retrieval error"
+                );
             }
         },
 
-        deleteDocument: async (_, args, { isAuth, userID }) => {
+        deleteDocument: async (_, args, { userID }) => {
             try {
                 const { _id, isDeleted } = args.document;
-                // const document = await Document.findById(_id);
-                // checkUserID(document, userID);
 
-                const newdocument = await Document.findByIdAndUpdate(
-                    _id,
+                let waitForDeleteDocument;
+
+                try {
+                    waitForDeleteDocument =
+                        (await documentLoader.load(_id.toString())) ||
+                        (await Document.findById(_id));
+                } catch (error) {
+                    return new DocumentNotFoundError(
+                        _id,
+                        error,
+                        `Document with ID ${_id} not found `
+                    );
+                }
+
+                const user = waitForDeleteDocument.user?.toString();
+
+                if (user !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to delete this document`,
+                        "document",
+                        _id.toString()
+                    );
+                }
+
+                await Document.findByIdAndUpdate(
+                    {
+                        _id,
+                        user: userID,
+                    },
                     { isDeleted },
                     { new: true }
                 );
-                if (!newdocument) {
-                    throw new Error(`Document with ID ${_id} not found`);
-                }
-                documentLoader.clear(_id.toString());
 
-                return { ...newdocument._doc, _id: newdocument.id };
-            } catch (error) {
-                return error;
-            }
-        },
-        permantDeleteDocument: async (_, { id }, { isAuth, userID }) => {
-            try {
-                // const document = await Document.findById(id);
-                // // checkUserID(document, userID);
-                // const permantDeleDocument = await Document.findByIdAndDelete(
-                //     id
-                // );
+                clearCache(_id, documentLoader);
 
-                // if (!permantDeleDocument) {
-                //     throw new Error(`Document with ID ${id} not found`);
-                // }
-
-                // try {
-                //     //tags
-                //     await Tag.updateMany(
-                //         { document: { $in: id } },
-                //         { $pull: { document: { $in: id } } }
-                //     );
-                //     //project
-                //     await Project.updateMany(
-                //         { documents: { $in: id } },
-                //         { $pull: { documents: { $in: id } } }
-                //     );
-
-                //     //user
-                //     await User.updateMany(
-                //         { documents: { $in: id } },
-                //         { $pull: { documents: { $in: id } } }
-                //     );
-                // } catch {
-                //     throw new Error("Deleting document failed");
-                // }
-                const [permantDeleDocument, tags, projects, users] =
-                    await Promise.all([
-                        Document.findByIdAndDelete(id).lean(),
-                        Tag.updateMany(
-                            { document: { $in: id } },
-                            { $pull: { document: { $in: id } } }
-                        ),
-                        Project.updateMany(
-                            { documents: { $in: id } },
-                            { $pull: { documents: { $in: id } } }
-                        ),
-                        User.updateMany(
-                            { documents: { $in: id } },
-                            { $pull: { documents: { $in: id } } }
-                        ),
-                    ]);
-                console.log(permantDeleDocument);
-                permantDeleDocument.tags?.map((tag) => {
-                    tagLoader.clear(tag.toString());
-                });
-                permantDeleDocument.project?.map((project) => {
-                    projectLoader.clear(project.toString());
-                });
-
-                documentLoader.clear(id);
-
-                return permantDeleDocument;
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
-        },
-        //FIXME:
-        permantDeleteALLDocument: async (_, args, { isAuth, userID }) => {
-            try {
-                const { isDeleted } = args.document;
-                const deletedDocuments = await Document.find({ isDeleted });
-                const deletedDocumentIds = deletedDocuments.map(
-                    (doc) => doc._id
+                logger.info(
+                    "Deleting document",
+                    `Document ID ${_id} has been deleted by user ID ${userID}`
                 );
-                const result = [];
-                for (const id of deletedDocumentIds) {
-                    const document = await Document.findByIdAndDelete(id);
-                    if (!document) {
-                        throw new Error(`Document with ID ${id} not found`);
-                    }
-                    documentLoader.clear(id.toString());
-                    result.push(id);
-                }
-                try {
-                    //tags
-                    await Tag.updateMany(
-                        { document: { $in: deletedDocumentIds } },
-                        { $pull: { document: { $in: deletedDocumentIds } } }
-                    );
-                    //project
-                    await Project.updateMany(
-                        { documents: { $in: deletedDocumentIds } },
-                        { $pull: { documents: { $in: deletedDocumentIds } } }
-                    );
 
-                    await User.updateMany(
-                        {},
-                        { $pull: { documents: { $in: deletedDocumentIds } } }
-                    );
-                } catch (error) {
-                    return error;
-                }
-
-                return result;
+                return {
+                    ...waitForDeleteDocument._doc,
+                    _id: waitForDeleteDocument.id,
+                };
             } catch (error) {
-                return error;
+                return new InternalServerError(
+                    error,
+                    "deleteDocument retrieval error"
+                );
+            }
+        },
+        permanentDeleteDocument: async (_, { id }, { userID }) => {
+            try {
+                // fetch document from cache or database
+
+                let permanentDeleDocument;
+
+                try {
+                    permanentDeleDocument =
+                        (await documentLoader.load(id.toString())) ||
+                        (await Document.findById(id));
+                } catch (error) {
+                    return new DocumentNotFoundError(
+                        id,
+                        error,
+                        `Document with ID ${id} not found `
+                    );
+                }
+
+                // check if document exist and user is owner
+
+                if (permanentDeleDocument.user.toString() !== userID) {
+                    return new NotAuthError(
+                        userID,
+                        `You do not have permission to delete this document`,
+                        "document",
+                        id.toString()
+                    );
+                }
+
+                // delete document and remove from tags, projects, users
+
+                await Promise.all([
+                    Document.findByIdAndDelete(id).lean(),
+                    Tag.updateMany(
+                        { document: { $in: id } },
+                        { $pull: { document: { $in: id } } }
+                    ),
+                    Project.updateMany(
+                        { documents: { $in: id } },
+                        { $pull: { documents: { $in: id } } }
+                    ),
+                    User.updateMany(
+                        { documents: { $in: id } },
+                        { $pull: { documents: { $in: id } } }
+                    ),
+                ]);
+
+                // clear cache
+
+                clearCache(id, documentLoader);
+                clearCache(permanentDeleDocument.tags, tagLoader);
+                clearCache(permanentDeleDocument.project, projectLoader);
+
+                logger.info(
+                    "Permanent deleting document",
+                    `Document ID ${id} has been permanently deleted by ${userID}`
+                );
+
+                return permanentDeleDocument;
+            } catch (error) {
+                return new InternalServerError(
+                    error,
+                    "permanentDeleteDocument retrieval error"
+                );
             }
         },
     },

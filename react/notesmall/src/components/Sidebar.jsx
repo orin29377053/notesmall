@@ -16,9 +16,7 @@ const Sidebar = () => {
     const { projectlist } = useSelector((state) => state.project);
 
     const deletedItems = sidebar?.filter((item) => item.isDeleted);
-    const archivedItems = sidebar?.filter(
-        (item) => item.isArchived && !item.isDeleted
-    );
+    
     const favoriteItems = sidebar?.filter(
         (item) => item.isFavorite && !item.isArchived && !item.isDeleted
     );
@@ -65,8 +63,7 @@ const Sidebar = () => {
                 </div>
                 <NavLink
                     className="sidebarTitle"
-                    // onClick={() => history("/search")}
-                    // activeClassName="sidebarActive"
+                    
                     to="/search"
                 >
                     <SearchIcon
@@ -144,6 +141,7 @@ const Sidebar = () => {
                     </div>
                     {projectlist?.map((project) => (
                         <FolderList
+                            key={project._id}
                             logo={<i className="fa-solid fa-bars-progress"></i>}
                             title={project.name}
                             list={project?.documents?.filter(
@@ -162,7 +160,6 @@ const Sidebar = () => {
                 />
             </div>
 
-            {/* <CategoryTab /> */}
         </div>
     );
 };

@@ -56,7 +56,6 @@ const SearchResult = ({ searchResult }) => (
                         />
                     </Col>
                 </Row>
-                {/* {searchResult.length - 1 !== i && <hr />} */}
             </div>
         ))}
     </>

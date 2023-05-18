@@ -4,43 +4,15 @@ import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import debounce from "lodash.debounce";
 import SearchResult from "./search/SearchResult";
 import searchImage from "../image/Search engines-bro.svg";
 import notFoundImage from "../image/No data-bro.svg";
 
 import { graphqlAPI } from "../utils/const";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate,  } from "react-router-dom";
 import Autocomplete from "@mui/material/Autocomplete";
 
-// const fetchToSearch = debounce((dispatch, keyword) => {
-//     if (keyword) {
-//         dispatch({
-//             type: "SEARCH_LIST",
-//             payload: {
-//                 gqlMethod: "query",
-//                 api: "searchDocuments",
-//                 format: `(keyword: "${keyword}")`,
-//                 response: `_id title
-//                 content
-//                 score
-//                 tags {
-//                   name
-//                   colorCode
-//                 }
-//                 highlights {
-//                   path
-//                   score
-//                   texts {
-//                     type
-//                     value
-//                   }
-//                 } `,
-//             },
-//         });
-//     } else {
-//     }
-// }, 1000);
+
 
 const fetchSearch = (dispatch, keyword) => {
     if (keyword) {

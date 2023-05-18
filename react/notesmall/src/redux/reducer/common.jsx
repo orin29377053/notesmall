@@ -32,7 +32,7 @@ const commonReducer = (state = initState, action) => {
 
         case "PERMENT_DELETE_SIDEBAR_LIST_RESULT":
             index = _.findIndex(state.sidebar, {
-                _id: action.data?.data?.permantDeleteDocument._id,
+                _id: action.data?.data?.permanentDeleteDocument._id,
             });
             state.sidebar.splice(index, 1);
             return {
