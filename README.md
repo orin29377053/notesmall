@@ -1,9 +1,9 @@
 # Notesmall
 
-Welcome to Notesmall! You can try to use this online note editing service with test account below:
+Welcome to Notesmall ! You can try to use this online note editing service with test account below:
 **Test account**
 > Email:    test@gmail.com
-Password: test
+> Password: test
 
 [Try it !](https://notesmall.site/home)
 
@@ -61,6 +61,6 @@ Notesmall provides various note management features, including **tagging** and *
     2. I utilize MongoDB Atlas Search as the search engine, combined with Lucene's tokenizer, to parse documents and build indexes. This setup supports fuzzy search and autocomplete functionality, allowing users to create their own note search engine.
 
 ## Contact
-* Linkedin: linkedin.com/in/linchinshou
+* Linkedin: [linkedin.com/in/linchinshou](linkedin.com/in/linchinshou)
 * Email : orin29377053@gmail.com 
 
