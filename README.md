@@ -62,6 +62,6 @@ Notesmall provides various note management features, including **tagging** and *
     2. I utilize MongoDB Atlas Search as the search engine, combined with Lucene's tokenizer, to parse documents and build indexes. This setup supports fuzzy search and autocomplete functionality, allowing users to create their own note search engine.
 
 ## Contact
-* Linkedin: [linkedin.com/in/linchinshou](linkedin.com/in/linchinshou)
+* Linkedin: [linkedin.com/in/linchinshou](https://www.linkedin.com/in/linchinshou/)
 * Email : orin29377053@gmail.com 
 
