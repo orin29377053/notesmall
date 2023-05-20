@@ -21,6 +21,13 @@ You can try to use this cloud note editing service with test account below:
     * [Search](#search)
     * [Management](#management)
     * [Compare](#compare)
+* [How to use](#how-to-use)
+    * [Sign in](#sign-in)
+    * [Add new document](#add-new-document)
+    * [Image upload](#image-upload)
+    * [Search](#search-1)
+    * [Project management](#project-management)
+    * [Tag management](#tag-management)
 * [Technique](#technique)
     * [System Architecture](#system-architecture)
     * [Schema](#schema)
@@ -29,7 +36,7 @@ You can try to use this cloud note editing service with test account below:
         * [GraphQL](#graphql)
         * [Authorization](#authorization)
         * [Image handling](#image-handling)
-        * [Search](#search-1)
+        * [Search](#search-2)
         * [Error handling](#error-handling)
         * [Logger](#logger)
 * [Road map](#road-map)
@@ -68,7 +75,34 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 | **Image Search** | Image recognition and automatic tagging |May not have specific image search functionality |
 
 
+## How to use
 
+### Sign in
+
+<img src="https://image.notesmall.site/readme/login.gif"/>
+
+### Add new document
+
+<img src="https://image.notesmall.site/readme/new.gif"/>
+
+### Mange document
+
+<img src="https://image.notesmall.site/readme/detail.gif"/>
+
+### Image upload
+<img src="https://image.notesmall.site/readme/cat.gif"/>
+
+### Search 
+
+<img src="https://image.notesmall.site/readme/searchcat.gif"/>
+
+### Project management
+
+<img src="https://image.notesmall.site/readme/project.gif"/>
+
+### Tag management
+
+<img src="https://image.notesmall.site/readme/tag.gif"/>
 
 
 ## Technique

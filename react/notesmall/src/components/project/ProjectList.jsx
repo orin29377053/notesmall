@@ -78,7 +78,7 @@ const ProjectList = ({ list }) => {
     useEffect(() => {}, [selectedButton]);
 
     useEffect(() => {
-        if (projectlist.length > 0) {
+        if (projectlist?.length > 0 && selectedButton == null) {
             let i = 0;
             while (i < projectlist.length) {
                 if (projectlist[i].length > 0) {

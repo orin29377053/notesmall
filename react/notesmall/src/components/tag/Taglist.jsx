@@ -112,7 +112,7 @@ const Taglist = () => {
     }, []);
 
     useEffect(() => {
-        if (taglist?.length > 0) {
+        if (taglist?.length > 0 && selectedButton === null) {
             setSelectedButton(taglist[0]);
             setIsActive(taglist[0]._id);
         }
