@@ -1,6 +1,11 @@
-# Notesmall
 
-Welcome to Notesmall ! You can try to use this cloud note editing service with test account below:
+
+<img src="https://image.notesmall.site/readme/mylogo.png"/>
+
+# Welcome to Notesmall !
+
+You can try to use this cloud note editing service with test account below:
+
 **Test account**
 > Email:    test@gmail.com
 >
@@ -8,11 +13,26 @@ Welcome to Notesmall ! You can try to use this cloud note editing service with t
 
 [Try it !](https://notesmall.site/home)
 
-## Content
+## Table of Contents
 
 * [Description](#description)
 * [Feature](#feature)
+    * [Editing](#editing)
+    * [Search](#search)
+    * [Management](#management)
+    * [Compare](#compare)
 * [Technique](#technique)
+    * [System Architecture](#system-architecture)
+    * [Schema](#schema)
+    * [Technologies](#technologies)
+        * [Frontend](#frontend)
+        * [GraphQL](#graphql)
+        * [Authorization](#authorization)
+        * [Image handling](#image-handling)
+        * [Search](#search-1)
+        * [Error handling](#error-handling)
+        * [Logger](#logger)
+* [Road map](#road-map)
 * [Contact](#contact)
 
 
@@ -64,7 +84,7 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
     | Category   | Technology/Service                           |
     |------------|---------------------------------------------|
-    | API        | GraphQL                                     |
+    | API        | [GraphQL](#graphql)                                     |
     | Cache      | Redis, DataLoader                           |
     | Server     | Express (Node.js), Apollo Server (GraphQL)  |
     | Database   | MongoDB Atlas                               |
@@ -76,15 +96,20 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 ### Schema
 
+<img src="https://image.notesmall.site/readme/schema.png"/>
 
 
 ### Technologies
 
-#### Fronted
+#### Frontend
 1. **React** : The frontend pages are implemented using the `React` framework and managed global variables through `React Redux`, enabling real-time updates of user information without sending requests to the backend.
+
 <img src="https://image.notesmall.site/readme/reducer.png"/>
+
 2. **API management** :`Redux Saga` is utilized for frontend API management, providing control over request flow and allowing for handling of response actions, such as redirecting upon successful requests or customizing notification messages.
+
 <img src="https://image.notesmall.site/readme/redux.png"/>
+
 3. **Deploy** : The frontend pages are automatically built and deployed to an S3 bucket using `GitHub Actions`, and leverages `AWS CloudFront`  for CDN caching to minimize page load time for users.
 
 
@@ -139,7 +164,7 @@ const getDocument = async (documentID, depth = 2) => {
 ```
 #### Authorization
 1. **JWT verify** : Utlized JWT (JSON Web Token) for user authentication. Whenever a user sends any request from the browser, the request will carry a JWT in headers by default, then  verifies the JWT in the `middleware`.
-2. If the decoding is successful, a `userID` is added to the `context` of the GraphQL request.
+2. If the decoding is successful, a `userID` is added to the `context` of the [GraphQL](#graphql) request.
 3. If fails ( eg: `expired`, `undefined`, or `null` ), subsequent requests are processed as `guest` .
 4. When accessing data in the server, it further verify the permission to access the data. If this verification fails, an error message is returned to the browser to prevent users from illegally modifying others' data.
 
@@ -164,7 +189,7 @@ const getDocument = async (documentID, depth = 2) => {
 <img src="https://image.notesmall.site/readme/search.png"/>
 
 #### Error handling
-1. When sending requests to GraphQL, the response is primarily 200, regardless of whether the request succeeds or fails.
+1. When sending requests to [GraphQL](#graphql), the response is primarily 200, regardless of whether the request succeeds or fails.
 2. To prevent misjudgment on the frontend, using the extension module `GraphQLError`, as the error handling method. It allows customization of the status code and error message.
 3. To make the module more versatile, creating a `baseError` that inherits of `GraphQLError`, which has custom error message structure and integrated a [logger](#logger) module to log when an error is thrown.
 4. Extended more custom error such as `UserError` and `NotFoundError`, facilitating developers in managing and tracking errors.
@@ -202,6 +227,11 @@ function eventLogFormatter(EventName, logMessage) {
 ```
 
 ## Road map
+* DataLoader moved to Redis
+* Optmize the GraphQL query from frontend
+* Docouments archieved and import / export
+
+
 
 
 ## Contact
