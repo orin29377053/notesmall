@@ -90,10 +90,15 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 #### GraphQL
 1. **GraphQL** provides more flexibility in frontend function development. The main resolvers include `user`, `document`, `project`, and `tag`, which are interconnected with each other in the schema. Furthermore, each resolver has its own dataloader responsible for caching and batch querying.
+
 <img src="https://image.notesmall.site/readme/graphql.png"/>
+
 2. **Dataloader** is a solution to the common n+1 problem in GraphQL.  In the context of this system's resolvers, nested queries may impose a query load on the database, so dataloader is used as a tool for batching and caching. Moreover, when data is updated, the dataloader is cleared to reduce the query load on the backend server to the database.
+
 <img src="https://image.notesmall.site/readme/dataloader.png"/>
+
 > **N+1 problem** : if there are n data items that need to be queried, a list of these n data items must first be obtained, followed by a query for each data item.
+
 3. **Depth control**: In MongoDB, if two tables have a reference relationship and are in a **many-to-many** situation, nested queries in GraphQL may cause infinite loops, leading to server crash. At this point, depth control is needed to restrict the maximum query depth of the resolver to prevent server crashes.
 
 ```js
