@@ -77,7 +77,7 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 
 
-<img src="https://orinlin.s3.amazonaws.com/notesmall+system+design.png"/>
+<img src="https://image.notesmall.site/readme/structure.png"/>
 
 1. **Frontend** : React, React-Redux, Redux-Saga
 2. **Backend** 
