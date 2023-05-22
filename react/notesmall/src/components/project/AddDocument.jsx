@@ -141,6 +141,7 @@ const AddDocument = ({ first, selectedButton, setSelectedButton }) => {
 
                     <div>
                         <Button
+                            disabled={!selectDocument}
                             variant="contained"
                             onClick={() => {
                                 dispatch({
@@ -161,6 +162,7 @@ const AddDocument = ({ first, selectedButton, setSelectedButton }) => {
                                     ],
                                 };
                                 setSelectedButton(newSelectProject);
+                                setSelectDocument("");
 
                                 
                                 handleClose();
