@@ -81,6 +81,16 @@ const editorReducer = (state = initState, action) => {
                 },
             };
         
+        case "UPDATE_FAVORITE":
+            return {
+                ...state,
+                editingDocument: {
+                    ...state.editingDocument,
+                    isFavorite: action.payload.isFavorite,
+                },
+            };
+        
+        
 
         default:
             return state;

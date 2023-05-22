@@ -84,6 +84,8 @@ const EditorInformation = ({
             payload: { id: editingDocument._id, isFavorite: !isFavorite },
         });
 
+        
+
         dispatch({
             type: "FETCH_RESULT_INFORMATION",
             data: {
@@ -149,6 +151,8 @@ const EditorInformation = ({
             setTags(editingDocument?.tags);
         }
     }, [editingDocument, path]);
+
+
 
     return (
         <div
@@ -295,7 +299,7 @@ const EditorInformation = ({
                         ) : null}
                     </div>
                 </div>
-                
+
                 <div className="docInfoBlock">
                     <div className="docInfoTitle">
                         Images
@@ -403,7 +407,7 @@ const EditorInformation = ({
                             font-weight: 700;
                         `}
                     >
-                        Perment
+                        Permanent
                     </Button>
                     <Modal
                         open={open}
@@ -418,7 +422,6 @@ const EditorInformation = ({
                                     font-size: 20px;
                                     font-weight: 700;
                                     margin-bottom: 10px;
-
                                 `}
                             >
                                 This action cannot be undone
