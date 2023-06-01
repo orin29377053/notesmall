@@ -140,7 +140,7 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 ### Schema
 
-<img src="https://image.notesmall.site/readme/schema2.png"/>
+<img src="https://image.notesmall.site/readme/schema3.png"/>
 
 
 ### Technologies
