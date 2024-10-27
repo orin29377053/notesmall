@@ -1,6 +1,6 @@
 
 <div align="center">
-<img src="https://image.notesmall.site/readme/mylogo.png"/>
+<img src="image/mylogo.png"/>
 </div>
 
 <div align="center">
@@ -14,14 +14,14 @@
 
 # Welcome to Notesmall !
 
-You can try to use this cloud note editing service with test account below:
+<!-- You can try to use this cloud note editing service with test account below: -->
 
-**Test account**
+<!-- **Test account**
 > Email:    test@gmail.com
 >
-> Password: test
+> Password: test -->
 
-[Try it !](https://notesmall.site/home)
+<!-- [Try it !](https://notesmall.site/home) -->
 
 ## Table of Contents
 
@@ -89,30 +89,30 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 ### Sign in
 
-<img src="https://image.notesmall.site/readme/login.gif"/>
+<img src="image/login.gif"/>
 
 ### Add new document
 
-<img src="https://image.notesmall.site/readme/new.gif"/>
+<img src="image/new.gif"/>
 
 ### Mange document
 
-<img src="https://image.notesmall.site/readme/detail.gif"/>
+<img src="image/detail.gif"/>
 
 ### Image upload
-<img src="https://image.notesmall.site/readme/cat.gif"/>
+<img src="image/cat.gif"/>
 
 ### Search 
 
-<img src="https://image.notesmall.site/readme/searchcat.gif"/>
+<img src="image/searchcat.gif"/>
 
 ### Project management
 
-<img src="https://image.notesmall.site/readme/project.gif"/>
+<img src="image/project.gif"/>
 
 ### Tag management
 
-<img src="https://image.notesmall.site/readme/tag.gif"/>
+<img src="image/tag.gif"/>
 
 
 ## Technique
@@ -121,7 +121,7 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 
 
-<img src="https://image.notesmall.site/readme/structure.png"/>
+<img src="image/structure.png"/>
 
 1. **Frontend** : React, React-Redux, Redux-Saga
 2. **Backend** 
@@ -140,7 +140,7 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 
 ### Schema
 
-<img src="https://image.notesmall.site/readme/schema3.png"/>
+<img src="image/schema3.png"/>
 
 
 ### Technologies
@@ -148,11 +148,11 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 #### Frontend
 1. **React** : The frontend pages are implemented using the `React` framework and managed global variables through `React Redux`, enabling real-time updates of user information without sending requests to the backend.
 
-<img src="https://image.notesmall.site/readme/reducer.png"/>
+<img src="image/reducer.png"/>
 
 2. **API management** :`Redux Saga` is utilized for frontend API management, providing control over request flow and allowing for handling of response actions, such as redirecting upon successful requests or customizing notification messages.
 
-<img src="https://image.notesmall.site/readme/redux.png"/>
+<img src="image/redux.png"/>
 
 3. **Deploy** : The frontend pages are automatically built and deployed to an S3 bucket using `GitHub Actions`, and leverages `AWS CloudFront`  for CDN caching to minimize page load time for users.
 
@@ -160,11 +160,11 @@ Notesmall is a user-friendly and easy-to-use cloud note editing service that pri
 #### GraphQL
 1. **GraphQL** provides more flexibility in frontend function development. The main resolvers include `user`, `document`, `project`, and `tag`, which are interconnected with each other in the schema. Furthermore, each resolver has its own dataloader responsible for caching and batch querying.
 
-<img src="https://image.notesmall.site/readme/graphql.png"/>
+<img src="image/graphql.png"/>
 
 2. **Dataloader** is a solution to the common n+1 problem in GraphQL.  In the context of this system's resolvers, nested queries may impose a query load on the database, so dataloader is used as a tool for batching and caching. Moreover, when data is updated, the dataloader is cleared to reduce the query load on the backend server to the database.
 
-<img src="https://image.notesmall.site/readme/dataloader.png"/>
+<img src="image/dataloader.png"/>
 
 > **N+1 problem** : if there are n data items that need to be queried, a list of these n data items must first be obtained, followed by a query for each data item.
 
@@ -212,7 +212,7 @@ const getDocument = async (documentID, depth = 2) => {
 3. If fails ( eg: `expired`, `undefined`, or `null` ), subsequent requests are processed as `guest` .
 4. When accessing data in the server, it further verify the permission to access the data. If this verification fails, an error message is returned to the browser to prevent users from illegally modifying others' data.
 
-<img src="https://image.notesmall.site/readme/jwt.png"/>
+<img src="image/jwt.png"/>
 
 #### Image handling
 1. Users can upload images to the notes by dragging and dropping.
@@ -224,20 +224,20 @@ const getDocument = async (documentID, depth = 2) => {
 7. Due to the addition of the URL of the newly uploaded image, document content changed, it sends an auto-save request to the server.
 8. Upon detecting an image URL in the content, the server fetch the image recognition API and uploads the recognized tags to the database.
 9. From uploading the image to image recognition , the process is asynchronous, enabling users to continue editing without having to wait for .
-<img src="https://image.notesmall.site/readme/imagehandling.png"/>
+<img src="image/imagehandling.png"/>
 
 #### Search
 1. **Auto-complete** : As a user types in the search field, each change triggers a request to the server for auto-completion of keywords. The server executes an auto-complete query on the database and returns potential keywords that might appear in the text.
 2. **Full-text search** : Upon completion of input and pressing Enter, a full-text search is initiated. After the search results are returned, the browser highlights the relevant keywords.
 
-<img src="https://image.notesmall.site/readme/search.png"/>
+<img src="image/search.png"/>
 
 #### Error handling
 1. When sending requests to [GraphQL](#graphql), the response is primarily 200, regardless of whether the request succeeds or fails.
 2. To prevent misjudgment on the frontend, using the extension module `GraphQLError`, as the error handling method. It allows customization of the status code and error message.
 3. To make the module more versatile, creating a `baseError` that inherits of `GraphQLError`, which has custom error message structure and integrated a [logger](#logger) module to log when an error is thrown.
 4. Extended more custom error such as `UserError` and `NotFoundError`, facilitating developers in managing and tracking errors.
-<img src="https://image.notesmall.site/readme/errorhandling.png"/>
+<img src="image/errorhandling.png"/>
 
 #### Logger
 1. Develop logger as Class.
